@@ -3,7 +3,7 @@
 void main() {
 	binSrchTree tree;
 
-	// ì‚½ì… ì—°ì‚° í…ŒìŠ¤íŠ¸
+	// »ğÀÔ ¿¬»ê Å×½ºÆ®
 	tree.insert(new binaryNode(35));
 	tree.insert(new binaryNode(18));
 	tree.insert(new binaryNode(7));
@@ -15,38 +15,38 @@ void main() {
 	tree.insert(new binaryNode(30));
 	tree.insert(new binaryNode(99));
 
-	// íŠ¸ë¦¬ ê¸°ë³¸ ì •ë³´
-	printf("ë…¸ë“œì˜ ê°œìˆ˜ = %d\n", tree.getCount());
-	printf("ë‹¨ë§ì˜ ê°œìˆ˜ = %d\n", tree.getLeafCount());
-	printf("íŠ¸ë¦¬ì˜ ë†’ì´ = %d\n", tree.getHeight());
+	// Æ®¸® ±âº» Á¤º¸
+	printf("³ëµåÀÇ °³¼ö = %d\n", tree.getCount());
+	printf("´Ü¸»ÀÇ °³¼ö = %d\n", tree.getLeafCount());
+	printf("Æ®¸®ÀÇ ³ôÀÌ = %d\n", tree.getHeight());
 
-	// ì—¬ëŸ¬ ê°€ì§€ ë°©ë²•ì˜ ìˆœíšŒë¥¼ í†µí•œ ë…¸ë“œ ì •ë³´ ì¶œë ¥
+	// ¿©·¯ °¡Áö ¹æ¹ıÀÇ ¼øÈ¸¸¦ ÅëÇÑ ³ëµå Á¤º¸ Ãâ·Â
 	tree.inorder();
 	tree.preorder();
 	tree.postorder();
 	tree.levelorder();
 
-	// ë…¸ë“œ íƒìƒ‰
+	// ³ëµå Å½»ö
 	tree.search(26);
 	tree.search(25);
 
-	// ì‚­ì œ ì—°ì‚°
-	printf("case 1 ==> ë…¸ë“œ 3 ì‚­ì œ");
+	// »èÁ¦ ¿¬»ê
+	printf("case 1 ==> ³ëµå 3 »èÁ¦");
 	tree.remove(3);
 	tree.levelorder();
-	printf("case 2 ==> ë…¸ë“œ 68 ì‚­ì œ");
+	printf("case 2 ==> ³ëµå 68 »èÁ¦");
 	tree.remove(68);
 	tree.levelorder();
-	printf("case 3 ==> ë…¸ë“œ 18 ì‚­ì œ");
+	printf("case 3 ==> ³ëµå 18 »èÁ¦");
 	tree.remove(18);
 	tree.levelorder();
-	printf("case 4 ==> ë…¸ë“œ 35 ì‚­ì œ(ë£¨íŠ¸ ë…¸ë“œ ì‚­ì œ)");
+	printf("case 4 ==> ³ëµå 35 »èÁ¦(·çÆ® ³ëµå »èÁ¦)");
 	tree.remove(35);
 	tree.levelorder();
 
-	// ìµœì¢… íŠ¸ë¦¬ ì •ë³´ ì¶œë ¥
-	printf("ë…¸ë“œì˜ ê°œìˆ˜ = %d\n", tree.getCount());
-	printf("ë‹¨ë§ì˜ ê°œìˆ˜ = %d\n", tree.getLeafCount());
-	printf("íŠ¸ë¦¬ì˜ ë†’ì´ = %d\n", tree.getHeight());
+	// ÃÖÁ¾ Æ®¸® Á¤º¸ Ãâ·Â
+	printf("³ëµåÀÇ °³¼ö = %d\n", tree.getCount());
+	printf("´Ü¸»ÀÇ °³¼ö = %d\n", tree.getLeafCount());
+	printf("Æ®¸®ÀÇ ³ôÀÌ = %d\n", tree.getHeight());
 }
 */
