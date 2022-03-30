@@ -1,0 +1,1 @@
+while (getchar() != '\n');
