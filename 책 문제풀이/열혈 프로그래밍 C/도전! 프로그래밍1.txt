@@ -1,0 +1,316 @@
+#include <stdio.h>
+
+int main()
+{
+	int n;
+	printf("10진수 입력: ");
+	scanf_s("%d", &n);
+	printf("16진수 출력: %X", n);
+}
+
+
+
+
+
+
+
+#include <stdio.h>
+
+void Multiple(int _num1, int _num2)
+{
+	for (int i = _num1; i < _num2 + 1; i++)
+	{
+		for (int j = 1; j < 10; j++)
+		{
+			printf("%d x %d = %d \n", i, j, i*j);
+		}
+		printf("\n");
+	}
+}
+
+int main()
+{
+	int num1, num2;
+	printf("1~10 사이 2개의 수 입력: ");
+	scanf_s("%d %d", &num1, &num2);
+	if (num1 >= num2)
+		Multiple(num2, num1);
+	else
+		Multiple(num1, num2);
+
+	return 0;
+}
+
+
+
+
+
+
+
+//최대공약수 내풀이1
+#include <stdio.h>
+
+void GCD(int _num1, int _num2)
+{
+	int result;
+
+	for (int i = 1; i <= _num1; i++)
+	{
+		if (_num1%i == 0 && _num2%i==0) 
+			result = i;
+	}
+
+	printf("최대공약수: %d", result);
+}
+
+int main()
+{
+	int num1, num2;
+	int result;
+
+	printf("2개의 정수를 입력하세요: ");
+	scanf_s("%d %d", &num1, &num2);
+
+	GCD(num1, num2);
+
+	return 0;
+}
+
+
+//최대공약수 내풀이2
+#include <stdio.h>
+
+void GCD(int _num1, int _num2)
+{
+	int result = 1;
+
+	for (int i = 2; i <= _num1; i++)
+	{
+		if (_num1 % i == 0 & _num2 % i == 0)
+		{
+			_num1 /= i;
+			_num2 /= i;
+			result *= i;
+			i = 1;
+		}
+	}
+	printf("최대공약수: %d", result);
+}
+
+int main()
+{
+	int num1, num2;
+	int result;
+
+	printf("2개의 정수를 입력하세요: ");
+	scanf_s("%d %d", &num1, &num2);
+
+	if (num1 <= num2)
+		GCD(num1, num2);
+	else
+		GCD(num2, num1);
+
+	return 0;
+}
+
+
+
+
+
+
+
+
+#include <stdio.h>
+
+//3500 = 500x + 700y + 400z
+
+
+
+void Calcul(int money, int crim, int seu, int coke)
+{
+	int n1 = 0, n2 = 0, n3 = 0;
+	money -= (crim + seu + coke);
+
+	for (n1 = 0; n1 <= money / crim; n1++)
+	{
+		for (n2 = 0; n2 <= money / seu; n2++)
+		{
+			for (n3 = 0; n3 <= money / coke; n3++)
+			{
+				if (money == crim * n1 + seu * n2 + coke * n3)
+				{
+					printf("크림빵 %2d개, 새우깡 %2d개, 콜라 %2d개 \n", n1 + 1, n2 + 1, n3 + 1);
+					break;
+				}
+			}
+		}
+	}
+}
+
+int main()
+{
+	int money = 3500;
+	int crim = 500;
+	int seu = 700;
+	int   coke = 400;
+
+	printf("님이 소유한 금액(원): ");
+	scanf_s("%d", &money);
+
+	Calcul(money, crim, seu, coke);
+
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+
+#include <stdio.h>
+
+int main()
+{
+   int num = 1;
+   int i;
+   int numOfNum = 0;
+
+   for (num = 1; numOfNum < 10; num++)
+   {
+      for (i = 2; i <= num; i++)
+      {
+         if (num % i == 0)
+         {
+            break;
+         }
+      }
+      if (i == num)
+      {
+         printf("%d ", num);
+         numOfNum++;
+      }
+   }
+
+   return 0;
+}
+
+
+
+
+
+
+
+
+#include <stdio.h>
+
+int main()
+{
+   int input;
+   int h = 0, m = 0, s = 0;
+   int i;
+
+   printf("초를 입력: ");
+   scanf_s("%d", &input);
+   
+   for (h = 0; input >= 3600; h++)
+      input -= 3600;
+
+   for (m = 0; input >= 60; m++)
+      input -= 60;
+
+   s = input;
+   printf("%d시간 %d분 %d초", h, m, s);
+
+
+   return 0;
+}
+
+
+
+
+
+
+
+
+#include <stdio.h>
+
+int main()
+{
+	int n;
+	int k;
+	int result = 1;
+
+	printf("\"2^k <= n\"에서 n 입력: ");
+	scanf_s("%d", &n);
+
+	for (k = 0; result <= n; k++)
+	{
+		result *= 2;
+	}
+
+	printf("k의 최대값: %d ", k - 1);
+
+	return 0;
+}
+
+
+
+
+
+
+//내 풀이
+#include <stdio.h>
+
+void Square(int n, int result, int cst)
+{
+	if (n <= 0)
+	{
+		printf("2의 %d제곱 = %d \n", cst, result);
+		return;
+	}
+	result *= 2;
+	Square(n - 1, result, cst);
+	return;
+}
+
+int main()
+{
+	int n;
+	int result = 1;
+	int cst;
+
+	printf("정수 입력: ");
+	scanf_s("%d", &n);
+	cst = n;
+	Square(n, result, cst);
+
+
+	return 0;
+}
+
+
+//다른 사람 풀이
+#include <stdio.h>
+
+int Cal(int n)
+{
+   if (n==0)
+      return 1;
+   return Cal(n - 1) * 2;
+}
+
+int main()
+{
+   int n;
+   printf("정수 입력: ");
+   scanf_s("%d", &n);
+
+   printf("2의 %d제곱 = %d\n", n, Cal(n));
+
+   return 0;
+}
+

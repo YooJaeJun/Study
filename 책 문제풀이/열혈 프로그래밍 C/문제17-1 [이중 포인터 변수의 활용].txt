@@ -1,0 +1,43 @@
+#include <stdio.h>
+
+void MaxAndMin(int *arr, int **_maxPtr, int **_minPtr)
+{
+	int i;
+
+	*_maxPtr = *_minPtr = &arr[0];
+
+	for (i = 0; i < 5; i++)
+	{
+		if (**_maxPtr < arr[i])
+		{
+			*_maxPtr = &arr[i];
+		}
+		if (**_minPtr > arr[i])
+		{
+			*_minPtr = &arr[i];
+		}
+	}
+}
+
+int main()
+{
+	int * maxPtr;
+	int * minPtr;
+	int arr[5];
+	int i;
+
+	for (i = 0; i < 5; i++)
+	{
+		printf("arr[%d] 정수 입력: ", i + 1);
+		scanf_s("%d", &arr[i]);
+	}
+	
+
+	MaxAndMin(arr, &maxPtr, &minPtr);
+
+
+	printf("\n 최대 %d / 최소 %d", *maxPtr, *minPtr);
+
+
+	return 0;
+}

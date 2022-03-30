@@ -1,0 +1,35 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+
+struct employee
+{
+	char name[20];
+	char num[20];
+	int pay;
+};
+
+int main()
+{
+	struct employee man[3];
+	
+	int th = 1;
+	for (int i = 0; i != 3; i++)
+	{
+		printf("%d번쨰 사람 이름: ", th);
+		scanf("%s", man[i].name);
+		printf("%d번쨰 사람 주민번호: ", th);
+		scanf("%s", man[i].num);
+		printf("%d번쨰 사람 급여: ", th++);
+		scanf("%d", &(man[i].pay));
+	}
+
+	printf("\n");
+	th = 1;
+	for (int i = 0; i != 3; i++)
+	{
+		printf("%d번째 사람 이름: %s \n%d번째 사람 주민번호: %s \n%d번째 사람 급여: %d\n", th, man[i].name, th, man[i].num, th, man[i].pay);
+		th++;
+	}
+
+	return 0;
+}

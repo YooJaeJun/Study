@@ -1,0 +1,130 @@
+//RectangleConstructor.cpp
+#include <iostream>
+#include "Point.h"
+#include "Rectangle.h"
+using namespace std;
+
+int main()
+{
+	Rectangle rec(1, 1, 5, 5);
+	rec.ShowRecInfo();
+	return 0;
+}
+
+
+
+
+
+//Rectangle.cpp
+#include <iostream>
+#include "Rectangle.h"
+using namespace std;
+
+Rectangle::Rectangle(const int &x1, const int &y1, const int &x2, const int &y2)
+	:upLeft(x1,y1), lowRight(x2,y2)
+{
+	//empty
+}
+
+void Rectangle::ShowRecInfo() const
+{
+	cout << "좌 상단: " << '[' << upLeft.GetX() << ", ";
+	cout << upLeft.GetY() << ']' << endl;
+	cout << "우 하단: " << '[' << lowRight.GetX() << ", ";
+	cout << lowRight.GetY() << ']' << endl << endl;
+}
+
+
+
+
+
+//Rectangle.h
+#ifndef __RECTANGLE_H_
+#define __RECTANGLE_H_
+#include "Point.h"
+
+class Rectangle
+{
+private:
+	Point upLeft;
+	Point lowRight;
+public:
+	Rectangle(const int &x1, const int &y1, const int &x2, const int &y2);
+	void ShowRecInfo() const;
+};
+
+
+#endif
+
+
+
+
+
+
+
+//Point.cpp
+#include <iostream>
+#include "Point.h"
+using namespace std;
+
+Point::Point(const int &xpos, const int &ypos)
+{
+	x = xpos;
+	y = ypos;
+}
+
+
+int Point::GetX() const	//const 함수!
+{
+	return x;
+}
+int Point::GetY() const	//const 함수!
+{
+	return y;
+}
+
+bool Point::SetX(int xpos)
+{
+	if (0 > xpos || xpos > 100)
+	{
+		cout << "벗어난 범위의 값 전달" << endl;
+		return false;
+	}
+	x = xpos;
+	return true;
+}
+bool Point::SetY(int ypos)
+{
+	if (0 > ypos || ypos > 100)
+	{
+		cout << "벗어난 범위의 값 전달" << endl;
+		return false;
+	}
+	y = ypos;
+	return true;
+}
+
+
+
+
+
+//Point.h
+#ifndef __POINT_H_
+#define __POINT_H_
+
+
+class Point
+{
+private:
+	int x;
+	int y;
+public:
+	Point(const int &xpos, const int &ypos);
+	int GetX() const;
+	int GetY() const;
+	bool SetX(int xpos);
+	bool SetY(int ypos);
+};
+
+
+#endif

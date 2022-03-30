@@ -1,0 +1,81 @@
+#include <stdio.h>
+
+int main()
+{
+	char arr[50];
+	int len = 0;
+	int i = 0;
+
+	printf("영단어 입력: ");
+	scanf_s("%s", arr, sizeof(arr));
+	
+	for (i = 0; arr[i] != '\0'; i++)
+	{
+		len++;
+	}
+	printf("%d", len);
+
+	return 0;
+}
+
+
+
+
+
+
+#include <stdio.h>
+
+int main()
+{
+	char str[50];
+	int chNum = 0;
+	int i;
+
+	printf("영단어 입력: ");
+	scanf_s("%s", str, sizeof(str));
+
+	for (i = 0; str[i] != '\0'; i++)
+	{
+		chNum++;
+	}
+
+	/*
+	for (i = 0; i < chNum/2; i++)
+	{
+		char temp = str[i];
+		str[i] = str[chNum - 1 - i];
+		str[chNum - 1 - i] = temp;
+	}
+	printf("%s", str);
+	*/
+
+	for (i = chNum; i >= 0; i--)
+	{
+		printf("%c", str[i]);
+	}	
+}
+
+
+
+
+
+#include <stdio.h>
+
+int main()
+{
+	char str[50];
+	char big;
+
+	printf("영단어 입력: ");
+	scanf_s("%s", str, sizeof(str));
+
+	big = str[0];
+	for (int i = 1; str[i] != '\0'; i++)
+	{
+		if (big < str[i])
+			big = str[i];
+	}
+	printf("아스키 코드 값이 가장 큰 문자: %c", big);
+
+	return 0;
+}

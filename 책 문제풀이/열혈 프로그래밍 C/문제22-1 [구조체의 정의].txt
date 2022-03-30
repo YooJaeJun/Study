@@ -1,0 +1,23 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+
+struct employee
+{
+	char name[20];
+	char num[20];
+	int pay;
+} man;
+
+int main()
+{
+	printf("이름: ");
+	scanf("%s", man.name);
+	printf("나이: ");
+	scanf("%s", man.num);
+	printf("급여: ");
+	scanf("%d", &(man.pay));
+
+	printf("이름: %s \n전화번호: %s \n급여: %d", man.name, man.num, man.pay);
+
+	return 0;
+}

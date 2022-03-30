@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <string.h>
+//문제1
+#include <stdlib.h>
+
+int main()
+{
+	char arr[30];
+
+	puts("문자열 입력: ");
+	fgets(arr, sizeof(arr), stdin);
+	
+	int sum = 0;
+	for (int i = 0; i != strlen(arr); i++)
+	{
+		if (arr[i] < 'A' && arr[i] >= '0')
+		{
+			//2의 아스키 코드가 46이라 치면, 46에서 2를 추출할 것이니, 44를 빼야겠지. 
+			//44 == (1의 아스키 코드 - 1)	//즉, 정수 == 요소의 아스키 코드 - (1의 아스키 코드 - 1)
+			sum += arr[i] - ('1' - 1);
+		}
+	}
+	printf("숫자 총 합: %d", sum);
+	
+
+	return 0;
+}
+
+
+
+
+
+
+//문제2
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main()
+{
+	char str1[20];
+	char str2[20];
+	char str3[40];
+
+	puts("문자열 str1 입력: ");
+	fgets(str1, sizeof(str1), stdin);
+	puts("문자열 str2 입력: ");
+	fgets(str2, sizeof(str2), stdin);
+
+	str1[strlen(str1) - 1] = '\0';
+	str2[strlen(str2) - 1] = '\0';
+
+	strcpy(str3, str1);
+	strcat(str3, str2);
+	printf("%s", str3);
+
+	return 0;
+}
+
+
+
+
+
+//문제3

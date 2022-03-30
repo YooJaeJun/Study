@@ -1,0 +1,110 @@
+#include <stdio.h>
+
+int main()
+{
+	int num;
+	int i = 0;
+	printf("Hello 출력시킬 개수 입력: ");
+	scanf_s("%d", &num);
+
+	while (i < num)
+	{
+		printf("Hello\n");
+		i++;
+	}
+		
+	return 0;
+}
+
+
+
+#include <stdio.h>
+
+int main()
+{
+	int num;
+	int i = 1;
+	printf("3의 배수 출력시킬 개수: ");
+	scanf_s("%d", &num);
+
+	while (i <= num)
+	{
+		printf("%d ",3*i);
+		i++;
+	}
+		
+	return 0;
+}
+
+
+
+#include <stdio.h>
+
+int main()
+{
+	int num = 1;
+	int sum = 0;
+
+	while (num != 0)
+	{
+		printf("더해줄 정수들 계속 입력(0입력 시 덧셈): ");
+		scanf_s("%d", &num);
+		sum += num;
+	}
+
+	printf("%d", sum);
+		
+	return 0;
+}
+
+
+
+
+
+
+#include <stdio.h>
+
+int main()
+{
+	int dan;
+	int i=9;
+
+	printf("정수 입력: ");
+	scanf_s("%d", &dan);
+
+	while (i>0)
+	{
+		printf("%1d x %1d = %1d\n", dan, i, dan*i);
+		i--;
+	}
+}
+
+
+
+
+
+
+#include <stdio.h>
+
+int main()
+{
+	int numNum;
+	int num;
+	int i=0;
+	double sum=0;
+
+	printf("몇 개의 정수입력? ");
+	scanf_s("%d", &numNum);
+
+	while (i < numNum)
+	{
+		printf("정수 입력: ");
+		scanf_s("%d", &num);
+		sum += num;
+		i++;
+	}
+
+	printf("%lf", (double)sum / numNum);
+
+	return 0;
+}

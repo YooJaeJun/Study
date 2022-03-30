@@ -1,0 +1,404 @@
+#include <iostream>
+using namespace std;
+
+#define ID_LEN 20
+#define MAX_SPD 200
+#define FUEL_STEP 2
+#define ACC_STEP 10
+#define BRK_STEP 10
+
+struct Car
+{
+	char gamerID[ID_LEN];	//소유자 ID
+	int fuelGauge;			//연료량
+	int curSpeed;			//현재속도
+};
+
+void ShowCarState(const Car &car)
+{
+	cout << "소유자 ID: " << car.gamerID << endl;
+	cout << "연료량: " << car.fuelGauge <<"%"<< endl;
+	cout << "현재속도 " << car.curSpeed << "km/s"<<endl<<endl;
+}
+
+void Accel(Car &car)
+{
+	if (car.fuelGauge <= 0)
+		return;
+	else
+		car.fuelGauge -= FUEL_STEP;
+
+	if (car.curSpeed + ACC_STEP >= MAX_SPD)
+	{
+		car.curSpeed = MAX_SPD;
+		return;
+	}
+
+	car.curSpeed += ACC_STEP;
+}
+
+void Break(Car &car)
+{
+	if (car.curSpeed < BRK_STEP)
+	{
+		car.curSpeed = 0;
+		return;
+	}
+
+	car.curSpeed -= BRK_STEP;
+}
+
+int main()
+{
+	Car run99 = { "run99", 100, 0 };
+	Accel(run99);
+	Accel(run99);
+	ShowCarState(run99);
+	Break(run99);
+	ShowCarState(run99);
+
+	Car sped77 = { "sped77", 100, 0 };
+	Accel(sped77);
+	Break(sped77);
+	ShowCarState(sped77);
+	return 0;
+}
+
+
+
+
+
+
+
+
+//구조체 안에 함수 삽입하기
+
+
+#include <iostream>
+using namespace std;
+
+#define ID_LEN 20
+#define MAX_SPD 200
+#define FUEL_STEP 2
+#define ACC_STEP 10
+#define BRK_STEP 10
+
+struct Car
+{
+	char gamerID[ID_LEN];	//소유자 ID
+	int fuelGauge;			//연료량
+	int curSpeed;			//현재속도
+
+
+	void ShowCarState()
+	{
+		cout << "소유자 ID: " << gamerID << endl;
+		cout << "연료량: " << fuelGauge << "%" << endl;
+		cout << "현재속도 " << curSpeed << "km/s" << endl << endl;
+	}
+
+	void Accel()
+	{
+		if (fuelGauge <= 0)
+			return;
+		else
+			fuelGauge -= FUEL_STEP;
+
+		if (curSpeed + ACC_STEP >= MAX_SPD)
+		{
+			curSpeed = MAX_SPD;
+			return;
+		}
+
+		curSpeed += ACC_STEP;
+	}
+
+	void Break()
+	{
+		if (curSpeed < BRK_STEP)
+		{
+			curSpeed = 0;
+			return;
+		}
+
+		curSpeed -= BRK_STEP;
+	}
+};
+
+
+
+int main()
+{
+	Car run99 = { "run99", 100, 0 };
+	run99.Accel();
+	run99.Accel();
+	run99.ShowCarState();
+	run99.Break();
+	run99.ShowCarState();
+
+	Car sped77 = { "sped77", 100, 0 };
+	sped77.Accel();
+	sped77.Break();
+	sped77.ShowCarState();
+	return 0;
+}
+
+
+
+
+
+
+//구조체 안에 enum 상수의 선언
+
+#include <iostream>
+using namespace std;
+
+namespace CAR_CONST
+{
+	enum
+	{
+		ID_LEN			=20,
+		MAX_SPD			=200,
+		FUEL_STEP		=2,
+		ACC_STEP		=10,
+		BRK_STEP		=10
+	};
+}
+
+struct Car
+{
+	char gamerID[CAR_CONST::ID_LEN];
+	int fuelGauge;
+	int curSpeed;
+
+	void ShowCarState()
+	{
+		cout << "소유자ID: " << gamerID << endl;
+		cout << "연료량: " << fuelGauge << endl;
+		cout << "현재속도: " << curSpeed << "km/s" << endl << endl;
+	}
+	void Accel()
+	{
+		if (fuelGauge <= 0)
+			return;
+		else
+			fuelGauge -= CAR_CONST::FUEL_STEP;
+
+		if ((curSpeed + CAR_CONST::ACC_STEP) >= CAR_CONST::MAX_SPD)
+		{
+			curSpeed = CAR_CONST::MAX_SPD;
+			return;
+		}
+
+		curSpeed += CAR_CONST::ACC_STEP;
+
+	}
+	void Break()
+	{
+		if (curSpeed < CAR_CONST::BRK_STEP)
+		{
+			curSpeed = 0;
+			return;
+		}
+
+		curSpeed -= CAR_CONST::BRK_STEP;
+	}
+};
+
+int main()
+{
+	Car run99 = { "run99",100,0 };
+	run99.Accel();
+	run99.Accel();
+	run99.ShowCarState();
+	run99.Break();
+	run99.ShowCarState();
+
+	Car sped77 = { "sped77",100,0 };
+	sped77.Accel();
+	sped77.Break();
+	sped77.ShowCarState();
+	return 0;
+}
+
+
+
+
+
+
+
+//함수는 외부로 뺄 수 있다.
+
+#include <iostream>
+using namespace std;
+
+namespace CAR_CONST
+{
+	enum
+	{
+		ID_LEN			=20,
+		MAX_SPD			=200,
+		FUEL_STEP		=2,
+		ACC_STEP		=10,
+		BRK_STEP		=10
+	};
+}
+
+struct Car
+{
+	char gamerID[CAR_CONST::ID_LEN];
+	int fuelGauge;
+	int curSpeed;
+
+	void ShowCarState();	//상태정보 출력
+	void Accel();			//엑셀, 속도증가
+	void Break();			//브레이크, 속도감소
+};
+
+
+void Car::ShowCarState()
+{
+	cout << "소유자ID: " << gamerID << endl;
+	cout << "연료량: " << fuelGauge << endl;
+	cout << "현재속도: " << curSpeed << "km/s" << endl << endl;
+}
+
+
+void Car::Accel()
+{
+	if (fuelGauge <= 0)
+		return;
+	else
+		fuelGauge -= CAR_CONST::FUEL_STEP;
+
+	if ((curSpeed + CAR_CONST::ACC_STEP) >= CAR_CONST::MAX_SPD)
+	{
+		curSpeed = CAR_CONST::MAX_SPD;
+		return;
+	}
+
+	curSpeed += CAR_CONST::ACC_STEP;
+
+}
+void Car:: Break()
+{
+	if (curSpeed < CAR_CONST::BRK_STEP)
+	{
+		curSpeed = 0;
+		return;
+	}
+
+	curSpeed -= CAR_CONST::BRK_STEP;
+}
+
+
+
+int main()
+{
+	Car run99 = { "run99",100,0 };
+	run99.Accel();
+	run99.Accel();
+	run99.ShowCarState();
+	run99.Break();
+	run99.ShowCarState();
+
+	Car sped77 = { "sped77",100,0 };
+	sped77.Accel();
+	sped77.Break();
+	sped77.ShowCarState();
+	return 0;
+}
+
+
+
+
+
+
+//class
+// 접근제어 지시자(접근제어 레이블)
+
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+namespace CAR_CONST
+{
+	enum
+	{
+		ID_LEN=20, MAX_SPD=200, FUEL_STEP=2,
+		ACC_STEP=10, BRK_STEP=10
+	};
+}
+
+class Car
+{
+private:
+	char gamerID[CAR_CONST::ID_LEN];
+	int fuelGauge;
+	int curSpeed;
+public:
+	void InitMembers(const char *ID, int fuel);
+	void ShowCarState();	//상태정보 출력
+	void Accel();			//엑셀, 속도증가
+	void Break();			//브레이크, 속도감소
+};
+
+
+void Car::InitMembers(const char *ID, int fuel)
+{
+	strcpy(gamerID, ID);
+	fuelGauge = fuel;
+	curSpeed = 0;
+}
+
+
+void Car::ShowCarState()
+{
+	cout << "소유자ID: " << gamerID << endl;
+	cout << "연료량: " << fuelGauge << endl;
+	cout << "현재속도: " << curSpeed << "km/s" << endl << endl;
+}
+
+
+void Car::Accel()
+{
+	if (fuelGauge <= 0)
+		return;
+	else
+		fuelGauge -= CAR_CONST::FUEL_STEP;
+
+	if ((curSpeed + CAR_CONST::ACC_STEP) >= CAR_CONST::MAX_SPD)
+	{
+		curSpeed = CAR_CONST::MAX_SPD;
+		return;
+	}
+
+	curSpeed += CAR_CONST::ACC_STEP;
+
+}
+void Car:: Break()
+{
+	if (curSpeed < CAR_CONST::BRK_STEP)
+	{
+		curSpeed = 0;
+		return;
+	}
+
+	curSpeed -= CAR_CONST::BRK_STEP;
+}
+
+
+
+int main()
+{
+	Car run99;
+	run99.InitMembers("run99", 100);
+	run99.Accel();
+	run99.Accel();
+	run99.Accel();
+	run99.ShowCarState();
+	run99.Break();
+	run99.ShowCarState();
+	return 0;
+}

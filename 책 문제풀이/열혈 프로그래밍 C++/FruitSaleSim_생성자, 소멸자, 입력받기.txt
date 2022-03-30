@@ -1,0 +1,85 @@
+#include <iostream>
+using namespace std;
+
+class Seller
+{
+private:
+	int myMoney;
+	int appleNum;
+	int applePrice;
+public:
+	Seller(int _myMoney, int _appleNum, int _applePrice)
+		: myMoney(_myMoney), appleNum(_appleNum), applePrice(_applePrice)
+	{}
+	int Sell(int money)
+	{
+		int num = money / applePrice;
+		myMoney += money;
+		appleNum -= num;
+		return num;
+	}
+	void Show()
+	{
+		cout << "잔액: " << myMoney << endl;
+		cout << "사과: " << appleNum << endl;
+	}
+};
+
+class Buyer
+{
+private:
+	int myMoney;
+	int appleNum;
+public:
+	Buyer(int _myMoney, int _appleNum)
+		: myMoney(_myMoney), appleNum(_appleNum)
+	{}
+	void Buy(Seller &seller, int money)
+	{
+		appleNum += seller.Sell(money);
+		myMoney -= money;
+	}
+	void Show()
+	{
+		cout << "잔액: " << myMoney << endl;
+		cout << "사과: " << appleNum << endl;
+	}
+};
+
+int main()
+{
+	int sellerDefaultMoney;
+	int sellerDefaultAppleNum;
+	int sellerApplePrice;
+	int buyerDefaultMoney;
+	int buyerDefaultAppleNum;
+	int buyerMoneyForBuy;
+
+
+
+	cout << "사과 장수 최초 금액: ";
+	cin >> sellerDefaultMoney;
+	cout << "사과 장수 최초 사과 개수: ";
+	cin >> sellerDefaultAppleNum;
+	cout << "최초 사과 가격: ";
+	cin >> sellerApplePrice;
+
+	cout << "손님 최초 금액: ";
+	cin >> buyerDefaultMoney;
+	cout << "손님 최초 사과 개수: ";
+	cin >> buyerDefaultAppleNum;
+	cout << "손님 사과 살 돈: ";
+	cin >> buyerMoneyForBuy;
+	
+	Seller seller(int sellerDefaultMoney, int sellerDefaultAppleNum, int sellerApplePrice);
+	Buyer buyer(int buyerDefaultMoney, int buyerDefaultAppleNum);
+
+
+
+	buyer.Buy(seller, buyerMoneyForBuy);
+
+	
+
+	return 0;
+
+}

@@ -1,0 +1,25 @@
+#include <stdio.h>
+
+int main()
+{
+	int ch;
+
+	ch = getchar();
+	
+	if (ch >= 'a' && ch <= 'z')
+	{
+		putchar(ch - 32);
+	}
+	else if (ch >= 'A' && ch <= 'Z')
+	{
+		putchar(ch + 32);
+	}
+	else
+	{
+		ch = -1;
+		puts("잘못된 입력입니다.");
+		return ch;
+	}
+
+	return 0;
+}

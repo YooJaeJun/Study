@@ -1,0 +1,157 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <Turboc.h>
+
+typedef struct listNode {
+	int Data;
+	struct listNode* Next;
+	struct listNode* Prev;
+} Node;
+
+Node* CreateNode(int data) {
+	Node* newNode = (Node*)malloc(sizeof(Node));
+	//variables initialization
+	newNode->Data = data;
+	newNode->Next = NULL;
+	newNode->Prev = NULL;
+
+	return newNode;
+}
+
+void DeleteNode(Node* node) {
+	free(node);
+}
+
+Node* GetNodeAt(Node* head, int index) {
+	Node* horse = head;
+	int count = 0;
+
+	while (horse != NULL) {
+		if (count++ == index) {
+			return horse;
+		}
+		horse = horse->Next;
+	}
+	return NULL;
+}
+
+int CountNode(Node *head) {
+	int count = 0;
+	Node* horse = head;
+
+	while (horse != NULL) {
+		horse = horse->Next;
+		count++;
+	}
+	return count;
+}
+
+void AddNode(Node** head, Node* newNode) {
+	//no list exists
+	if ((*head) == NULL) {
+		*head = newNode;
+	}
+	//list exists
+	else {
+		Node* horse = *head;
+		
+		while (horse->Next != NULL) {
+			horse = horse->Next;
+		}
+
+		horse->Next = newNode;
+		newNode->Prev = horse;
+	}
+}
+
+void InsertAfter(Node* Current, Node* newNode) {
+	//head
+	if (Current->Prev == NULL && Current->Next == NULL) {
+		Current->Next = newNode;
+		newNode->Prev = Current;
+	}
+	//not head
+	//if tail
+	if (Current->Next == NULL) {
+		Current->Next = newNode;
+		newNode->Prev = Current;
+	}
+	//if the middle of 2 nodes
+	else {
+		Current->Next->Prev = newNode;
+		newNode->Prev = Current;
+		newNode->Next = Current->Next;
+		Current->Next = newNode;
+	}
+}
+
+void RemoveNode(Node** head, Node* remove) {
+	//head
+	if (*head == remove) {
+		*head = remove->Next;
+	}
+	//when remove has next link to go
+	if (remove->Next != NULL) {
+		remove->Next->Prev = remove->Prev;
+	}
+	//when remove has prev link to go
+	if (remove->Prev != NULL) {
+		remove->Prev->Next = remove->Next;
+	}
+
+	DeleteNode(remove);
+}
+
+int main() {
+
+	int i = 0;
+	int count = 0;
+
+	//future head
+	Node * list = NULL;
+	//temporary node
+	Node* newNode = NULL;
+	//current node
+	Node* curr = NULL;
+
+	for (i = 0; i < 5; i++) {
+		newNode = CreateNode(i);
+		AddNode(&list, newNode);
+	}
+	count = CountNode(list);
+	for (i = 0; i < count; i++) {
+		curr = GetNodeAt(list, i);
+		printf("List[%d] = %d\n", i, curr->Data);
+	}
+	printf("---------------5 Nodes Created-------------\n");
+
+	newNode = CreateNode(99);
+	curr = GetNodeAt(list, 0);
+	InsertAfter(curr, newNode);
+
+	newNode = CreateNode(444);
+	curr = GetNodeAt(list, 4);
+	InsertAfter(curr, newNode);
+
+	count = CountNode(list);
+	for (i = 0; i < count; i++) {
+		curr = GetNodeAt(list, i);
+		printf("List[%d] = %d\n", i, curr->Data);
+	}
+	printf("---------------After 2 Nodes inserted-------------\n");
+
+	newNode = GetNodeAt(list, 1);
+	RemoveNode(&list, newNode);
+
+	newNode = GetNodeAt(list, 0);
+	RemoveNode(&list, newNode);
+
+	count = CountNode(list);
+	for (i = 0; i < count; i++) {
+		curr = GetNodeAt(list, i);
+		printf("List[%d] = %d\n", i, curr->Data);
+	}
+
+	printf("---------------After Node with index 2 removed--------------\n");
+
+	return 0;
+}

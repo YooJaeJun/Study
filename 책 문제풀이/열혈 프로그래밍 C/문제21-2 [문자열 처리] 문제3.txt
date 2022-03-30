@@ -1,0 +1,224 @@
+//첫 풀이
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+void NameAge(char * input, char * name, char * age, int * nameEnd, int * ageEnd)
+{
+	for (int i = 0; input[i] != ' '; i++)
+	{
+		name[i] = input[i];
+		*nameEnd = i;
+	}
+
+	int ageNum = 0;
+	for (int i = *nameEnd + 2; input[i] != '\n'; i++)
+	{
+		age[ageNum++] = input[i];
+		*ageEnd = i - *nameEnd - 1;
+	}
+}
+
+void Diff(char * nameOrAge1, char * nameOrAge2, char str[])
+{
+	int diff = 0;
+	for (int i = 0; i != strlen(nameOrAge1); i++)
+	{
+		if (nameOrAge1[i] != nameOrAge2[i])
+		{
+			diff++;
+			break;
+		}
+	}
+	if (diff == 0)
+		printf("두 사람의 %s(은/는) 같습니다.\n", str);
+	else
+		printf("두 사람의 %s(은/는) 다릅니다.\n", str);
+}
+
+
+int main()
+{
+	char input[30];
+	char name[10];
+	char age[10];
+
+	puts(" \"이름 나이\" 입력: ");
+	fgets(input, sizeof(input), stdin);
+
+	int nameEnd = 0;
+	int ageEnd = 0;
+	//1번 저장
+	NameAge(input, name, age, &nameEnd, &ageEnd);
+
+	char name1[10];
+	for (int i = 0; i != nameEnd; i++)
+	{
+		name1[i] = name[i];
+		name1[i + 1] = '\0';
+	}
+	char age1[10];
+	for (int i = 0; i != ageEnd; i++)
+	{
+		age1[i] = age[i];
+		age1[i + 1] = '\0';
+	}
+
+
+	puts(" \"이름 나이\" 입력: ");
+	fgets(input, sizeof(input), stdin);
+
+	//2번 저장
+	NameAge(input, name, age, &nameEnd, &ageEnd);
+
+	char name2[10];
+	for (int i = 0; i != nameEnd; i++)
+	{
+		name2[i] = name[i];
+		name2[i + 1] = '\0';
+	}
+	char age2[10];
+	for (int i = 0; i != ageEnd; i++)
+	{
+		age2[i] = age[i];
+		age2[i + 1] = '\0';
+	}
+
+	//비교
+	char nameStr[] = "이름";
+	Diff(name1, name2, nameStr);
+
+	char ageStr[] = "나이";
+	Diff(age1, age2, ageStr);
+
+	return 0;
+}
+
+
+
+
+//승윤님 피드백 후 수정
+//1. const 2. 유효성 판단 3. 이름나이 파씽 함수
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+void InputValidation(const char * input, int * error, int * manNum)
+{
+	for (int i = 0; input[i] != '\0'; i++)
+	{
+		if (input[i] == ' ')
+		{
+			*error = 1;
+			*manNum = *manNum + 1;
+			return;
+		}
+	}
+	puts("공백으로 이름과 나이를 구분하세요\n");
+}
+
+void NameAge(const char * input, char * name, char * age, int * nameEnd, int * ageEnd)
+{
+	for (int i = 0; input[i] != ' '; i++)
+	{
+		name[i] = input[i];
+		*nameEnd = i;
+	}
+
+	int ageNum = 0;
+	for (int i = *nameEnd + 2; input[i] != '\n'; i++)
+	{
+		age[ageNum++] = input[i];
+		*ageEnd = i - *nameEnd - 1;	//input 끝에서 name 끝을 빼준 것에 -1 
+	}
+}
+
+void Diff(const char * nameOrAge1, const char * nameOrAge2, const char str[])
+{
+	int diff = 0;
+	for (int i = 0; i != strlen(nameOrAge1); i++)
+	{
+		if (nameOrAge1[i] != nameOrAge2[i])
+		{
+			diff++;
+			break;
+		}
+	}
+	if (diff == 0)
+		printf("\n두 사람의 %s(은/는) 같습니다.\n", str);
+	else
+		printf("\n두 사람의 %s(은/는) 다릅니다.\n", str);
+}
+
+void NameAndAgeAssign(const char * name, const char * age, const int * nameEnd, const int * ageEnd, char * nameN, char * ageN)
+{
+	for (int i = 0; i != *nameEnd; i++)
+	{
+		nameN[i] = name[i];
+		nameN[i + 1] = '\0';
+	}
+	char age1[10];
+	for (int i = 0; i != *ageEnd; i++)
+	{
+		ageN[i] = age[i];
+		ageN[i + 1] = '\0';
+	}
+}
+
+int main()
+{
+	char input[30];
+	char name[10];
+	char age[10];
+
+	puts(" -------\"이름 나이\" 형태로 입력해서 두 사람 이름과 나이 비교--------: \n");
+
+	//2번 입력 및 유효성 검사
+	int manNum = 1;
+	int error = 0;
+	while (error != 1)
+	{
+		printf("%d번째 사람: ", manNum);
+		fgets(input, sizeof(input), stdin);
+		InputValidation(input, &error, &manNum);
+	}
+
+	int nameEnd = 0;
+	int ageEnd = 0;
+	//1번 저장
+	NameAge(input, name, age, &nameEnd, &ageEnd);
+	//1번 할당
+	char name1[10];
+	char age1[10];
+	NameAndAgeAssign(name, age, &nameEnd, &ageEnd, name1, age1);
+
+
+
+	//2번 입력 및 유효성 검사
+	error = 0;
+	while (error != 1)
+	{
+		printf("%d번째 사람: ", manNum);
+		fgets(input, sizeof(input), stdin);
+		InputValidation(input, &error, &manNum);
+	}
+
+	//2번 저장
+	NameAge(input, name, age, &nameEnd, &ageEnd);
+	//2번 할당
+	char name2[10];
+	char age2[10];
+	NameAndAgeAssign(name, age, &nameEnd, &ageEnd, name2, age2);
+
+
+	//비교
+	char nameStr[] = "이름";
+	Diff(name1, name2, nameStr);
+
+	char ageStr[] = "나이";
+	Diff(age1, age2, ageStr);
+
+	return 0;
+}

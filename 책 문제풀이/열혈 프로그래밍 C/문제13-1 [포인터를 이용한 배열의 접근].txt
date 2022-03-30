@@ -1,0 +1,120 @@
+#include <stdio.h>
+
+int main()
+{
+	int arr[5] = { 1,2,3,4,5 };
+	int *ptr = arr;
+	int i = 0;
+	for (i = 0; i < 5; i++)
+	{
+		*ptr += 2;	//*ptr은 배열요소 i번째
+		ptr++;		//ptr=arr[i]이니 다음 배열요소를 지정
+		// *(ptr++) += 2; 로 2줄을 1줄로 축약가능.
+	}
+	for (i = 0; i < 5; i++)
+		printf("%d ", arr[i]);
+	
+	
+	/*
+	for (int i = 0; i < 5; i++)
+	{
+		//ptr[i] = ptr[i] + 2;
+		printf("%d ", ptr[i]);
+	}
+	*/
+
+
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+#include <stdio.h>
+
+int main()
+{
+	int arr[5] = { 1,2,3,4,5 };
+	int *ptr = arr;
+	int i, a;
+	for (i = 0; i < 5; i++)
+	{
+		*(ptr + i) += 2;
+	}
+	for (i = 0; i < 5; i++)
+	{
+		printf("%d ", arr[i]);
+	}
+
+
+	return 0;
+}
+
+
+
+
+
+
+#include <stdio.h>
+
+int main()
+{
+	int arr[5] = { 1,2,3,4,5 };
+	int *ptr = &arr[4];
+	int i = 0;
+	int sum = 0;
+
+
+
+	for (i = 0; i < 5; i++)
+	{
+		sum += *ptr;
+		*ptr--;
+	}
+
+
+	printf("%d", sum);
+
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+#include <stdio.h>
+
+int main()
+{
+	int arr[6] = { 1,2,3,4,5,6 };
+	int *ptr1 = arr;
+	int *ptr2 = &arr[5];
+	int temp;
+	int i;
+
+	for (i = 0; i < 5/2; i++)
+	{
+		temp = *ptr1;
+		*ptr1 = *ptr2;
+		*ptr2 = temp;
+
+		ptr1++;
+		ptr2--;
+	}
+
+	for (i = 0; i < 6; i++)
+	{
+		printf("%d ", arr[i]);
+	}
+
+	return 0;
+}

@@ -1,0 +1,149 @@
+#include <iostream>
+using namespace std;
+
+class Point
+{
+private:
+	int xpos, ypos;
+public:
+	Point(int x, int y)
+		: xpos(x), ypos(y)
+	{
+	}
+	void ShowPointInfo() const
+	{
+		cout << "[" << xpos << ", " << ypos << "]" << endl;
+	}
+};
+
+class Circle
+{
+private:
+	Point point;
+	int radius;
+public:
+	Circle(int x, int y, int r)
+		: point(x,y), radius(r)
+	{
+	}
+	void ShowCircleInfo()
+	{
+		cout << "radius: " << radius<< endl;
+		point.ShowPointInfo();
+	}
+};
+
+class Ring
+{
+private:
+	Circle circle1;
+	Circle circle2;
+public:
+	Ring (int x1, int y1, int r1, int x2, int y2, int r2)
+		:circle1(x1,y1,r1), circle2(x2,y2,r2)
+	{
+	}
+	void ShowRingInfo()
+	{
+		cout << "Inner Circle Info: " << endl;
+		circle1.ShowCircleInfo();
+		cout << "Outter Circle Info: " << endl;
+		circle2.ShowCircleInfo();
+	}
+};
+
+int main()
+{
+	Ring ring(1, 1, 4, 2, 2, 9);
+	ring.ShowRingInfo();
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+using namespace std;
+
+
+namespace COMP_POS
+{
+	enum posName { CLERK, SENIOR, ASSIST, MANAGER };
+
+	void ShowPosName(int _pos)
+	{
+		switch (_pos)
+		{
+		case CLERK:
+			cout << "사원" << endl;
+			break;
+		case SENIOR:
+			cout << "주임" << endl;
+			break;
+		case ASSIST:
+			cout << "대리" << endl;
+			break;
+		case MANAGER:
+			cout << "과장" << endl;
+		}
+	}
+}
+
+
+class NameCard
+{
+private:
+	char * name;
+	char * compName;
+	char * phoneNum;
+	int position;
+public:
+	NameCard(const char * _name, const char * _compName, const char * _phoneNum, int _position)
+	{
+		name = new char[strlen(_name) + 1];
+		compName = new char[strlen(_compName) + 1];
+		phoneNum = new char[strlen(_phoneNum) + 1];
+		position = _position;
+		strcpy(name, _name);
+		strcpy(compName, _compName);
+		strcpy(phoneNum, _phoneNum);
+	}
+	void ShowNameCardInfo()
+	{
+		cout << "이름: " << name << endl;
+		cout << "회사: " << compName << endl;
+		cout << "전화번호: " << phoneNum << endl;
+		cout << "직급: ";
+		COMP_POS::ShowPosName(position);
+		cout << endl;
+	}
+	~NameCard()
+	{
+		delete[]name;
+		delete[]compName;
+		delete[]phoneNum;
+	}
+};
+
+int main()
+{
+	NameCard manClerk("Yoo", "aa", "111-1111-1111", COMP_POS::CLERK);
+	NameCard manSenior("Zoo", "bb", "211-1111-1111", COMP_POS::SENIOR);
+	NameCard manAssist("Woo", "cc", "311-1111-1111", COMP_POS::ASSIST);
+	manClerk.ShowNameCardInfo();
+	manSenior.ShowNameCardInfo();
+	manAssist.ShowNameCardInfo();
+	
+	return 0;
+}

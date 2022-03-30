@@ -1,0 +1,51 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+
+typedef struct point
+{
+	int xpos;
+	int ypos;
+} Point;
+
+typedef struct rectangle
+{
+	Point leftUp;
+	Point rightDown;
+} Rectangle;
+
+void RectangleArea(Rectangle rec)
+{
+	int area;
+	area = (rec.rightDown.xpos - rec.leftUp.xpos) * (rec.rightDown.ypos - rec.leftUp.ypos);
+	printf("넓이: %d \n", area);
+}
+
+void RectanglePoint(Rectangle * rec)
+{
+	Point leftDown = { rec->rightDown.xpos - rec->leftUp.xpos, rec->rightDown.ypos };
+	Point rightUp = { rec->rightDown.xpos, rec->rightDown.ypos - rec->leftUp.ypos };
+
+	printf("좌상단: [%d, %d] \n", rec->leftUp.xpos, rec->leftUp.ypos);
+	printf("우하단: [%d, %d] \n", rec->rightDown.xpos, rec->rightDown.ypos);
+	printf("좌하단: [%d, %d] \n", leftDown.xpos, leftDown.ypos);
+	printf("우상단: [%d, %d] \n", rightUp.xpos, rightUp.ypos);
+}
+
+
+int main()
+{
+	Point leftUpPoint = { 0, 0 };
+	Point rightDownPoint = { 100, 100 };
+
+	printf("좌상단 x, y 좌표 입력: ");
+	scanf("%d %d", &leftUpPoint.xpos, &leftUpPoint.ypos);
+
+	printf("우하단 x, y 좌표 입력: ");
+	scanf("%d %d", &rightDownPoint.xpos, &rightDownPoint.ypos);
+
+	Rectangle rec = { leftUpPoint, rightDownPoint };
+	RectangleArea(&rec);
+	RectanglePoint(&rec);
+
+	return 0;
+}

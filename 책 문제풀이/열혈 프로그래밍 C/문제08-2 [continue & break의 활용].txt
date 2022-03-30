@@ -1,0 +1,89 @@
+//내 풀이
+#include <stdio.h>
+
+int main()
+{
+	for (int i = 2; i < 10; i=i+2)
+	{
+		for (int j = 1; j < 10 ; j=j+1)
+		{
+			if (j <= i)
+			{
+				printf("%d x %d = %d\n", i, j, i*j);
+				continue;
+			}
+			break;
+		}
+	}
+	return 0;
+}
+
+
+//답안 풀이
+#include <stdio.h>
+
+int main()
+{
+	for (int i = 1; i < 10; i++)
+	{
+		if (i % 2 != 0)
+			continue;
+
+		for (int j = 1; j < 10; j++)
+		{
+			if (i < j)
+				break;
+			printf("%d x %d = %d\n", i, j, i*j);
+		}
+		printf("\n");
+	}
+
+
+	return 0;
+}
+
+
+
+
+
+//내 풀이
+#include <stdio.h>
+
+int main()
+{
+	for (int i = 0; i < 10 ; i++)
+	{
+		for (int j = 0; j < 10; j++)
+		{
+			if (i + j == 9)
+				printf("%d%d\n", i, j);
+			
+		}
+	}
+	return 0;
+}
+
+
+//답안 풀이
+#include <stdio.h>
+
+int main()
+{
+	int result;
+
+	for (int i = 0; i < 10; i++)
+	{
+		for (int j = 0; j < 10; j++)
+		{
+			if (i == j)
+				continue;
+
+			result = i * 10 + j + j * 10 + i;
+
+			if (result == 99)
+				printf("%d%d + %d%d = %d \n", i, j, j, i, result);
+
+		}
+	}
+	return 0;
+}

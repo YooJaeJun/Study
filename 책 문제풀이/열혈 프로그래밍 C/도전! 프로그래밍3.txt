@@ -1,0 +1,445 @@
+//도전1
+#include <stdio.h>
+
+void Degree(int (*arr1)[4])
+{
+	int arr2[4][4];
+	int i, j;
+
+	for (i = 0; i < 4; i++)
+	{
+		for (j = 0; j < 4; j++)
+		{
+			arr2[i][j] = arr1[3 - j][i];
+			printf("%3d ", arr2[i][j]);
+		}
+		printf("\n");
+	}
+	printf("\n");
+
+	for (i = 0; i < 4; i++)
+		for (j = 0; j < 4; j++)
+			arr1[i][j] = arr2[i][j];
+}
+
+
+int main()
+{
+	int arr[4][4] = { 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16 };
+	int i, j;
+	
+	for (i = 0; i < 4; i++)
+	{
+		for (j = 0; j < 4; j++)
+		{
+			printf("%3d ", arr[i][j]);
+		}
+		printf("\n");
+	}
+	printf("\n");
+	
+	Degree(arr);
+	Degree(arr);
+	Degree(arr);
+
+
+	return 0;
+}
+
+
+
+
+
+
+
+
+//도전2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//도전3
+#include <stdio.h>
+#include <stdlib.h>
+
+int main()
+{
+	int i;
+	printf("난수의 범위: 0부터 %d까지 \n", RAND_MAX);
+	for (i = 0; i < 5; i++)
+		printf("난수 출력: %d \n", rand() % 100);
+	
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+//도전4
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int main()
+{
+	int i;
+	srand(time(NULL));
+	printf("주사위 1의 결과: %d\n", rand() % 6 + 1);
+	printf("주사위 2의 결과: %d\n", rand() % 6 + 1);
+		
+
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+//도전5 - 첫 풀이
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+
+int main()
+{
+	int myNum, comNum;
+	char * me, * com;
+	int win = 0, draw = 0;
+	
+	while (1)
+	{
+		printf("바위는 1, 가위는 2, 보는 3: ");
+		scanf_s("%d", &myNum);
+
+		switch (myNum)
+		{
+		case 1:
+			me = "바위";
+			break;
+		case 2:
+			me = "가위";
+			break;
+		case 3:
+			me = "보";
+			break;
+		default:
+			printf("잘못된 입력값입니다.");
+			return 0;
+		}
+
+		srand((int)time(NULL));
+		comNum = rand() % 3 + 1;
+
+		switch (comNum)
+		{
+		case 1:
+			com = "바위";
+			break;
+		case 2:
+			com = "가위";
+			break;
+		case 3:
+			com = "보";
+			break;
+		default:
+			printf("잘못된 입력값입니다.");
+			return 0;
+		}
+
+		printf("당신은 %s 선택, 컴퓨터는 %s 선택, ", me, com);
+		
+		if (myNum == comNum)
+		{
+			printf("비겼습니다!\n");
+			draw++;
+		}
+		else if ((myNum == 1 && comNum == 2) || (myNum == 2 && comNum == 3) || (myNum == 3 && comNum == 1))
+		{
+			printf("당신이 이겼습니다!\n");
+			win++;
+		}
+		else if ((myNum == 1 && comNum == 3) || (myNum == 2 && comNum == 1) || (myNum == 3 && comNum == 2))
+		{
+			printf("당신이 졌습니다!\n");
+			break;
+		}
+	}
+
+	printf("게임의 결과: %d승 %d무", win, draw);
+
+	return 0;
+}
+
+
+//도전5 - 두 번째 풀이. 함수 분류 
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+
+void MyRockPaperScissors(int *myNum)
+{
+	if (*myNum == 1)
+		printf("당신은 바위 선택, ");
+	else if (*myNum == 2)
+		printf("당신은 가위 선택, ");
+	else if (*myNum == 3)
+		printf("당신은 보 선택, ");
+	else
+	{
+		printf("당신은 이상한 손 모양을 내밀었고, ");
+		return;
+	}
+}
+
+void ComRockPaperScissors(int * comNum)
+{
+	srand((int)time(NULL));
+	*comNum = rand() % 3 + 1;
+
+	if (*comNum == 1)
+		printf("컴퓨터는 바위 선택, ");
+	else if (*comNum == 2)
+		printf("컴퓨터는 가위 선택, ");
+	else if (*comNum == 3)
+		printf("컴퓨터는 보 선택, ");
+}
+
+int WinLoseDraw(int *myNum, int *comNum, int *win, int *draw, int *lose)
+{
+	if (*myNum == *comNum)
+	{
+		printf("비겼습니다!\n");
+		*draw += 1;
+	}
+	else if ((*myNum == 1 && *comNum == 2) || (*myNum == 2 && *comNum == 3) || (*myNum == 3 && *comNum == 1))
+	{
+		printf("당신이 이겼습니다!\n");
+		*win += 1;
+	}
+	else if ((*myNum == 1 && *comNum == 3) || (*myNum == 2 && *comNum == 1) || (*myNum == 3 && *comNum == 2))
+	{
+		printf("당신이 졌습니다!\n");
+		*lose += 1;
+	}
+	else
+		printf("아무 일도 일어나지 않았습니다.");
+}
+
+
+int main()
+{
+	int myNum = 0, comNum = 0;
+	char * me, * com;
+	int win = 0, draw = 0, lose = 0;
+	
+	while (1)
+	{
+		printf("바위는 1, 가위는 2, 보는 3: ");
+		scanf_s("%d", &myNum);
+
+		MyRockPaperScissors(&myNum);
+		ComRockPaperScissors(&comNum);
+		WinLoseDraw(&myNum, &comNum, &win, &draw, &lose);
+		if (lose >= 1)
+			break;
+	}
+
+	printf("게임의 결과: %d승 %d무", win, draw);
+
+	return 0;
+}
+
+
+//도전5 - 세 번째 풀이. 함수 분류. 포인터 배열.
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+
+void MyRockPaperScissors(char * arr[], int *myNum)
+{
+	printf("당신은 %s 선택, ", arr[*myNum]);
+}
+
+void ComRockPaperScissors(char * arr[], int * comNum)
+{
+	srand((int)time(NULL));
+	*comNum = rand() % 3 + 1;
+
+	printf("컴퓨터는 %s 선택, ", arr[*comNum]);
+}
+
+void WinLoseDraw(int *myNum, int *comNum, int *win, int *draw, int *lose)
+
+{
+	if (*myNum == *comNum)
+	{
+		printf("비겼습니다!\n");
+		*draw += 1;
+	}
+	else if ((*myNum == 1 && *comNum == 2) || (*myNum == 2 && *comNum == 3) || (*myNum == 3 && *comNum == 1))
+	{
+		printf("당신이 이겼습니다!\n");
+		*win += 1;
+	}
+	else if ((*myNum == 1 && *comNum == 3) || (*myNum == 2 && *comNum == 1) || (*myNum == 3 && *comNum == 2))
+	{
+		printf("당신이 졌습니다!\n");
+		*lose += 1;
+	}
+	else
+		printf("아무 일도 일어나지 않았습니다.");
+}
+
+
+int main()
+{
+	int myNum = 0, comNum = 0;
+	char * me, * com;
+	int win = 0, draw = 0, lose = 0;
+	char * arr[4] = { "\0", "바위", "가위", "보" };
+
+	while (lose == 0)
+	{
+		printf("바위는 1, 가위는 2, 보는 3: ");
+		scanf_s("%d", &myNum);
+		
+		if (myNum < 1 || myNum > 3)
+		{
+			printf("유효하지 않음\n"); break;
+		}
+		
+
+		MyRockPaperScissors(arr, &myNum);
+		ComRockPaperScissors(arr, &comNum);
+		WinLoseDraw(&myNum, &comNum, &win, &draw, &lose);
+	}
+
+	printf("게임의 결과: %d승 %d무", win, draw);
+
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+
+//도전6
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int main()
+{
+	int arr1[3], arr2[3];
+	int strike = 0, ball = 0;
+	int i, j, total = 0;
+
+	while (strike < 3)
+	{
+		strike = 0, ball = 0;
+
+		for (i = 0; i < 3; i++)
+		{
+			srand((int)time(NULL));
+			arr2[i] = rand() % 10;
+
+			printf("서로 다른 %d번째 숫자 입력: ", i + 1);
+			scanf_s("%d", &arr1[i]);
+
+			//0~9 벗어났는지 검사
+			while (arr1[i] < 0 || arr1[i] > 9)
+			{
+				printf("숫자가 유효하지 않습니다. 0~9 사이 수를 다시 입력하세요.\n");
+				printf("서로 다른 %d번째 숫자 입력: ", i + 1);
+				scanf_s("%d", &arr1[i]);
+			}
+			//컴퓨터: 중복 검사
+			if (i > 0)	//2번째 부터
+			{
+				while (arr2[i - 1] == arr2[i])
+				{
+					srand((int)time(NULL));
+					arr2[i] = rand() % 10;
+				}
+			}
+			//나: 중복 검사
+			if (i == 1)
+			{
+				while (arr1[i - 1] == arr1[i])
+				{
+					printf("숫자가 중복되었습니다. 다시 입력하세요.\n");
+					printf("서로 다른 %d번째 숫자 입력: ", i + 1);
+					scanf_s("%d", &arr1[i]);
+				}
+			}
+			else if(i == 2)
+			{
+				while (arr1[i - 2] == arr1[i] || arr1[i - 1] == arr1[i])
+				{
+					printf("숫자가 중복되었습니다. 다시 입력하세요.\n");
+					printf("서로 다른 %d번째 숫자 입력: ", i + 1);
+					scanf_s("%d", &arr1[i]);
+				}
+			}
+		}
+
+		for (i = 0; i < 3; i++)
+		{
+			if (arr1[i] == arr2[i])
+				strike++;
+			else
+			{
+				for (j = 0; j < 3; j++)
+				{
+					if (arr1[i] == arr2[j])
+						ball++;
+				}
+			}
+		}
+
+		printf("컴퓨터가 ");
+		for (i = 0; i < 3; i++)
+			printf("%d ", arr2[i]);
+		printf("사용자가 ");
+		for (i = 0; i < 3; i++)
+			printf("%d ", arr1[i]);
+		printf("==> %d strike  %d ball \n\n", strike, ball);
+
+		total++;
+	}
+
+	printf("총 %d번 만에 3 strike", total);
+
+
+	return 0;
+}

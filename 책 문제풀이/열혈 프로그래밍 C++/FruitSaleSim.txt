@@ -1,0 +1,168 @@
+#include <iostream>
+using namespace std;
+
+class Seller
+{
+private:
+	int APPLE_PRICE;
+	int numOfApples;
+	int myMoney;
+public:
+	Seller(int price, int num, int money)
+	{
+		APPLE_PRICE = price;
+		numOfApples = num;
+		myMoney = money;
+	}
+	int Sales(int money)
+	{ 
+		if (money >= 0)
+		{
+			int num = money / APPLE_PRICE;
+			numOfApples -= num;
+			myMoney += money;
+			return num;
+		}
+		else
+		{
+			cout << "구매금액이 0보다 작아 판매를 취소합니다." << endl;
+			return 0;
+		}
+	}
+	void SellerShowState() const
+	{
+		cout << "사과금액: " << APPLE_PRICE << endl;
+		cout << "남은사과개수: " << numOfApples << endl;
+		cout << "현재보유액: " << myMoney << endl << endl;
+	}
+};
+
+class Buyer
+{
+private: 
+	int myMoney;
+	int numOfApples;
+public:
+	Buyer(const int money)
+	{
+		myMoney = money;
+		numOfApples = 0;
+	}
+	void Buy(Seller &seller, int money)
+	{
+		if (money >= 0)
+		{
+			numOfApples += seller.Sales(money);
+			myMoney -= money;
+		}
+		else
+		{
+			cout << "구매금액이 0보다 작을 수 없습니다." << endl << endl;
+			return;
+		}
+	}
+	void BuyerShowState() const
+	{
+		cout << "남은금액: " << myMoney << endl;
+		cout << "사과개수: " << numOfApples << endl << endl;
+	}
+};
+
+int main()
+{
+
+	Seller seller (1000,20,0);
+	Buyer buyer (5000);
+	
+	buyer.Buy(seller, 2000);
+	seller.SellerShowState();
+	buyer.BuyerShowState();
+
+}
+
+
+
+
+
+
+
+
+//이니셜라이저
+#include <iostream>
+using namespace std;
+
+class Seller
+{
+private:
+	int APPLE_PRICE;
+	int numOfApples;
+	int myMoney;
+public:
+	Seller(int price, int num, int money)
+		: APPLE_PRICE(price), numOfApples(num), myMoney(money)
+	{
+	}
+	int Sales(int money)
+	{
+		if (money >= 0)
+		{
+			int num = money / APPLE_PRICE;
+			numOfApples -= num;
+			myMoney += money;
+			return num;
+		}
+		else
+		{
+			cout << "구매금액이 0보다 작아 판매를 취소합니다." << endl;
+			return 0;
+		}
+	}
+	void SellerShowState() const
+	{
+		cout << "사과금액: " << APPLE_PRICE << endl;
+		cout << "남은사과개수: " << numOfApples << endl;
+		cout << "현재보유액: " << myMoney << endl << endl;
+	}
+};
+
+class Buyer
+{
+private:
+	int myMoney;
+	int numOfApples;
+public:
+	Buyer(const int money)
+		: myMoney(money), numOfApples(0)
+	{
+	}
+	void Buy(Seller &seller, int money)
+	{
+		if (money >= 0)
+		{
+			numOfApples += seller.Sales(money);
+			myMoney -= money;
+		}
+		else
+		{
+			cout << "구매금액이 0보다 작을 수 없습니다." << endl << endl;
+			return;
+		}
+	}
+	void BuyerShowState() const
+	{
+		cout << "남은금액: " << myMoney << endl;
+		cout << "사과개수: " << numOfApples << endl << endl;
+	}
+};
+
+int main()
+{
+
+	Seller seller(1000, 20, 0);
+	Buyer buyer(5000);
+
+	buyer.Buy(seller, 2000);
+	seller.SellerShowState();
+	buyer.BuyerShowState();
+
+}

@@ -1,0 +1,62 @@
+#include <iostream>
+using namespace std;
+
+void PlusOne(int &val1, int &val2)
+{
+	val1++;
+	val2++;
+}
+
+void Reverse(int &val1, int &val2)
+{
+	val1 = val1 - (val1 * 2);
+	val2 = val2 - (val2 * 2);
+}
+
+int main()
+{
+	int val1 = -10; 
+	int val2 = -20;
+
+	cout << val1 << ' ' << val2 << endl;
+
+	PlusOne(val1, val2);
+	cout << val1 << ' ' << val2 << endl;
+
+	Reverse(val1, val2);
+	cout << val1 << ' ' << val2 << endl;
+
+}
+
+
+
+
+
+참조자는 상수를 창조할 수 없음. 매개변수의 인자로는 반드시 변수가 등장해야 함.
+
+
+
+
+
+#include <iostream>
+using namespace std;
+
+void SwapPointer(int *(&ptr1), int *(&ptr2))
+{
+	int temp = *ptr1;
+	*ptr1 = *ptr2;
+	*ptr2 = temp;
+}
+
+int main()
+{
+	int num1 = 5;
+	int *ptr1 = &num1;
+	int num2 = 10;
+	int *ptr2 = &num2;
+
+	SwapPointer(ptr1, ptr2);
+
+	cout << num1 << ' ' << num2 << endl;
+
+}

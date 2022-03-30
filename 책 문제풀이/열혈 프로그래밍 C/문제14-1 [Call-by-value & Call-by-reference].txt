@@ -1,0 +1,56 @@
+#include <stdio.h>
+
+int SquareByValue(int num)
+{
+	num *= num;
+	return num;
+}
+
+void SquareByReference(int * num)
+{
+	*num *= *num;
+}
+
+int main()
+{
+	int num = 3;
+
+	num = SquareByValue(num);
+	printf("%d \n", num);
+
+	SquareByReference(&num);
+	printf("%d \n", num);
+
+	return 0;
+}
+
+
+
+
+
+
+#include <stdio.h>
+
+void Swap3(int * num1, int * num2, int * num3)
+{
+	int temp;
+	temp = *num1;
+	*num1 = *num3;
+	*num3 = *num2;
+	*num2 = temp;
+
+}
+
+int main()
+{
+	int num1 = 2;
+	int num2 = 3;
+	int num3 = 4;
+
+	Swap3(&num1, &num2, &num3);
+
+	printf("num1: %d\nnum2: %d\nnum3: %d\n", num1, num2, num3);
+
+	return 0;
+}
+

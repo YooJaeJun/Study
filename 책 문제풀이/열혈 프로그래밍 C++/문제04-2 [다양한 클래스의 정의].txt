@@ -1,0 +1,67 @@
+#include <iostream>
+using namespace std;
+
+class Point
+{
+private:
+	int xpos, ypos;
+public:
+	void Init(int x, int y)
+	{
+		xpos = x;
+		ypos = y;
+	}
+	void ShowPointInfo() const
+	{
+		cout << "[" << xpos << ", " << ypos << "]" << endl;
+	}
+};
+
+
+class Circle
+{
+private:
+	int circleRadius;
+	Point point;
+public:
+	void Init(int x, int y, int radius)
+	{	
+		point.Init(x, y);
+		circleRadius = radius;
+	}
+	void ShowCircleInfo() const
+	{
+		cout << "radius: " << circleRadius << endl;
+		point.ShowPointInfo();
+	}
+};
+
+class Ring
+{
+private:
+	Circle inCircle;
+	Circle OutCircle;
+public:
+	void Init(int x, int y, int radius, int x2, int y2, int radius2)
+	{
+		inCircle.Init(x,y,radius);
+		OutCircle.Init(x2, y2, radius2);
+	}
+	void ShowRingInfo() const
+	{
+		cout << "Inner Circle Info..." << endl;
+		inCircle.ShowCircleInfo();
+		cout << "Outter Circle Info..." << endl;
+		OutCircle.ShowCircleInfo();
+	}
+};
+
+
+
+int main()
+{
+	Ring ring;
+	ring.Init(1, 1, 4, 2, 2, 9);
+	ring.ShowRingInfo();
+	return 0;
+}

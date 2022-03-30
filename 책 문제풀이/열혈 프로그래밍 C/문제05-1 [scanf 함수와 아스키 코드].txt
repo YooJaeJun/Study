@@ -1,0 +1,81 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+
+int main()
+{
+	int x1, y1;
+	int x2, y2;
+	int area;
+	
+	printf("좌상단 x y: ");
+	scanf("%d %d", &x1, &y1);
+	printf("우하단 x y: ");
+	scanf("%d %d", &x2, &y2);
+
+	area = (x2 - x1)*(y2 - y1);
+	printf("%d", area);
+	
+	return 0;
+}
+
+
+
+
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+
+int main()
+{
+	double n1, n2;
+
+	printf("두 개의 실수 입력: ");
+	scanf("%lf %lf", &n1, &n2);
+
+	printf("n1/n2=%lf", n1 / n2);
+
+	return 0;
+}
+
+
+
+
+
+
+0~127	//1바이트로 표현 가능
+1씩 증가
+32만큼 차이
+
+
+
+
+
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+
+int main()
+{
+	int c;
+	printf("아스키 코드(정수) 입력: ");
+	scanf("%d", &c);
+	printf("%c", c);
+
+	return 0;
+}
+
+
+
+
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+
+int main()
+{
+	char c;
+
+	printf("문자 입력: ");
+	scanf("%c", &c);
+	
+	printf("%d", c);
+
+	return 0;
+}

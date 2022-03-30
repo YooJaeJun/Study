@@ -1,0 +1,89 @@
+#include <iostream>
+using namespace std;
+
+
+void MenuList();
+void MenuNumCase();
+void OpenAccount();
+void Deposit();
+
+int MenuNum;
+
+struct Account
+{
+	int AccountID;
+	char Name[10];
+	int Balance;
+};
+
+int main()
+{
+	MenuList();
+}
+
+void MenuList()
+{
+
+	cout << "-----Menu-----\n1. 계좌개설\n2. 입금\n3. 출금\n4. 계좌정보 전체 출력\n5. 프로그램 종료\n선택: ";
+	cin >> MenuNum;
+	if (MenuNum == 5)
+	{
+		return;
+	}
+	else
+	{
+		MenuNumCase();
+	}
+}
+
+
+void MenuNumCase()
+{
+	switch (MenuNum)
+	{
+	case 1:
+		OpenAccount();
+		break;
+	case 2:
+		Deposit();
+		break;
+	case 3:
+		cout << "출금";
+		break;
+	case 4:
+		cout << "출금";
+		break;
+	}
+
+	MenuList();
+}
+
+void OpenAccount()
+{
+	int OpenAccountID;
+	char OpenName [10];
+	int OpenAmount;
+
+	cout << "[계좌개설]\n";
+	cout << "계좌ID: ";
+	cin >> OpenAccountID;
+	cout << "이름: ";
+	cin >> OpenName;
+	cout << "입금액: ";
+	cin >> OpenAmount;
+}
+
+void Deposit()
+{
+	int AccountID;
+	int Amount;
+
+	cout << "[입금]\n";
+	cout << "계좌ID: ";
+	cin >> AccountID;
+	
+	cout << "입금액: ";
+	cin >> Amount;
+	
+	cout << "입금완료";
+}

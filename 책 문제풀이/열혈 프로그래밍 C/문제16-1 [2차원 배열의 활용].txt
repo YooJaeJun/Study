@@ -1,0 +1,122 @@
+#include <stdio.h>
+
+int main()
+{
+	int arr[3][9];
+	int i, j;
+
+	for (i = 0; i < 3; i++)
+	{
+		for (j = 0; j < 9; j++)
+		{
+			arr[i][j] = (i + 2)*(j + 1);
+		}
+		printf("\n");
+	}
+
+	for (i = 0; i < 3; i++)
+	{
+		for (j = 0; j < 9; j++)
+		{
+			printf("%4d ", arr[i][j]);
+		}
+		printf("\n");
+	}
+	return 0;
+}
+
+
+
+
+
+
+
+
+#include <stdio.h>
+
+int main()
+{
+	int i, j;
+
+	int arr1[2][4] = {
+		{1,2,3,4},
+		{5,6,7,8}
+	};
+	int arr2[4][2];
+
+	for (i = 0; i < 4; i++)
+	{
+		for (j = 0; j < 2; j++)
+		{
+			arr2[i][j] = arr1[j][i];
+		}
+	}
+
+	for (i = 0; i < 4; i++)
+	{
+		for (j = 0; j < 2; j++)
+			printf("%d ", arr2[i][j]);
+		printf("\n");
+	}
+
+	return 0;
+}
+
+
+
+
+
+
+
+
+#include <stdio.h>
+
+int main()
+{
+	int arr[5][5] = { 0 };
+	int score, i, j;
+
+	for (i = 0; i < 4; i++)
+	{
+		printf("\n%d번째 학생 점수 입력 \n", i + 1);
+
+		for (j = 0; j < 4; j++)
+		{
+			printf("%d번째 과목 점수: ", j + 1);
+			scanf_s("%d", &score);
+			arr[i][j] = score;
+			arr[i][4] += arr[i][j];	//해당 학생의 총점
+		}
+		
+	}
+
+	//과목의 총점
+	for (i = 0; i < 4; i++)
+	{
+		for (j = 0; j < 4; j++)
+		{
+			arr[4][i] += arr[j][i];
+		}
+	}
+
+	for (i = 0; i < 4; i++)
+	{
+		arr[4][4] += arr[i][4];
+	}
+
+	printf("\n");
+	
+	for (i = 0; i < 5; i++)
+	{
+		for (j = 0; j < 5; j++)
+		{
+			printf("%3d ", arr[i][j]);
+		}
+		printf("\n");
+	}
+
+	return 0;
+}
+
+
+

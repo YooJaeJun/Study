@@ -1,0 +1,106 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+enum direction
+{
+	Right,
+	Down,
+	Left,
+	Up
+};
+
+int main()
+{
+	int input;	//입력받을 수
+
+	printf("nxn 정수 입력: ");
+	scanf_s("%d", &input);
+
+	//메모리 동적할당
+	int ** arr = (int**)malloc(sizeof(int) * input);
+	for (int i = 0; i < input; i++)
+	{
+		arr[i] = (int*)malloc(sizeof(int) * input);
+	}
+
+	int num = input;	//input은 이따 화면에 출력할 때 사용. num은 값 대입하는 반복횟수로, 두 줄씩 돌 때 마다 깎아줌.
+	int x = 0, y = 0;	//좌표
+	int elem = 1;	//요소
+	enum direction dir = Right;
+
+	while (num != 0)
+	{
+		//줄 최초값
+		arr[y][x] = elem;
+		//한 줄 씩 좌표에 값 넣어주기
+		for (int i = 0; i != num - 1; i++)
+		{
+			switch (dir)
+			{
+			case Right:
+				x++;
+				break;
+			case Down:
+				y++;
+				break;
+			case Left:
+				x--;
+				break;
+			case Up:
+				y--;
+				break;
+			default:
+				break;
+			}
+
+			arr[y][x] = ++elem;
+		}
+
+		//좌표 1칸씩 보정
+		switch (dir)
+		{
+		case Right:
+			dir = Down;
+			y++;
+			num--;
+			break;
+		case Down:
+			dir = Left;
+			x--;
+			break;
+		case Left:
+			dir = Up;
+			y--;
+			num--;
+			break;
+		case Up:
+			dir = Right;
+			x++;
+			break;
+		default:
+			break;
+		}
+
+		//다음 줄부터
+		elem++;
+	}
+
+	for (y = 0; y < input; y++)
+	{
+		for (x = 0; x < input; x++)
+		{
+			printf("%3d ", arr[y][x]);
+		}
+		printf("\n");
+	}
+
+	//메모리 해제
+	for (int i = 0; i < input; i++)
+	{
+		free(arr[i]);
+	}
+	free(arr);
+
+
+	return 0;
+}

@@ -1,0 +1,143 @@
+//문제1
+
+//Main.cpp
+#include "Cal.h"
+#include <iostream>
+
+using namespace std;
+
+int main()
+{
+	Calculator cal;
+	cal.Init();
+	cout << "3.2 + 2.4 = " << cal.Add(3.2, 2.4) << endl;
+	cout << "3.5 / 1.7 = " << cal.Div(3.5, 1.7) << endl;
+	cout << "2.2 - 1.5 = " << cal.Min(2.2, 1.5) << endl;
+	cout << "4.9 / 1.2 = " << cal.Div(4.9, 1.2) << endl;
+	cal.ShowOpCount();
+	return 0;
+}
+
+//cpp
+#include "Cal.h"
+#include <iostream>
+using namespace std;
+
+void Calculator::Init()
+{
+}
+
+double Calculator::Add(double num1, double num2)
+{
+	AddNum++;
+	return num1 + num2;
+}
+double Calculator::Min(double num1, double num2)
+{
+	MinNum++;
+	return num1 - num2;
+}
+double Calculator::Mul(double num1, double num2)
+{
+	MulNum++;
+	return num1 * num2;
+}
+double Calculator::Div(double num1, double num2)
+{
+	DivNum++;
+	return num1 / num2;
+}
+
+void Calculator::ShowOpCount()
+{
+	cout << "덧셈: " << AddNum << ' ';
+	cout << "뻴셈: " << MinNum << ' ';
+	cout << "곱셈: " << MulNum << ' ';
+	cout << "나눗셈: " << DivNum << ' ';
+}
+
+//h
+#ifndef __CAL__
+#define __CAL__
+
+class Calculator
+{
+private:
+	int AddNum=0;
+	int MinNum=0;
+	int MulNum=0;
+	int DivNum=0;
+public:
+	void Init();
+	double Add(double num1, double num2);
+	double Min(double num1, double num2);
+	double Mul(double num1, double num2);
+	double Div(double num1, double num2);
+	void ShowOpCount();
+};
+
+
+
+#endif
+
+
+
+
+
+
+
+
+
+
+//문제2
+
+
+//헤더
+#ifndef __Printer
+#define __Printer
+
+
+class Printer
+{
+private:
+	char savestr[30];
+public:
+	void SetString(const char* str);
+	void ShowString();
+};
+
+
+#endif
+
+
+//Main cpp
+#include "Printer.h"
+
+
+int main()
+{
+	Printer pnt;
+	pnt.SetString("Hello");
+	pnt.ShowString();
+
+	pnt.SetString("I love myself");
+	pnt.ShowString();
+	return 0;
+}
+
+
+//cpp
+#define _CRT_SECURE_NO_WARNINGS
+#include "Printer.h"
+#include <iostream>
+using namespace std;
+
+void Printer::SetString(const char *str)
+{
+	strcpy(savestr, str);
+}
+
+void Printer::ShowString()
+{
+	cout << savestr << endl;
+}

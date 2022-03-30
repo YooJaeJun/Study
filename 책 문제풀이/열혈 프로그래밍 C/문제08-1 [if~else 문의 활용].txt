@@ -1,0 +1,93 @@
+#include <stdio.h>
+
+int main()
+{
+	
+	for (int i = 1; i < 100; i++)
+	{
+		if (i%7==0 || i%9==0)
+			printf("%d \n", i);
+	}
+	return 0;
+}
+
+
+
+#include <stdio.h>
+
+int main()
+{
+	int n1, n2;
+	int result;
+
+	printf("2개의 정수 입력: ");
+	scanf_s("%d %d", &n1, &n2);
+
+	result = n1 > n2 ? n1 - n2 : n2 - n1;
+
+	printf("%d", result);
+
+
+	return 0;
+}
+
+
+
+#include <stdio.h>
+
+int main()
+{
+	int score1, score2, score3;
+	int scoreAverage;
+
+	printf("국어 점수: ");
+	scanf_s("%d", &score1);
+	printf("수학 점수: ");
+	scanf_s("%d", &score2);
+	printf("영어 점수: ");
+	scanf_s("%d", &score3);
+
+	scoreAverage = (score1 + score2 + score3) / 3;
+
+
+	if (scoreAverage >= 90)
+		printf("A");
+	else if (scoreAverage >= 80)
+		printf("B");
+	else if (scoreAverage >= 70)
+		printf("C");
+	else if (scoreAverage >= 50)
+		printf("D");
+	else if (scoreAverage < 50 && scoreAverage >0)
+		printf("F");
+	else
+		printf("유효하지 않은 점수");
+
+	return 0;
+}
+
+
+
+#include <stdio.h>
+
+int main()
+{
+	int score1, score2, score3;
+	int scoreAverage;
+
+	printf("국어 점수: ");
+	scanf_s("%d", &score1);
+	printf("수학 점수: ");
+	scanf_s("%d", &score2);
+	printf("영어 점수: ");
+	scanf_s("%d", &score3);
+
+	scoreAverage = (score1 + score2 + score3) / 3;
+
+
+	scoreAverage >=90? printf("A") : scoreAverage>=80? printf("B") : scoreAverage >= 70 ? printf("C") : 
+		scoreAverage >= 50 ? printf("D") : scoreAverage < 50 && scoreAverage >0 ? printf("F") : printf("유효하지 않은 점수");
+
+
+	return 0;
+}

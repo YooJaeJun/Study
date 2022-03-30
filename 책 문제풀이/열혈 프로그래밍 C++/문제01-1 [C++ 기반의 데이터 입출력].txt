@@ -1,0 +1,89 @@
+#include "pch.h"
+#include <iostream>
+
+int main()
+{
+	int a, b, c, d, e;
+	int result = 0;
+	std::cout << "1번째 정수 입력: ";
+	std::cin >> a;
+	std::cout << "2번째 정수 입력: ";
+	std::cin >> b;
+	std::cout << "3번째 정수 입력: ";
+	std::cin >> c;
+	std::cout << "4번째 정수 입력: ";
+	std::cin >> d;
+	std::cout << "5번째 정수 입력: ";
+	std::cin >> e;
+
+	result = a + b + c + d + e;
+	std::cout << "합계: "<<result;
+	std::cin >> result;
+}
+
+
+#include "pch.h"
+#include <iostream>
+
+int main()
+{
+	char Name [10];
+	char PhoneNum [10];
+
+	std::cout << "이름: ";
+	std::cin >> Name;
+
+	std::cout << "전화번호: ";
+	std::cin >> PhoneNum;
+
+	std::cout << "당신의 이름은 " << Name << "이며, 당신의 전화번호는 " << PhoneNum << " 입니다.";
+}
+
+
+
+#include "pch.h"
+#include <iostream>
+
+int main()
+{
+	int num;
+
+	std::cout << "구구단 숫자 입력: ";
+	std::cin >> num;
+
+	for (int i = 1; i < 10; i++)
+	{
+		int multiple = num * i;
+		std::cout << num << " * " << i << " = " << multiple << std::endl;
+	}
+}
+
+
+
+#include "pch.h"
+#include <iostream>
+
+int main()
+{
+	int BasicPay = 50;
+	int SellRevenue;
+	double SellPercent = 0.12;
+
+
+	for (int i = 1; ; i++)
+	{
+		std::cout << "판매 금액을 만원 단위로 입력(-1 to end): ";
+		std::cin >> SellRevenue;
+
+		if (SellRevenue == -1)
+		{
+			std::cout << "프로그램을 종료합니다.";
+			break;
+		}
+		else
+		{
+			int Pay = BasicPay + SellRevenue * SellPercent;
+			std::cout << "이번 달 급여: " << Pay << "만원\n";
+		}
+	}
+}

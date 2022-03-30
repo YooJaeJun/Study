@@ -1,0 +1,68 @@
+#include <stdio.h>
+
+int main()
+{
+	int total = 0, num = 1;
+
+	while (num != 0)
+	{
+		printf("정수 입력(0 to quit): ");
+		scanf_s("%d", &num);
+		total += num;
+	}
+
+	printf("합계: %d\n", total);
+
+	return 0;
+}
+
+
+
+#include <stdio.h>
+
+int main()
+{
+	int n = 0;
+	int sum = 0;
+
+
+	do
+	{
+		do
+		{
+			sum += n;
+			n++;
+		} while (n % 2 == 0);
+
+		n++;
+	} while (n <= 100);
+
+
+	printf("%d", sum);
+
+	return 0;
+}
+
+
+
+#include <stdio.h>
+
+int main()
+{
+	int cur = 2;
+	int is = 0;
+
+	do
+	{
+		is = 1;
+		do
+		{
+			printf("%d x %d = %d\n", cur, is, cur*is);
+			is++;
+		} while (is < 10);
+		cur++;
+
+	} while (cur < 10);
+
+	return 0;
+}

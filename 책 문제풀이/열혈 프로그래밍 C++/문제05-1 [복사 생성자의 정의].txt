@@ -1,0 +1,85 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+namespace COMP_POS
+{
+	enum { CLERK, SENIOR, ASSIST, MANAGER};
+
+	void ShowPosName(int pos)
+	{
+		switch (pos)
+		{
+		case CLERK:
+			cout << "사원" << endl;
+			break;
+		case SENIOR:
+			cout << "주임" << endl;
+			break;
+		case ASSIST:
+			cout << "대리" << endl;
+			break;
+		case MANAGER:
+			cout << "과장" << endl;
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+class NameCard
+{
+private:
+	char * name;
+	char * comp;
+	char * phone;
+	int position;
+public:
+	NameCard(const char * name, const char * comp, const char * phone, int pos)
+		: position(pos)
+	{
+		this->name = new char[strlen(name) + 1];
+		this->comp = new char[strlen(comp) + 1];
+		this->phone = new char[strlen(phone) + 1];
+		strcpy(this->name, name);
+		strcpy(this->comp, comp);
+		strcpy(this->phone, phone);
+	}
+	NameCard(const NameCard& copy) : position(copy.position)
+	{
+		name = new char[strlen(copy.name) + 1];
+		comp = new char[strlen(copy.comp) + 1];
+		phone = new char[strlen(copy.phone) + 1];
+		strcpy(name, copy.name);
+		strcpy(comp, copy.comp);
+		strcpy(phone, copy.phone);
+	}
+	void Show() const
+	{
+		cout << "이름: " << name << endl;
+		cout << "회사: " << comp<< endl;
+		cout << "번호: " << phone << endl;
+		cout << "직급: ";
+		COMP_POS::ShowPosName(position);
+		cout << endl;
+	}
+	~NameCard()
+	{
+		delete[]name;
+		delete[]comp;
+		delete[]phone;
+	}
+};
+
+int main()
+{
+	NameCard manClerk("Yoo", "aa", "010 - 1111 - 1111", COMP_POS::CLERK);
+	NameCard copy1 = manClerk;
+	NameCard manSenior("Hong", "bb", "010 - 2222 - 2222", COMP_POS::SENIOR);
+	NameCard copy2 = manSenior;
+	copy1.Show();
+	copy2.Show();
+	return 0;
+}

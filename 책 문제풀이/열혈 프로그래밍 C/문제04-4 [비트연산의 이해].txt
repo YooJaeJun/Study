@@ -1,0 +1,25 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+
+int main()
+{
+	int num;
+	printf("숫자 입력: ");
+	scanf("%d", &num);
+	printf("%d", ~num+1);
+
+	return 0;
+}
+
+
+
+#include <stdio.h>
+
+int main()
+{
+	int n1 = 3;
+
+	printf("%d x 8 / 4 = %d", n1, n1 << 3 >> 2 );
+
+	return 0;
+}

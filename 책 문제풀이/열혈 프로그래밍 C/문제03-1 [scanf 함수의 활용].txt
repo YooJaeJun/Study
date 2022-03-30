@@ -1,0 +1,91 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+
+int main()
+{
+	int minusResult;
+	int plusResult;
+	int num1, num2;
+
+	printf("2개의 정수 입력: ");
+	scanf("%d %d", &num1, &num2);
+
+	minusResult = num1 - num2;
+	plusResult = num1 + num2;
+
+	printf("뺄셈 결과: %d \n", minusResult);
+	printf("덧셈 결과: %d", plusResult);
+
+	return 0;
+
+}
+
+
+
+
+
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+
+int main()
+{
+	int num1, num2, num3;
+	printf("3개의 정수 입력: ");
+	scanf("%d %d %d", &num1, &num2, &num3);
+
+	printf("%dx%d+%d=%d", num1, num2, num3, num1*num2 + num3);
+	
+	return 0;
+}
+
+
+
+
+
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+
+int main()
+{
+	int num;
+
+	printf("하나의 정수 입력: ");
+	scanf("%d", &num);
+	printf("%d", num*num);
+
+	return 0;
+}
+
+
+
+
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+
+int main()
+{
+	int num1, num2;
+
+	printf("2개의 정수 입력: ");
+	scanf("%d %d", &num1, &num2);
+	printf("%d / %d 시 몫은 %d, 나머지는 %d", num1, num2, num1 / num2, num1%num2);
+
+	return 0;
+}
+
+
+
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+
+int main()
+{
+	int num1, num2, num3, result;
+
+	printf("3개의 정수 입력: ");
+	scanf("%d %d %d", &num1, &num2, &num3);
+	result = (num1 - num2)*(num2 + num3)*(num3%num1);
+	printf("(%d-%d)x(%d+%d)x(%d과%d나머지) = %d", num1, num2, num2, num3, num3, num1, result);
+
+	return 0;
+}

@@ -1,0 +1,147 @@
+#include <stdio.h>
+
+int BigNum(int, int, int);
+int SmallNum(int, int, int);
+
+int main()
+{
+	int n1, n2, n3;
+	printf("3개의 정수 입력: ");
+	scanf_s("%d %d %d", &n1, &n2, &n3);
+	printf("%d %d %d 중 큰 수: %d \n", n1, n2, n3, BigNum(n1, n2, n3));
+	printf("%d %d %d 중 작은 수: %d\n", n1, n2, n3, SmallNum(n1, n2, n3));
+
+
+	return 0;
+}
+
+int BigNum(int n1, int n2, int n3)
+{
+	if (n1 > n2)
+	{
+		if (n1 > n3)
+			return n1;
+		else
+			return n3;
+	}
+	else if (n1 < n2)
+	{
+		if (n2 < n3)
+			return n3;
+		else
+			return n2;
+	}
+}
+
+int SmallNum(int n1, int n2, int n3)
+{
+	if (n1 < n2)
+	{
+		if (n1 < n3)
+			return n1;
+		else
+			return n3;
+	}
+	else if (n1 > n2)
+	{
+		if (n2 > n3)
+			return n3;
+		else
+			return n2;
+	}
+}
+
+
+
+
+
+
+#include <stdio.h>
+
+double CelToFah(double cel);
+double FahToCel(double fah);
+double CelToFahScan(double cel);
+double FahToCelcan(double fah);
+
+int main()
+{
+	double cel = 0, fah = 0;
+	CelToFahScan(cel);
+	FahToCelcan(fah);
+
+	return 0;
+}
+
+double CelToFahScan(double cel)
+{
+	printf("섭씨온도 입력: ");
+	scanf_s("%lf", &cel);
+	printf("%lf \n", CelToFah(cel));
+}
+
+double FahToCelcan(double fah)
+{
+	printf("화씨온도 입력: ");
+	scanf_s("%lf", &fah);
+	printf("%lf \n", FahToCel(fah));
+}
+
+double CelToFah(double cel)
+{
+	double fah = 1.8 * cel + 32;
+	return fah;
+}
+
+
+double FahToCel(double fah)
+{
+	double cel = (fah - 32) / 1.8;
+	return cel;
+}
+
+
+
+
+
+
+
+
+#include <stdio.h>
+
+int scan(int num);
+PrintFibonacci(int seq1, int seq2, int num);
+
+int main()
+{
+	int num = 0;
+	int seq1 = 0, seq2 = 1;
+
+	num = scan(num);
+
+	PrintFibonacci(seq1, seq2, num);
+
+
+	return 0;
+}
+
+int scan(int num)
+{
+	printf("n개의 피보나치 수열 출력: ");
+	scanf_s("%d", &num);
+	return num;
+}
+
+PrintFibonacci(int seq1, int seq2, int num)
+{
+	printf("%d ", seq1);
+
+	int temp = 0;
+
+	for (int i = 1; i < num; i++)
+	{
+		temp = seq2;
+		seq2 += seq1;
+		seq1 = temp;
+		printf("%d ", seq1);
+	}
+}

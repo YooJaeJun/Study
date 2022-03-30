@@ -1,0 +1,16 @@
+문법
+namespace
+get(), set()
+const, 참조전달 (인수와 반환값 중 빌트인 타입이 아니며 댕글링 포인터의 위험이 없을 경우 레퍼런스로 전달)
+noexcept 키워드/ virtual 소멸자
+연산자 오버로딩
+assert
+
+상속과 다형성 / override, final 키워드
+enum hack
+dynamic_cast, dynamic_pointer_cast
+싱글톤 패턴 frame_image
+
+
+회전 후면dc를 만들어 plg_blt
+matrix 클래스를 만들어 행렬곱으로 구현
