@@ -23,7 +23,7 @@ vector<int> dist(7);	// 거리
 
 void dijk(int start) {
 	dist[start] = 0;
-	priority_queue<pair<int, int>, vector<pair<int, int>, greater<pair<int, int>>> pq;	// 가중치, 노드 Idx
+	priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;	// 가중치, 노드 Idx
 	pq.push({ 0, start });
 	// 가까운 순서대로 처리
 	while (pq.empty() == false) {
