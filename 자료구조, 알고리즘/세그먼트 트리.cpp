@@ -30,6 +30,18 @@ void update(int start, int end, int node, int index, int dif) {
 	update(mid + 1, end, node * 2 + 1, index, dif);
 }
 
+// 특정 원소값 수정 (반환값 있는 형태로 구현)
+/*
+int update(int node, int start, int end, int idx, double dif)
+{
+	if (idx < start || idx > end) return tree[node];
+	tree[node] += dif;
+	if (start == end) return tree[node];
+	int mid = (start + end) / 2;
+	return tree[node] = update(node * 2, start, mid, idx, dif) + update(node * 2 + 1, mid + 1, end, idx, dif);
+}
+*/
+
 void solution() {
 	int n;
 	/*cin >> n;*/
