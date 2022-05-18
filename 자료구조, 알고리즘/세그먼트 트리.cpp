@@ -34,7 +34,7 @@ void update(int start, int end, int node, int index, int dif) {
 /*
 int update(int node, int start, int end, int idx, double dif)
 {
-	if (idx < start || idx > end) return tree[node];
+	if (idx < start || idx > end) return 0;
 	tree[node] += dif;
 	if (start == end) return tree[node];
 	int mid = (start + end) / 2;
