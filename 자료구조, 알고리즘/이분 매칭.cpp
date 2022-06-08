@@ -7,18 +7,17 @@ using vi = vector<int>;
 using vvi = vector<vector<int>>;
 #define yes cout << "YES\n";
 #define no cout << "NO\n";
-const int maxn = 1e9 + 7;
+const int maxn = 200;
 const double mod = 1e9 + 7;
 
 // 이분매칭
 
-const int maxx = 200;
 // n: A그룹 크기, m: B그룹 크기
 // A[i], B[i]: 각 정점이 매칭된 반대편 정점 번호
-int n, m, A[maxx], B[maxx];
+int n, m, A[maxn], B[maxn];
 // adj[i]: A[i]와 인접한 그룹 B의 정점들
-vi adj[maxx];
-bool visited[maxx];
+vi adj[maxn];
+bool visited[maxn];
 
 // a그룹에 속한 정점 a를 이분 매칭시켜서 성공하면 true
 bool dfs(int a)
@@ -57,7 +56,7 @@ void solution()
 	int match = 0;
 	// 초기값: -1
 	fill(A, A + n, -1);
-	fill(B, B + n, -1);
+	fill(B, B + m, -1);
 	for (int i = 0; i < n; i++)
 	{
 		// 아직 매칭되지 않은 그룹 A 정점에 대해 매칭 시도
