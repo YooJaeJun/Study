@@ -1,0 +1,21 @@
+class COption
+{
+pubic:
+enum E_OPT{TEXTURE=1, SHADOW=2, SOUND=4};
+//static enum E_OPT{TEXTURE=1, SHADOW=2, SOUND=4}; 정의부만이라면 이렇게 정적 선언할 필요가 없지요
+unsigned int m_OptCheck;
+....
+}
+
+...<client>...
+COption Opt;
+Opt.m_OptCheck = COption::TEXTURE | COption::SHADOW | COption::SOUND;
+
+....
+
+if(m_OptCheck & COption::SHADOW)
+  m_OptCheck ^= COption::SHADOW;
+else
+  m_OptCheck |= COption::SHADOW;
+
+....
