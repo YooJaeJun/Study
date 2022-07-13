@@ -1,10 +1,46 @@
-C, C++ 세미콜론 => 종결자(terminator)
+C, C++ 세미콜론
+- 종결자(terminator)
 
 주석문
-// C++ 스타일
-/* */ C 스타일
+- // C++ 스타일
+- /* */ C 스타일
 
 전처리기 preprocessor
-컴파일을 하기 전에 소스 파일에 대해 미리 어떤 처리를 수행하는 프로그램
-전처리 지시자 (dirctive) include
+- 컴파일을 하기 전에 소스 파일에 대해 미리 어떤 처리를 수행하는 프로그램
+- 전처리 지시자 (dirctive) include
+
+이스케이프 시퀀스(escape sequence)
+- 개행
+
+캐리지 리턴(carriage return)
+- 구문들을 분리. ';'
+
+토큰 token
+- 한 행의 코드에서 더 이상 분리할 수 없는 요소
+- 빈칸, 탭, 캐리지 리턴에 의해 다음 토큰과 분리된다.
+
+화이트 스페이스
+- 빈칸, 탭, 캐리지 리턴을 집합적으로 부르는 이름
+
+- 빈칸과 캐리지 리턴은 서로 바꾸어 사용할 수 있다.
+
+C++ 변수 선언 스타일
+- 가능한 그 변수를 처음 사용하는 곳에서 가장 가까운 위치에 선언
+
+클래스와 객체의 관계
+- == 데이터형과 변수의 관계
+- 클래스: 객체형 object type
+- 객체: 객체 인스턴스 object instance or 인스턴스 변수 instance variable
+
+함수 몸체
+- statements
+
+지시자를 특정 함수 정의 안에 넣을 수도 있다.
+- using std::cout;
+
+istream, ostream 클래스
+- 입력과 출력을 연속된 문자들의 stream 이라고 간주한다.
+
+삽입 insertion 연산자 <<
+추출 extraction 연산자 >>
 
