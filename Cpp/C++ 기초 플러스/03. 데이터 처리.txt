@@ -148,10 +148,101 @@ char32_t
 - U'R' / U"dirty"
 
 
-const 제한자
+
+
+2. const 제한자
 
 키워드 const
 - 제한자(qualifier)
 - 선언의 의미를 제한함
 
 
+
+
+3. 부동 소수점수
+ex.
+34.1245 => 기본값 0.341245, 스케일 100
+34124.5 => 기본값 0.341245, 스케일 100000
+소수점이 스케일에 따라 자리를 옮기기 때문에 이 데이터형 == 부동 소수점형
+
+
+float 정밀도 손실 문제
+#include <iostream>
+int main()
+{
+	using namespace std;
+	float a = 2.34E+22f;
+	float b = a + 1.0f;
+
+	cout << "a = " << a << endl;	// a = 2.34e+22
+	cout << "b - a = " << b - a << endl;	// b - a = 0
+	return 0;
+}
+
+
+
+
+4. 산술
+'/' 도 자료형마다 연산자 오버로딩 되어있음
+
+{ }를 사용할 경우 초기화 (C++11)
+#include <iostream>
+int main()
+{
+	int x = 2;
+	char c1{ x };	// const 변수만 허용
+}
+
+산술 연산 시, 다음 타입 값은 모두 int형으로 변환
+- bool, char, unsigned char, signed char, short
+- 이를 정수 승급(integral promotion) 이라고 함
+
+표현범위를 수용할 수 있을 만큼 충분히 큰 첫 번째 데이터형으로 승급
+- 한쪽 피연산자 long double => 상대편 피연산자를 long double 형으로 변환
+- double, float 도 동일
+- 이외 다른 타입은 정수 승급
+
+#include <iostream>
+int main()
+{
+	using namespace std;
+	int a, b, c;
+
+	a = 19.99 + 11.99;
+	b = (int)19.99 + (int)11.99;
+	c = int(19.99) + int(11.99);	// c++
+	cout << "a: " << a << endl;
+	cout << "b: " << b << endl;
+	cout << "c: " << c << endl;
+
+	char ch = 'Z';
+	cout << "int(ch): " << int(ch) << endl;
+	cout << "static_cast<int>(ch): " << static_cast<int>(ch) << endl;
+}
+a: 31
+b: 30
+c: 30
+int(ch): 90
+static_cast<int>(ch): 90
+
+우수리 버림.
+
+
+
+문제
+1. 메모리 효율, 저장용량
+2. (생략)
+3. 안전장치를 제공하지 않는다 !
+4. long 형, int형
+5. 첫 번째는 ASCII 코드를 사용하는 시스템에서만 A라는 문자 저장
+- 두 번째는 어떤 시스템에서도 A라는 문자 저장
+6. (생략)
+7. 두 데이터형이 얼마나 크냐에 달려 있음
+- long형이 4바이트면 데이터 손실 없음
+8. (생략)
+9. (생략)
+10. (d제외 생략)
+- d: char32_t
+
+프로그래밍 연습 
+(생략)
