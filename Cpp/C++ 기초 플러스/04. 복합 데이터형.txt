@@ -298,4 +298,166 @@ a picnic basket fil
 // 디버깅해보니 넣어주는데..?
 
 
-자동 공간, 정적 공간, 동적 공간
+
+메모리를 대입하는 방법에 따라 구분하는 공간
+- 자동 공간, 정적 공간, 동적 공간
+
+자동 공간(automatic storage)
+- 함수 안에서 정의되는 보통의 변수들 == 자동 변수
+- 스택에 저장
+
+정적 공간
+- 프로그램이 실행되는 동안 지속적으로 존재하는 공간
+- static ~
+
+동적 공간(자유 공간, free store, 힙, heap)
+- 자유 공간이라 불리는 메모리 풀(memory pool)을 관리
+- 메모리 누수 조심
+
+
+
+
+
+9. 변수형의 조합
+
+더블 포인터 활용
+
+```
+#include <iostream>
+using namespace std;
+
+struct A { int a; };
+
+int main()
+{
+	A a1, a2, a3;
+	a1.a = 1;
+	A* pa = &a2;
+	pa->a = 2;
+
+	A aArr[3];
+	aArr[0].a = 3;
+	cout << aArr->a << ' ';
+
+	const A* pArr[3] = { &a1, &a2, &a3 };
+	cout << pArr[1]->a << ' ';
+
+	const A** ppArr = pArr;
+	cout << (*ppArr)->a << ' ';
+
+	auto ppb = pArr;	// 자동 형태 추측
+	cout << (*(ppb + 1))->a << ' ';	// 1번 인덱스 접근
+}
+```
+```
+3 2 1 2
+```
+
+
+
+
+
+10. 배열의 대안
+
+vector
+
+array (C++11)
+- 고정 배열 템플릿
+
+고정 배열 vs std::vector vs std::array
+
+```
+#include <iostream>
+#include <vector>
+#include <array>
+using namespace std;
+
+int main()
+{
+	// C, Original C++
+	int a1[4] = { 1, 2, 3, 4 };
+
+	// C++98 STL
+	vector<int> a2 = { 5, 6, 7, 8 };
+
+	// C++11 
+	array<int, 4> a3 = { 9, 10, 11, 12 };
+	array<int, 4> a4;
+	a4 = a3;
+
+	cout << "고정배열 \n";
+	for (int i = 0; i < 4; i++) cout << "a1[i]: " << a1[i] << ' ' << "주소: " << &a1[i] << endl;
+	cout << '\n';
+
+	cout << "vector \n";
+	for (int i = 0; i < 4; i++) cout << "a2[i]: " << a2[i] << ' ' << "주소: " << &a2[i] << endl;
+	cout << '\n';
+
+	cout << "array \n";
+	for (int i = 0; i < 4; i++) cout << "a3[i]: " << a3[i] << ' ' << "주소: " << &a3[i] << endl;
+	cout << '\n';
+}
+
+```
+```
+고정배열
+a1[i]: 1 주소: 000000D82C32F668
+a1[i]: 2 주소: 000000D82C32F66C
+a1[i]: 3 주소: 000000D82C32F670
+a1[i]: 4 주소: 000000D82C32F674
+
+vector
+a2[i]: 5 주소: 0000024705D12110
+a2[i]: 6 주소: 0000024705D12114
+a2[i]: 7 주소: 0000024705D12118
+a2[i]: 8 주소: 0000024705D1211C
+
+array
+a3[i]: 9 주소: 000000D82C32F6D8
+a3[i]: 10 주소: 000000D82C32F6DC
+a3[i]: 11 주소: 000000D82C32F6E0
+a3[i]: 12 주소: 000000D82C32F6E4
+```
+
+
+
+array 특징
+- 주소를 통해서 array 객체가 동일한 지역의 메모리를 사용한다. (예제의 경우 stack)
+- 반면 vector 객체는 자유 저장 또는 heap에 저장
+
+
+[] 배열 첨자(bracket notation) vs .at() 멤버
+- at() 사용 시 유효하지 않은 인덱스가 런타임과 프로그램 도중에 디폴트에 의해 잡히게 되어 전격 취소된다. ?
+
+
+
+
+
+연습문제
+1. 생략
+2. array<char, 30> actors;
+나머지 생략
+
+3. ~  9. 생략
+
+10. enum Response { No, Yes, Maybe };
+11. 생략
+12. 
+float treacle[10] = {1,2,3,4,5,6,7,8,9,10};
+cout << *treacle << ' ' << *(treacle + 9);
+
+13. 
+int n;
+cin >> n;
+int* arr = new int[n];
+delete[] arr;
+
+14. 문자열 첫 요소의 주소값
+15. 생략
+16. 개행 문자가 남아있어 입력이 완료되었다고 판단하여 입력받지 않고 끝내버린다.
+17. 생략
+
+
+
+프로그래밍 연습
+생략
