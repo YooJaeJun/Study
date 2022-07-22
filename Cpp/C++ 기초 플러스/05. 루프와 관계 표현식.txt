@@ -1,2 +1,241 @@
 관계 표현식, 논리 표현식
 
+표현식
+- 어떤 값이나, 값과 연산자들의 적절한 조합
+
+ex.
+- 10은 값이 10인 표현식
+- 28 * 20은 값이 560인 표현식
+- x = 20
+- x = y = z = 0
+
+구문
+- expression + semiclon
+
+
+접두어(prefix) 방식 
+- cout << a++;
+- a가 현재 가진 값으로 표현식의 값을 먼저 평가한 후, 값을 나중에 증가
+
+접미어(postfix) 방식 
+- cout << ++a;
+- 값을 먼저 증가시킨 후, 증가된 b의 값으로 표현식의 값을 나중에 평가
+
+하나의 구문에서 같은 값을 여러 번 증가 혹은 감소시키지 않도록 주의해야 함
+- 결과가 시스템에 따라 다르게 나올 수 있음
+ 
+부수 효과(side effect)와 시퀀스 포인트(;)
+- y = (4 + x++) + (6 + x++);
+- 4 + x++는 완전 수식이 아니기 때문에 평가된 직후에 x가 증가한다고 보장하지 않는다.
+- C++는 부분 수식이 각각 평가된 후에 x가 증가되는지, 또는 모든 수식의 평가를 끝낸 후에 x가 증가되는지 구체적으로 규정하지 않는다.
+
+
+포인터와 결합
+
+
+접두형 증감 연산자
+- 내용 참조 연산자와 우선순위가 같다.
+- 오른쪽에서 왼쪽으로 결합
+
+접미형 증감 연산자
+- 접두형 증감연산자보다 우선순위가 높다.
+- 왼쪽에서 오른쪽으로 결합
+
+```
+*++pt		포인터 증가, 값을 취한다.
+++*pt;		지시되는 값 증가
+(*pt)++		지시되는 값 증가
+*pt++		원래 주소를 참조하고, 포인터 증가
+```
+
+콤마 표현식
+- i = 20, j = 2 * i	// j = 2 * i의 값인 40이 콤마 표현식의 값
+- 연산자 중 우선순위가 가장 낮다.
+
+
+strcmp
+- 두 문자열 비교
+- 같으면 0 리턴
+- 첫번째 다음 두번째 : 음수 리턴
+- 두 첫 : 양수 리턴
+
+C 스타일 문자열
+- 배열의 크기가 아니라 널 문자에 의해 정의됨
+- 다음 변수들 같음
+```
+char big[80] = "dd";
+char little[6] = "dd";
+```
+
+```
+#include <iostream>
+#include <cstring>
+
+int main()
+{
+	using namespace std;
+	char word[5] = "?ate";
+
+	for (char ch = 'a'; strcmp(word, "mate"); ch++)
+	{
+		cout << word << endl;
+		word[0] = ch;
+	}
+	cout << "루프가 끝난 후 단어는 " << word << '\n';
+	return 0;
+}
+```
+
+strcmp(str1, str2) < 0
+- str1이 str2보다 앞에 오면 맞는 것
+
+
+
+clock()
+
+```
+#include <iostream>
+#include <ctime>	// clock() 함수와 clock_t형
+using namespace std;
+
+int main()
+{
+	cout << "지연시간(초) 입력: ";
+	float secs;
+	cin >> secs;
+	clock_t delay = secs * CLOCKS_PER_SEC;
+			// 지연 시간을 시스템 단위 클록 수로 변환
+	cout << "카운터 시작. \a\n";
+	clock_t start = clock();
+	while (clock() - start < delay)	// 시간이 경과할 때까지 대기
+		;			// 세미콜론에 유의
+	cout << "종료.\a\n";
+	return 0;
+}
+```
+
+
+#define vs typedef
+
+```
+#define FLOAT_POINTER float *
+FLOAT_POINTER pa, pb;	// pa는 float 지시하는 포인터, pb는 float형!!
+```
+
+- 여러 개의 변수 리스트를 선언하는 경우 typedef이 옳다.
+
+
+
+4. Range 기반 for
+
+```
+	for (double &x : prices)
+		x *= 0.8;
+	for (int x : {3, 4, 2})
+		cout << x << ' ';
+```
+
+
+
+5. 루프와 텍스트 입력
+
+cin을 이용한 입력
+- 표지 문자(sentinel character) 라 불리는 특수 문자를 입력 중지 신호로 사용
+
+'에코'한다
+- 읽어들인 문자를 다시 출력한다.
+- 운영체제와 테스트 프로그램이 화면으로 에코함
+
+
+빈칸 문자를 에코하지 않는다면?
+- cin.get();
+
+```
+#include <iostream>
+using namespace std;
+
+int main()
+{
+	char ch;
+	int cnt = 0;
+	cin.get(ch);	// 빈칸 문자를 포함한 모든 문자들을 에코하고 카운트함
+	while (ch != '#')
+	{
+		cout << ch;
+		++cnt;
+		cin.get(ch);	// 빈칸 문자를 포함한 모든 문자들을 에코하고 카운트함
+	}
+	cout << endl << cnt << " 문자 읽음 \n";
+	return 0;
+}
+```
+
+
+
+파일 끝(End-Of-File) 조건
+- 운영 체제의 도움을 받아 입력이 파일의 끝에 도달했을 때 이를 인식하고, 그 정보를 프로그램에 전달함
+
+cin EOF
+- cin은 EOF를 탐지했을 때 두 개의 비트(eofbit와 failbit)를 1로 설정함
+- eof()라는 bool 반환 멤버함수를 사용하면 eofbit가 설정되었는지 알 수 있음
+- ctrl + z    Enter   로 EOF 조건 시뮬레이션
+
+```
+#include <iostream>
+using namespace std;
+
+int main()
+{
+	char ch;
+	int cnt = 0;
+	cin.get(ch);
+	// while (cin.fail() == false)	// EOF 검사
+	// while (cin)	// 입력 성공 시 루프 실행. 이게 더 일반적
+	while(cin.get(ch))	// 리턴값이 cin이므로 다음과 같이 작성
+	{
+		cout << ch;
+		++cnt;
+		cin.get(ch);
+	}
+	cout << cnt << " 문자를 읽음 \n";
+	return 0;
+}
+```
+
+원리
+- cin.get(ch)는 두 번이 아니라 검사 조건에서 한 번만 호출됨
+- 루프 조건 검사 위해 프로그램은 먼저 cin.get(ch)를 호출
+- 입력이 성공적이면 ch에 값 넣음
+- 그리고 나서 프로그램은 함수 호출의 리턴값으로 cin을 얻음
+- cin에 bool 변환 적용
+- 입력이 성공이면 true, 아니면 false로 변환
+
+
+
+
+연습 문제
+1. ? 조건식
+for, while 루프: 진입 조건 루프
+do while 루프: 탈출 조건 루프
+
+2. ~ 3. (생략)
+
+4. 6 8 
+5. 8 
+6. (생략)
+7. 중괄호 안에 여러 구문 배치
+8. 
+(1)(주의) 적법함
+- 1과 024라는 두 표현식이 콤마 연산자로 결합된 것
+- 오른쪽 표현식 024의 값이 전체 표현식의 값이 됨
+- 024는 8진수이므로 십진수로 치면 20을 대입
+(2) y에 1이 대입하고, 024는 아무 일도 하지 않는다.
+
+9. 
+cin >> ch	개행, 공백, 탭 등의 문자들을 무시하고 건너뛴다.
+ch = cin.get()	~그 문자들을 읽어들인다.
+
+
+
+프로그래밍 연습
+생략
