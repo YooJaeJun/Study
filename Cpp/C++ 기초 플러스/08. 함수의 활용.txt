@@ -20,3 +20,238 @@
 
 
 2. 참조 변수
+
+함수의 형식 매개변수
+- 참조를 매개변수로 사용하면, 그 함수의 복사본 대신 원본 데이터를 가지고 작업한다.
+
+```
+#include <iostream>
+using namespace std;
+int main()
+{
+	int rats = 101;
+	int* pt = &rats;
+	int& rodents = *pt;
+	int bunnies = 50;
+	pt = &bunnies;
+	cout << "&rats: " << &rats << endl;
+	cout << "pt: " << pt << endl;
+	cout << "&rodents: " << &rodents << endl;	// rodents는 그대로 rats를 참조한다!
+	cout << "&bunnies: " << &bunnies << endl;
+	return 0;
+}
+```
+
+값, 포인터, 레퍼런스 이용 swap
+
+
+lvalue 매개변수
+- 참조가 가능한 데이터 객체
+- 변수, 배열의 원소, 구조체의 멤버, 참조 또는 역참조 포인터
+
+원본 데이터를 변경해야 할 경우
+- 임시변수의 생성을 허용하지 말아야 한다.
+
+const 참조 매개변수 이점
+- 데이터 변경 에러 방지
+- 원형에 const를 사용하면, 함수가 const와 const가 아닌 실제 매개변수를 모두 처리할 수 있지만,
+  - 원형에 const를 생략한 함수는 const가 아닌 데이터만 처리할 수 있다.
+- 함수가 자신의 필요에 따라 임시 변수를 생성하여 사용할 수 있다.
+
+
+참조 리턴
+- 참조를 리턴하는 함수는 실제로 참조가 되는 변수에 대한 alias(별명) 파일이다.
+
+주의!!
+- 함수가 종료할 때 수명이 함께 끝나는 메모리 위치에 대한 참조를 리턴하지 않도록 조심하는 것
+- 임시 변수를 지시하는 포인터 리턴도 피해야 한다.
+- 함수에 매개변수로 전달된 참조를 리턴하자.
+
+
+참조 리턴 시 const 사용 이유
+```
+accumalate(dup, five) = four;
+```
+위 구문이 컴파일되는 이유
+- 리턴값이 참조형이기 때문에 수정 가능한 lvalue다.
+
+const 
+- const이므로 대입 허용 불가
+- 모호한 에러를 만들지 않는다.
+
+```
+const string& version2(string& s1, const string& s2) {}   // 안전
+```
+
+```
+const string& version3(string& s1, const string& s2)
+{
+  string tmp;
+  tmp = s2 + s1 + s2;
+  return temp;    // 지역변수에 대한 참조를 리턴하므로 안전하지 않다!!!
+}
+
+
+왠 갑자기 파일 입출력
+
+
+참조 매개변수 사용 시기
+- 호출 함수에 있는 데이터 객체의 변경을 허용하기 위해
+- 전체 데이터 객체 대신에 참조를 전달하여 프로그램의 속도를 높이기 위해
+
+함수가 전달된 데이터를 변경하지 않고 사용만 하는 경우:
+- 데이터 객체가 기본 데이터형이나 작은 구조체라면 값으로 전달한다.
+- 데이터 객체가 배열이라면 포인터가 유일한 선택이므로 포인터를 사용한다. 포인터를 const를 지시하는 포인터로 만든다.
+- 데이터 객체가 덩치 큰 구조체라면 const 포인터나 const 참조를 사용하여 프로그램의 속도를 높인다.
+  - 구조체나 클래스 설계를 복사하는 데 드는 시간과 공간을 절약한다. 포인터나 참조를 const로 만든다.
+- 데이터 객체가 클래스 객체라면 const 참조를 사용한다.
+  - 클래스 객체 매개변수의 전달은 참조로 전달하는 것이 표준.
+
+함수가 호출 함수의 데이터를 변경하는 경우
+- 데이터 객체가 기본 데이터형이면 포인터를 사용한다.
+- 데이터 객체가 ㅂ ㅐ열이면 유일한 선택은 포인터를 사용하는 것이다.
+- 데이터 객체가 구조체이면 참조 or 포인터를 사용한다.
+- 데이터 객체가 클래스 객체이면 참조를 사용한다.
+
+
+
+3. 디폴트 매개변수
+
+규칙
+- 디폴트 매개변수로 만들려면, 그 매개변수보다 오른쪽에 있는 모든 매개변수를 디폴트 매개변수로 만들어야 한다.
+```
+int A(int a, int b = 4, int c = 5);   // 맞다
+int B(int a, int b = 6, int c);       // 틀리다
+```
+
+
+4. 함수 오버로딩
+
+함수의 매개변수 리스트
+== 함수시그내처(function signature)
+
+const
+- const 변수에는 const 매개변수와 const가 아닌 매개변수를 둘 다 전달할 수 있지만,
+- const가 아닌 변수에는 const가 아닌 매개변수만 전달할 수 있다.
+```
+void A(char* a);
+...
+const char p1[5] = "asdf";
+A(p1);  // 대응하는 원형이 없다.
+```
+
+
+함수 시그내처가 다른 경우에만 다른 리턴형을 가질 수 있다.
+```
+#include <iostream>
+using namespace std;
+
+double A(float n, float m) { return m; }
+long A(int n, float m) { return n; }
+
+int main()
+{
+	cout << A(5, 2.0f);	// long A() 호출
+	return 0;
+}
+```
+
+
+rvalue 전달 시 &&
+
+```
+#include <iostream>
+using namespace std;
+
+const double A(double& r) { return 0; }
+const double A(double&& r) { return r; }  // 호출
+
+int main()
+{
+	cout << A(3.0 + 7.0);
+	return 0;
+}
+```
+
+함수 오버로딩 사용 경우
+- 서로 다른 데이터형의 매개변수를 요구 and 디폴트 매개변수가 소용 없을 때
+
+
+이름 장식(Name Decoration)
+(== 이름 맹글링, name mangling)
+- 함수 원형에 지정되어 있는 형식 매개변수의 데이터형을 기반으로 각각의 함수 이름을 암호화
+```
+long MyFunctionFoo(int, float);
+?MyFunctionFoo@@YAXH@z  // 내부 형식 예시
+```
+
+
+
+5. 함수 템플릿
+
+일반화 프로그래밍(generic programming)
+- 구체적인 데이터형 대신 일반형으로 프로그래밍
+- 데이터형이 매개변수에 의해 표현되므로, 템플릿을 매개변수화 데이터형(parameterized type) 이라고도 한다.
+
+템플릿
+- 컴파일러는 ~~형 버전의 Swap() 함수 생성
+- 즉 별개의 두 함수 정의가 생성됨
+
+오버로딩
+- 템플릿 역시 오버로딩 가능
+
+명시적 특수화
+- explicit specialization
+
+다음 원형들이 공존할 때, 컴파일러는
+- 템플릿이 아닌 버전 > 명시적 특수화 버전 > 템플릿 버전
+- 순으로 선택한다.
+
+```
+#include <iostream>
+using namespace std;
+
+struct job
+{
+	char name[40];
+	double salary;
+	int floor;
+};
+
+void A(job& a, job& b) { cout << "템플릿이 아닌 버전"; }
+
+template<typename T>
+void A(T& a, T& b) { cout << "템플릿 버전"; }
+
+template<> void A<job>(job& a, job& b) { cout << "job형을 위한 명시적 특수화"; }	  // 
+
+int main()
+{
+	job a, b;
+	A(a, b);
+	return 0;
+}
+```
+```
+템플릿이 아닌 버전
+```
+
+
+템플릿은 함수 정의를 생성할 계획을 세우는 것에 불과함
+- 컴파일러가 특정 데이터형에 맞는 함수 정의를 생성하기 위해 템플릿을 사용할 때,
+- 그 결과를 템플릿의 구체화(instantiation) 라고 한다.
+- 함수 호출은 컴파일러가 템플릿 함수를 구체화하게 한다.
+- 이 방식의 구체화를 암시적 구체화(implicit instantiation) 이라고 한다.
+
+명시적 구체화
+```
+template void A<job>(job&, job&);
+template void A(job&, job&);      // 둘 다 명시적 특수화
+```
+- 컴파일러는 이 선언을 발견했을 때 템플릿을 사용하여 job형에 맞는 구체화를 생성한다.
+- "A() 템플릿을 사용하여 job형에 맞는 함수 정의를 생성하라."
+
+정리
+- 명시적 특수화 선언은 키워드 template 뒤에 <> 를 가지는 반면,
+- 명시적 구체화는 <>를 생략한다.
+
