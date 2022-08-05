@@ -1,0 +1,63 @@
+
+OOP
+- 추상화 abstraction
+- 캡슐화 encapsulation와 데이터 은닉 data hiding
+- 다형 polymorphism
+- 상속 inheritance
+- 코드의 재활용 reusability of code
+
+
+인터페이스
+- 두 시스템 간의 상호 작용을 위한 공통된 프레임워크
+
+데이터 은닉
+
+캡슐화
+- 세부적인 구현들을 따로 결합하여 추상화와 분리하는 것
+- 데이터 은닉은 캡슐화의 한 예
+
+public, private
+
+
+함수 머리(function heading)와 함수 몸체(function body)
+
+```
+void Stock::update(double price);
+```
+
+"update()가 클래스 사용 범위(class scope)를 가지고 있다." 고 말한다.
+
+Stock::update()
+- 함수의 검증된 이름(qualified name)
+
+update()
+- 검증되지 않은 이름 unqualified name
+
+
+인라인 메서드
+
+코드 수정 규칙(rewrite rule)에 따르면, 클래스 선언 안에 메서드를 정의하는 것은,
+- 그 메서드 정의를 원형으로 대체하고, 
+- 클래스 선언 바로 뒤에 그 메서드 정의를 인라인 함수로 다시 작성하는 것과 같다.
+
+멤버 함수 호출
+== 다른 OOP 언어에서 메시지를 보낸다 (sending a message)와 같다.
+
+
+클라이언트-서버 모델
+
+- 클라이언트는 클래스를 사용하는 프로그램
+- 클래스 메서드를 포함하여, 클래스 선언이 서버를 구성
+- 서버는 그것을 필요로 하는 프로그램들이 사용할 수 있는 리소스
+- 클라이언트는 public으로 정의된 인터페이스를 통해서만 서버를 사용
+- 클라이언트의 책임은 인터페이스를 이해하는 것
+- 서버 책임은 서버가 인터페이스에 따라 신뢰성 있고 정확하게 수행되는지 확인하는 것
+
+
+예시: 고정 소수점 표기
+
+```
+std::cout.setf(std::ios_base::fixed, std::ios_base::floatfield);
+std::cout.Precision(3);
+```
+
