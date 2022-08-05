@@ -255,3 +255,175 @@ template void A(job&, job&);      // 둘 다 명시적 특수화
 - 명시적 특수화 선언은 키워드 template 뒤에 <> 를 가지는 반면,
 - 명시적 구체화는 <>를 생략한다.
 
+
+
+컴파일러는 어느 함수를 선택할까?
+- 어떤 함수 호출에 대해 매개변수가 여러 개일 때, 어떤 함수 정의를 사용할 것인지
+- 이 전략을 오버로딩 분석(overload resolution)이라 한다.
+
+전략
+- 1단계: 후보 함수들의 목록을 만든다.
+  - 이들은 호출된 함수와 이름이 동일한 함수와 함수 템플릿들이다.
+- 2단계: 여러 후보 함수들 중에서, 계속 존속할 수 있는 함수들의 목록을 만든다.
+  - 이들은 매개변수의 개수가 일치하는 함수들이다.
+  - 이들에 대해서 암시적 변환 절차가 이루어진다.
+  - 실제 매개변수의 각 데이터형이, 대응하는 형식 매개변수의 데이터형과 정확하게 일치하는 경우도 포함된다.
+  - 예를 들어, float형 매개변수를 사용하는 함수 호출은, double형 형식 매개변수에 대응할 수 있도록 그 값을 double형으로 변환시킬 수 있다.
+  - 그리고 템플릿은 float를 위한 구체화를 생성할 수 있다.
+- 3단계: 가장 적당한 함수가 있는지 판단한다.
+  - 함수가 있으면 사용, 없으면 에러
+
+
+1. may('B') 호출
+- 다음 후보 목록
+
+```
+/*1*/ void may(int);
+/*2*/ float may(float, float = 3);
+/*3*/ void may(char);
+/*4*/ char* may(const char*);
+/*5*/ char may(const char&);
+/*6*/ template<class T> void may(const T&);
+/*7*/ template<class T> void may(T*);
+```
+
+- 리턴형이 아닌 시그내처만 고려한다.
+
+- 후보 4, 7은 정수형이 포인터형으로 암시적으로 변환될 수 없기 때문에 탈락함
+- 후보 템플릿 6은 char형으로 특수화 생성
+
+1. 매개변수가 정확하게 대응하는 것. 일반 함수가 템플릿보다 순위가 높다.
+2. 승급 변환(char와 short를 int형으로 등 자동 변환)
+3. 표준 변환(int를 char로, char를 float로, long을 double로 등)
+4. 클래스 선언에서 정의되는 변환과 같은, 사용자 정의 변환
+
+- 승급 > 표준. 1이 2보다 우선
+- 매개변수 정확. 3, 5, 6이 1보다 우선
+- 정확한 대응이 3, 5, 6.   2개 이상이므로 에러.
+
+
+부분순서화 규칙(partial ordering rule)
+- 가장 특수화된 템플릿을 찾아내는 규칙을 함수 템플릿에 대한 부분순서화 규칙(partial ordering rule) 이라 함
+
+결국 순서
+- 템플릿 아닌 함수 > 특수화 템플릿 함수 > 그 외 템플릿 함수
+
+```
+lesser(m, n);
+lesser<>(m, n);		// 템플릿 함수만 호출
+lesser<int>(m, n);	// 템플릿 함수만 호출
+```
+
+
+decltype 키워드 (C++ 11)
+
+형식
+- decltype(expression) var;
+
+```
+	int x;
+	decltype(x) y;	// x와 동일한 타입의 y를 만들어라.
+	decltype(x + y) z;
+```
+
+- const, *, & 모두 동일 타입화
+- 함수 호출일 경우 함수 리턴형 타입
+
+```
+long A(int);
+decltype(A(3)) B;	// long B;
+```
+
+- expression이 lvalue일 경우, var는 expression 타입을 참조!
+
+```
+#include <iostream>
+using namespace std;
+
+int32_t main()
+{
+	double a = 4.4;
+	decltype(a) b = a;
+	decltype((a)) c = a;	// double& c
+	a -= 1.0;
+	cout << "b: " << b << endl;
+	cout << "c: " << c << endl;
+	return 0;
+}
+```
+```
+b: 4.4
+c: 3.4
+```
+
+- typedef과 함께 사용 가능
+
+
+대체할 수 있는 함수 구문 
+trailing return type
+
+```
+// double h(int x, float y); 대체
+auto h(int x, float y) -> double;
+```
+
+예제
+
+```
+#include <iostream>
+using namespace std;
+
+template<class T1, class T2>
+auto gt(T1 x, T2 y) ->decltype(x + y)
+{
+	return x + y;
+}
+
+int32_t main()
+{
+	cout << gt(5, 5.4f);
+	return 0;
+}
+```
+```
+10.4
+```
+
+
+정리
+inline, 참조, 디폴트 매개변수, 함수 오버로딩, 템플릿
+
+
+연습문제
+1. 한 행에 넣을 수 있을 만큼 짧고, 재귀되지 않는 함수들
+2. 
+- void song(const char* name, int times = 1);
+- 선언과 유사
+- no. const 키워드 붙여야 함. 답지 설명은 디폴트 값도 유지해서 맞다고 하나 문자열 리터럴은 const char*로 받아야 함
+
+3~5. [생략]
+
+6. 
+- 둘다 가능하나 디폴트 매개변수로 처리
+double mass(double density, double volume = 1.0);
+
+- 함수 오버로딩
+void repeat(int iterCnt, string str);
+void repeat(string str);
+
+- 함수 오버로딩
+int average(int a, int b);
+double average(double a, double b);
+
+- 둘 다 불가능
+함수의 오버로딩은 리턴형이 아닌 함수 시그내처로 판단한다.
+
+
+7~8. [생략]
+
+9. float, float&, float&, int, double
+
+
+
+프로그래밍 연습
+[생략]
