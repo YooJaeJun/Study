@@ -61,3 +61,352 @@ std::cout.setf(std::ios_base::fixed, std::ios_base::floatfield);
 std::cout.Precision(3);
 ```
 
+
+
+3. 클래스 생성자와 파괴자
+
+디폴트 생성자
+
+```
+Stock first;	            // 디폴트 생성자 암시적 호출
+Stock first = Stock();	    // 디폴트 생성자 명시적 호출
+Stock* prelief = new Stock;	// 디폴트 생성자 암시적 호출
+```
+
+- 실수로 디폴트가 아닌 생성자의 암시적인 형식을 지정하면 안 된다.
+
+
+파괴자
+
+- main의 시작과 끝에 중괄호를 하나 더 두어 파괴자 확인
+
+
+원리
+생성자에 대한 호출이 임시 객체를 먼저 생성 
+-> 그 임시 객체가 "객체명"에 복사 
+-> 임시 객체는 버림 
+-> 컴파일러가 임시 객체에 대해 파괴자 호출
+
+- 자동 기억 변수들은 스택에 놓이기 때문에, 
+- 마지막에 생성된 객체가 먼저 삭제되고, 처음에 생성된 객체가 마지막으로 생성된다.
+
+팁
+- 객체의 값을 초기화로도 설정할 수 있고 대입으로도 설정할 수 있다면, 초기화를 사용. 더 효율적.
+
+
+C++11 리스트 초기화
+```
+Stock jock{"asdf"};
+```
+
+const 멤버 함수
+
+요약
+- 각각의 생성자는 자신만의 유일한 시그내처 또는 매개변수 리스트를 가져야 한다.
+
+675p 오타인지 위와 똑같음
+
+
+
+4. 객체 들여다보기, this 포인터
+
+```
+const Stock& topval(const Stock& s) const;
+```
+
+- 한 객체에는 암시적으로 접근하고, 다른 한 객체에는 명시적으로 접근한다.
+- 그러고 나서 두 객체 중의 하나에 대한 참조를 리턴한다.
+- 함수가 명시적으로 접근된 객체를 변경하지 않는다.
+- 함수가 암시적으로 접근된 객체를 변경하지 않는다.
+
+
+this 포인터
+- 모든 클래스 메서드들은 그 메서드를 호출하는 객체의 주소로 설정되는 하나의 this 포인터를 갖는다.
+- 생성자와 파괴자를 포함한 각 멤버 함수 해당
+
+
+
+5. 객체 배열
+
+```
+#include <iostream>
+using namespace std;
+
+class A
+{
+public:
+	string name;
+	A(string name)
+	{
+		this->name = name;
+	};
+};
+
+int main()
+{
+	A* a[2]
+	{
+		new A("asdf"),
+		new A("zxcv")
+	};
+	cout << a[1]->name;
+	return 0;
+}
+```
+```
+zxcv
+```
+
+
+
+6. 클래스 사용 범위
+
+클래스 사용 범위(class scope)
+
+약식(unqualified) 멤버 이름
+- 클래스 선언이나 멤버 함수 정의 안에서 사용
+
+
+클래스 사용 범위 상수
+
+```
+class A
+{
+private:
+	const int n = 5;
+	int a[n];
+};
+```
+
+- 위 예시 안 됨
+- C++11이 멤버 초기화를 제공하지만, 배열 선언을 작동하게 하는 방식이 아님. 12장에서 설명
+
+대안
+1. 클래스 안의 열거체 선언
+
+```
+class A
+{
+private:
+	enum { months = 12 };
+	int consts[months];
+};
+```
+
+2. static
+
+```
+class A
+{
+private:
+	static const int months = 12;
+	int costs[months];
+};
+```
+
+- 다른 정적 변수들과 함께 저장되는 months라는 하나의 상수 생성 
+- 다른 A 객체들이 상수 공유
+- 정수값과 열거값을 가지는 정적 상수만 이 테크닉 사용하여 선언
+
+
+범위가 정해진 열거 enum class
+
+```
+#include <iostream>
+using namespace std;
+
+int main()
+{
+	enum eggOld { small, medium, large, jumbo };
+	enum class tShirt { small, medium, large, xlarge };
+	eggOld one = medium;	// 범위가 업음
+	tShirt rolf = tShirt::large;	// 범위가 있음
+	int king = one;		// 범위가 없는 것에 대한 암시적 타입 전환
+	int ring = rolf;	// 허용되지 않음. 암시적 타입 전환이 아님
+	if (king < jumbo)	// 허용됨
+		cout << "yes\n";
+	if (king < tShirt::medium)	// 허용되지 않음
+		cout << "no\n";
+	if (king < int(tShirt::medium))		// (int)tShirt::medium	
+		cout << "꼭 필요하다면 명시적 변환";
+
+	enum class : short pizza{ small, medium, large, xlarge };
+	// 사용자에 따라 다른 정수형 데이터형으로 선택 가능?? 오류 뜨는디
+
+	return 0;
+}
+```
+
+
+
+7. 추상화 데이터형
+
+추상화 데이터형(abstract data type, ADT)
+- 언어나 시스템의 세부적인 것들을 따지지 않고, 데이터형을 일반적인 형식으로 서술한다.
+
+스택 예시
+
+```
+//Stack.h
+#pragma once
+#include <iostream>
+
+typedef unsigned long Item;
+
+class Stack
+{
+private:
+	enum { MAX = 10 };
+	Item items[MAX];
+	Item top;
+public:
+	Stack();
+	const Item& getTop() const;
+	bool isempty() const;
+	bool isfull() const;
+	bool push(const Item& item);
+	bool pop(Item& item);
+};
+```
+
+```
+// Stack.cpp
+#include "Stack.h"
+
+Stack::Stack() { top = 0; }
+
+const Item& Stack::getTop() const { return top; }
+
+bool Stack::isempty() const { return top == 0; }
+
+bool Stack::isfull() const { return top == MAX; }
+
+bool Stack::push(const Item& item)
+{
+	if (top < MAX)
+	{
+		items[top++] = item;
+		return true;
+	}
+	else return false;
+}
+
+bool Stack::pop(Item& item)
+{
+	if (top > 0)
+	{
+		item = items[--top];
+		return true;
+	}
+	else return false;
+}
+```
+
+```
+// main
+#include "Stack.h"
+using namespace std;
+
+int main()
+{
+	Stack st;
+	st.push(1);
+	st.push(2);
+	st.push(3);
+	while (st.isempty() == false) 
+	{
+		Item i = st.getTop();
+		cout << i << ' ';
+		st.pop(i);
+	}
+
+	cout << "\n비어있니? " << st.isempty();
+	return 0;
+}
+```
+```
+3 2 1
+비어있니? 1
+```
+
+
+요약
+- OOP는 프로그램이 데이터를 표현하는 방법을 강조한다.
+- 첫 단계: 데이터를 프로그램의 인터페이스를 가지고 서술하는 것이다.
+    - 인터페이스는 데이터를 사용하는 방법을 말한다.
+- 그 다음 인터페이스를 구현하는 클래스를 설계한다.
+- private, public
+- 클래스는 데이터와 메서드들을 하나의 패키지로 결합한다.
+
+- 객체는 클래스의 구체적인 하나의 사례(instance)다.
+- 객체가 그 데이터형의 변수, 또는 클래스 서술에 따라 new에 의해 대입된 메모리와 같은, 변수 들가물이라는 것을 뜻한다.
+- 클래스는 ADT와 잘 어울린다.
+    - public 인터페이스, private 세부 구현
+
+
+
+연습문제
+1. 내 답 - 클래스란 추상화 과정을 거쳐 연관된 사물과 행동의 집합을 구조체로 표현한 것
+클래스는 사용자 정의 데이터형의 정의다.
+클래스 선언은 데이터를 저장하는 방법을 서술한다.
+클래스 선언은 데이터들에 접근하여 그들을 조작하는 데 사용할 수 있는 메서드들을 서술한다.
+
+2. 내 답 -
+- 추상화는 현실의 사물과 행동을 데이터 모델링한다.
+- public한 인터페이스, private한 세부 구현을 나누어 데이터 은닉할 부분과 아닌 부분을 나눈다.
+- 이를 통해 하나의 클래스로 만들어 캡슐화한다(감싼다).
+
+추상화: 클래스는 클래스 메서드의 public 인터페이스를 통해 클래스 객체를 대상으로 수행할 수 있는 연산들을 서술한다.
+데이터 은닉: 클래스는 데이터 멤버들에 대해 private 가시성(디폴트)을 사용할 수 있다. 즉, 멤버 함수를 통해서만 그 데이터에 접근할 수 있다.
+캡슐화: 데이터 표현과 메서드 코드와 같은 세부 구현은 사용자에게 은닉되어 있다.
+
+
+3. 내 답 - 클래스는 실제 메모리에 올라가 있지 않은 설계도이며, 객체는 클래스를 바탕으로 메모리에 올라가 실체화된 개념이다.
+
+클래스는 하나의 데이터형을 정의. 그 데이터형을 어떻게 사용할 것인지 포함~
+표준 데이터형과 그 데이터형의 변수 사이의 관계
+
+
+4. 자신 클래스를 가리키는 this 포인터를 암시적으로 가지고 있다.
+
+각 객체는 자신만의 고유 데이터 집합을 저장할 공간을 따로 대입받음
+그러나 모든 객체들은 멤버 함수 집합을 공유한다.
+
+5. 
+```
+class account
+{
+private:
+    string name;
+    int accountNumber;
+    int price;
+public:
+    void deposit(int price);
+    void withdraw(int price);
+}
+```
+
+6. 객체 생성 시기(객체가 선언될 때 or 명시적으로 생성자를 호출할 때), 객체가 소멸되는 시기(선언된 지역을 벗어날 때)
+
+7. [생략]
+디폴트 매개변수는 함수 정의가 아니라 함수 원형에 넣는다 !!!
+
+8. 매개변수가 없는 생성자. 
+사용자가 선언하지 않으면 컴파일러가 자동 생성하여 변수들을 기본값으로 초기화시킨다.
+사용자가 생성자 중 하나라도 선언하면 컴파일러가 자동 생성하지 않는다.
+암시적 정의가 가능하다.
+
+9. [생략]
+
+10. 객체 자신을 가리키는 포인터 객체, 자기 자신
+
+this 포인터는 클래스 메서드에서 사용할 수 있는 포인터.
+그 메서드를 호출하는 데 사용된 객체를 지시한다. !!!!!!!!
+this는 그 객체의 주소, *this는 그 객체 자체
+
+
+
+
+프로그래밍 연습
+[생략]
+
