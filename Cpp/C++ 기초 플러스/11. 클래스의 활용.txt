@@ -1,0 +1,44 @@
+
+1. 연산자 오버로딩
+
+2. 잠깐의 휴식: 연산자 오버로딩 예제
+
+```
+Time Time::Sum(const Time& t) const
+{
+	Time sum;
+	sum.minutes = minutes + t.minutes;
+	sum.hours = hours + t.hours + sum.minutes / 60;
+	sum.minutes %= 60;
+	return sum;
+}
+```
+
+- 리턴값은 참조가 될 수 없다.
+- 위처럼 Time을 리턴형으로 사용하면, 객체를 파괴하기 전에 프로그램이 Sum 객체의 복사본을 생성한다.
+
+```
+Time operator+const Time& t) const;
+```
+
+```
+total = coding.operator+(fixing);
+total = coding + fixing;
+```
+
+```
+t4 = t1 + t2 + t3;
+t4 = t1.operator+(t2.operator+(t3));
+```
+
+
+제약
+- 피연산자 중 적어도 하나는 사용자 정의 데이터형이어야 한다.
+- 오리지널 연산자에 적용되는 문법 규칙을 위반하는 방식으로 사용할 수 없다.
+```
+	int x;
+	time t;
+	% x;	// 나머지 연산자로 사용할 수 없음
+	% t;	// 오버로딩된 연산자로 사용할 수 없음
+```
+
