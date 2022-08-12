@@ -42,3 +42,590 @@ t4 = t1.operator+(t2.operator+(t3));
 	% t;	// 오버로딩된 연산자로 사용할 수 없음
 ```
 
+- 연산자 우선순위도 변경할 수 없다.
+- 연산자 기호를 새로 만들 수 없다.
+- 다음 연산자 오버로딩 불가
+	sizeof
+	.	멤버 연산자
+	.*	멤버 지시 포인터 연산자
+	::	사용 범위 결정 연산자
+	?:	조건 연산자
+	typeid	RTTI연산자
+	const_cast
+	dynamic_cast
+	reinterpret_cast
+	static_cast
+
+- 오버로딩하는 데 멤버 함수만 사용할 수 있는 연산자
+	=
+	()	함수 호출 연산자
+	[]	배열 인덱스 연산자
+	->	클래스 멤버 접근 포인터 연산자
+
+
+에제
+
+```
+// mytime.h
+
+class Time
+{
+private:
+	int hours;
+	int minutes;
+public:
+	Time();
+	Time(int h, int m = 0);
+	Time operator+(const Time& t) const;
+	Time operator-(const Time& t) const;
+	Time operator*(double n) const;
+};
+
+
+// mytime.cpp
+#include <iostream>
+// #include "mytime.h"
+
+Time::Time()
+{
+	hours = minutes = 0;
+}
+
+Time::Time(int h, int m)
+{
+	hours = h;
+	minutes = m;
+}
+
+Time Time::operator+(const Time& t) const
+{
+	Time sum;
+	sum.minutes = minutes + t.minutes;
+	sum.hours = hours + t.hours + sum.minutes / 60;
+	sum.minutes %= 60;
+	return sum;
+}
+
+Time Time::operator-(const Time& t) const
+{
+	Time diff;
+	int tot1, tot2;
+	tot1 = t.minutes + 60 * t.hours;
+	tot2 = minutes + 60 * hours;
+	diff.minutes = (tot2 - tot1) % 60;
+	diff.hours = (tot2 - tot1) / 60;
+	return diff;
+}
+
+Time Time::operator*(double mult) const
+{
+	Time result;
+	long totalminutes = hours * mult * 60 + minutes * mult;
+	result.hours = totalminutes / 60;
+	result.minutes = totalminutes % 60;
+	return result;
+}
+```
+
+
+
+3. 프렌드의 도입
+
+프렌드 함수, 클래스, 멤버 함수
+- 함수를 어떤 클래스에 대해 프렌드로 만들면, 그 프렌드 함수는 클래스의 멤버 함수들이 가지는 것과 동등한 접근 권한을 갖는다.
+
+이항 연산자 binary operator
+- 두 개의 피연산자를 요구하는 연산자
+
+필요성
+- 이항 연산자를 오버로딩하면, 프렌드를 만들 필요성이 생긴다.
+- ex. Time 객체에 하나의 실수(real number)로 곱할 때
+
+```
+A = B * 2.75; 	// O
+A = 2.75 * B;	// X
+```
+
+해결책
+- A = 2.75 * B;		를 	A = operator*(2.75, B);		로
+```
+Time operator*(double m, const Time& t);
+```
+
+문제
+- 멤버가 아닌 연산자 오버로딩 함수를 사용하면, 
+- 멤버가 아닌 함수들은 클래스에 들어 있는 private 데이터에 직접 접근할 수 없다.
+
+
+프렌드 생성하기
+```
+friend Time operator*(double m, const Time& t);
+```
+
+operator*() 함수
+- 클래스 선언 안에 선언되지만 멤버 함수가 아니다.
+	- 그러므로 멤버 연산자를 사용하여 호출되지 않는다.
+- 멤버 함수와 동등한 접근 권한을 가진다.
+- 정의에는 friend가 없다.
+
+
+프렌드 함수는 OOP에 어울리지 않는다??
+- 프렌드 함수들을 클래스를 위한 확장 인터페이스의 일부라고 생각해야 한다.
+- double 형 값이 Time 값 곱하는 것과 Time 값에 double 형 값 곱하는 것은 같다.
+- 전자가 프렌드 함수를 요구, 후자가 멤버 함수를 요구하는 것은 개념상의 차이가 아니라 C++의 문법 때문이다!
+- 클래스 메서드와 프렌드는 단순히 클래스 인터페이스를 나타내는 두 개의 서로 다른 메커니즘이다.
+
+
+- 사실 위 프렌드 함수는 다음과 같이 사용해서 프렌드가 아닌 함수로 작성할 수 있따.
+
+```
+Time operator*(double m, const Time& t)
+{
+	return t * m;		// t.operator*(m)을 사용한다.
+}
+```
+
+그럼에도 이 버전 역시 프렌드로 만드는 것이 바람직하다.
+	1. 그 함수가 클래스의 공식 인터페이스의 일부로 결합된다.
+	2. 나중에 그 함수가 private 데이터에 직접 접근할 필요가 생겼을 때,
+		클래스 선언에 있는 원형은 그대로 두고 함수 정의만 바꾸면 되기 때문이다.
+
+- 연산자를 어떤 클래스에 적용할 수 있게 오버로딩하여,
+- 클래스 멤버가 아닌 항을 첫 번째 피연산자로 사용하려면, 피연산자 순서를 바꾸어 주는 프렌드 함수를 사용할 수 있다.
+
+
+프렌드: << 연산자의 오버로딩
+
+<< 오버로딩 첫 번째
+
+```
+cout << trip;	// cout이 Time 클래스를 인식하게 하려면?
+```
+
+- ostream 클래스 선언에 새로운 연산자 함수의 정의를 추가. -> 사용자가 iostream에 접근? 위험
+- Time 클래스 선언을 사용하여 Time 클래스에게 cout를 사용하는 법을 가리친다.
+
+```
+void operator<<(ostream& os, const Time& t)
+{
+	os << t.hours << "시간, " << t.minutes << "분";
+}
+```
+
+프렌드?
+- ostream<<()이 Time 객체의 private 멤버들에 직접 접근하기 때문에,
+- 그 함수는 Time 클래스에 대해 프렌드여야 한다.
+- 반대로 그 함수가 ostream 클래스에 대해 프렌드일 필요가 없다.
+
+
+<< 오버로딩 두 번째
+
+```
+cout << "여행 일시: " << trip << " (화요일)\n";		// 동작 안함
+```
+
+operator<<() 함수가 ostream 객체에 대한 참조를 리턴하도록 개정
+
+```
+ostream& opstrea<<(ostream& os, const Time& t)
+{
+	os << t.hours << "시간, " << t.minutes << "분";
+	return os;
+}
+```
+
+```
+cout << trip;
+// operator<<(cout, trip);		// 같은 함수
+```
+이 함수 호출은 cout 객체를 리턴한다.
+
+```
+cout << "여행 일시: " << trip << " (화요일)\n";
+```
+
+이제 위 예시가 돌아가는데, 원리를 알아보자.
+
+	cout << "여행 일시: "
+	이것은 문자열을 출력하고 cout 객체를 리턴하는, <<의 특별한 ostream 정의를 호출한다.
+	문자열 출력 후, 리턴값인 cout으로 대체
+	
+	cout << trip << " (화요일)\n";
+	그 다음, trip 객체 값 출력하고 cout 객체를 리턴하는, <<의 Time 클래스 선언을 사용한다.
+
+	cout << " (화요일)\n";
+	문자열을 위한 ostream 정의 사용하여 문자열 출력.
+
+
+opstrea<<() 파일 출력
+```
+#include <fstream>
+// ...
+ofstream fout;
+fout.open("savetime.txt");
+Time trip(12, 40);
+fout << trip;		// operator<<(fout, trip);
+```
+
+
+- 정의가 곧 원형일 경우에도 friend 함수 사용
+
+```
+// .h
+#pragma once
+#include <iostream>
+class Time
+{
+	// ...
+	Time operator*(double n) const;
+	friend Time operator*(double m, const Time& t) { return t * m; }
+	friend std::ostream& operator<<(std::ostream& os, const Time& t);
+};
+
+// .cpp
+// ...
+std::ostream& operator<<(std::ostream& os, const Time& t)
+{
+	os << t.hours << "시간, " << t.minutes << "분";
+	return os;
+}
+```
+
+
+
+4. 오버로딩 연산자: 멤버 함수와 멤버가 아닌 함수
+
+멤버 함수로 구현할까? 멤버가 아닌 함수로 구현할까? 고민..
+
+```
+// 멤버 함수
+Time operator+(const Time& t) const;
+
+// 멤버 아닌 함수
+friend Time operator+(const Time& t1, const Time& t2);
+```
+
+같은 연산자 함수의 멤버 버전은,
+- 하나의 피연산자가 암시적으로 호출한 객체로 전달되기 때문에, 매개변수를 하나 적게 요구한다.
+
+오버로딩 연산자 함수의 멤버가 아닌 버전은, 
+- 연산자가 요구하는 수만큼의 형식 매개변수를 요구한다.
+
+이 장 뒷부분에서 더 설명
+
+
+
+5. 오버로딩 보충: Vector 클래스
+
+벡터
+
+변위 벡터 (displacement vector)
+- 위치 변화를 나타내는 벡터
+
+
+```
+// Vector.h -- 모드 상태와 <<를 사용하는, Vector 클래스
+#pragma once;
+#include <iostream>
+
+namespace VECTOR
+{
+	class Vector
+	{
+	public:
+		enum Mode { RECT, POL };
+		// 직사각형을 위해서는 RECT를, Polar modes를 위해서는 POL을 사용한다
+	private:
+		double x;	// 수평 성분
+		double y;	// 수직 성분
+		double mag;	// 벡터의 길이
+		double ang;	// 방위(도)로 표시되는 벡터의 방향
+		Mode mode;	// POL을 위해서 RECT를 (RECT 또는 POL)
+		// 값을 설정하는 private 메서드들
+		void set_mag();
+		void set_ang();
+		void set_x();
+		void set_y();
+	public:
+		Vector();
+		Vector(double n1, double n2, Mode form = RECT);
+		void reset(double n1, double n2, Mode form = RECT);
+		~Vector();
+		double xval() const { return x; }
+		double yval() const { return y; }
+		double magval() const { return mag; }
+		double angval() const { return ang; }
+		void polar_mode();		// 모드를 'p'로 설정한다
+		void rect_mode();		// 모드를 'r'로 설정한다
+		// 연산자 오버로딩
+		Vector operator+(const Vector& b) const;
+		Vector operator-(const Vector& b) const;
+		Vector operator-() const;
+		Vector operator*(double n) const;
+		// 프렌드 함수
+		friend Vector operator*(double n, const Vector& a);
+		friend std::ostream& operator<< (std::ostream & os, const Vector & v);
+	};
+}
+
+
+// Vector.cpp
+#include <cmath>
+// #include "Vector.h"
+using std::sqrt;
+using std::sin;
+using std::cos;
+using std::atan;
+using std::atan2;
+using std::cout;
+
+namespace VECTOR
+{
+	// 1 라디안 내의 각도를 계산해라 (1 라디안에 대한 degree 값 계산)
+	const double Rad_to_deg = 45.0 / atan(1.0);
+	// 반드시 57.2957785130823 값이 되어야 함
+
+	// private 메서드들
+	// x값과 y값으로 크기를 계산한다.
+	void Vector::set_mag()
+	{
+		mag = sqrt(x * x + y * y);
+	}
+	void Vector::set_ang()
+	{
+		if (x == 0.0 && y == 0.0)
+			ang = 0.0;
+		else
+			ang = atan2(y, x);
+	}
+
+	// 극 좌표를 사용하여 x를 설정한다.
+	void Vector::set_x()
+	{
+		x = mag * cos(ang);
+	}
+	// ~ y ~
+	void Vector::set_y()
+	{
+		y = mag * sin(ang);
+	}
+
+	// public
+	Vector::Vector()
+	{
+		x = y = mag = ang = 0.0;
+		mode = RECT;
+	}
+
+	// form이 r이면 직각 좌표로부터 벡터를 구성한다.
+	// form이 p이면 극 좌표로부터 벡터를 구성한다.
+	Vector::Vector(double n1, double n2, Mode form)
+	{
+		reset(n1, n2, form);
+	}
+
+	// form이 RECT이면 직각 좌표로부터 벡터를 구성한다 (디폴트)
+	// form이 POL이면 극 좌표로부터 벡터를 구성한다.
+	void Vector::reset(double n1, double n2, Mode form)
+	{
+		mode = form;
+		if (form == RECT)
+		{
+			x = n1;
+			y = n2;
+			set_mag();
+			set_ang();
+		}
+		else if (form == POL)
+		{
+			mag = n1;
+			ang = n2 / Rad_to_deg;
+			set_x();
+			set_y();
+		}
+		else
+		{
+			cout << "Vector()에 전달된 제 3의 매개변수가 잘못되었다.\n";
+			cout << "그래서 벡터를 0으로 설정했다.\n";
+			x = y = mag = ang = 0.0;
+			mode = RECT;
+		}
+	}
+
+	Vector::~Vector() {}
+
+	void Vector::polar_mode()	// 극 좌표 모드로 설정한다.
+	{
+		mode = POL;
+	}
+
+	void Vector::polar_mode()	// 직각 ~
+	{
+		mode = RECT;
+	}
+
+	// 연산자 오버로딩
+	Vector Vector::operator+(const Vector& b) const
+	{
+		return Vector(x + b.x, y + b.y);
+	}
+
+	Vector Vector::operator-(const Vector& b) const
+	{
+		return Vector(x - b.x, y - b.y);
+	}
+
+	Vector Vector::operator-() const
+	{
+		return Vector(-x, -y);
+	}
+
+	Vector Vector::operator*(double n) const
+	{
+		return Vector(n * x, n * y);
+	}
+
+	Vector operator*(double n, const Vector& a)
+	{
+		return a * n;
+	}
+
+	// mode가 RECT면 직각 좌표를 출력
+	// ~ POL ~ 극 ~
+	std::ostream& operator<<(std::ostream& os, const Vector& v)
+	{
+		if (v.mode == Vector::RECT)
+			os << "(x,y) = (" << v.x << ", " << v.y << ")";
+		else if (v.mode == Vector::POL)
+		{
+			os << "(m,a) = (" << v.mag << ", "
+				<< v.ang * Rad_to_deg << ")";
+		}
+		else
+			os << "Vector 객체의 모드 지정이 틀렸습니다.\n";
+		return os;
+	}
+}
+```
+
+
+상태 멤버 (state member)
+- 객체의 상태를 나타냄
+- mode
+
+제 3의 매개변수 'r'
+
+메서드가 새로운 클래스 객체를 만들어 계산할 필요가 있을 때
+- 클래스 생성자로 처리해보자
+
+```
+// randwalk.cpp
+#include <cstdlib>
+#include <ctime>
+// #include "Vector.h"
+
+int main()
+{
+	using namespace std;
+	using VECTOR::Vector;
+	srand(time(0));
+	double direction;
+	Vector step;
+	Vector result(0.0, 0.0);
+	unsigned long steps = 0;
+	double target;
+	double dstep;
+	cout << "목표 거리를 입력(끝내려면 q): ";
+	while (cin >> target)
+	{
+		cout << "보폭을 입력: ";
+		if (!(cin >> dstep))
+			break;
+
+		while (result.magval() < target)
+		{
+			direction = rand() % 360;
+			step.reset(dstep, direction, Vector::POL);
+			result = result + step;
+			steps++;
+		}
+	}
+	// 이하 생략
+}
+```
+
+
+
+6. 자동 변환과 클래스의 데이터형 변환
+
+형 변환
+
+```
+// 암시적 데이터형 변환을 허용하지 않는다.
+explicit Stonwt(double lbs);
+
+Stonewt myCat;
+myCat = 19.6;				// explicit로 선언되면 틀리다.
+myCat = Stonewt(19.6);		// 맞다. 명시적 데이터형 변환
+myCat = (Stonewt) 19.6;		// 맞다. 명시적 데이터형 변환의 옛날 형식
+```
+
+- 생성자가 단 하나의 매개변수를 사용할 때 명시적 형 변환(myCat = 19.6)이 가능
+
+- Stonewt(int) 생성자를 못찾았을 때,
+- int형으로부터 변환할 수 있는 다른 내장 데이터형을 사용하는 생성자를 찾는다.
+- Stonewt(double) 생성자가 이 목적에 적당.
+- int형을 double형으로 먼저 변환한 후, Stonewt(double) 생성자를 사용해 Stonewt 객체로 변환.
+
+
+변환 함수
+
+```
+Stone wolfe(285.7);
+double host = wolfe;	// 가능?
+```
+
+가능하나, 생성자를 사용하지 않는다. --> // 안되는디?
+
+변환 함수(conversion function)
+- 이라는 특별한 형태의 C++ 연산자 함수 사용
+- 강제 데이터형 변환(type cast)처럼 사용
+	A a(5.5);
+	double b = double(a);
+	double c = (double)a;
+
+- operator typeName();
+- 클래스의 메서드여야 한다.
+- 리턴형을 가지면 안된다.
+- 매개변수를 가지면 안된다.
+
+
+```
+#include <iostream>
+using namespace std;
+
+class A
+{
+public:
+	double d;
+	A() : d(0.0) {}
+	A(double other) : d(other) {}
+	A(int otherI, double otherD) : d(otherD) {}
+
+	operator int() const { return int(d); }
+	operator double() const { return d; }
+};
+
+int main()
+{
+	A a(5.5);
+	double b = a;
+	cout << b << ' ' << double(a) << ' ' << (double)a << '\n';
+	cout << int(a) << ' ' << (int)a;
+}
+```
+```
+5.5 5.5 5.5
+5 5
+```
+
