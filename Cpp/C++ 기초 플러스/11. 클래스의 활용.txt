@@ -629,3 +629,101 @@ int main()
 5 5
 ```
 
+
+explicit
+- 명시적 변환을 사용하여 암시적 변환의 가능성을 없애는 것이 가장 좋다.
+
+```
+class Stonewt
+{
+	explicit operator int() const;
+	explicit operator double() const;
+};
+```
+
+```
+Stonewt::operator int() { return int (pounds + 0.5); }
+// 위 변환 함수를 다음 비변환 함수로 대체
+int Stonewt::Stone_to_Int() { return int(pounds + 0.5); }
+// 그러면 안정적. 다음 구문을 허용하지 않음
+int plb = poppins;
+```
+
+- explicit 키워드 사용
+	- 암시적 변환은 없어지고 명시적 변환만 가능하게 됨
+
+- 변환 함수라 부르는 특별한 클래스 멤버 연산자 함수는,
+	- 클래스 객체를 다른 어떤 데이터형으로 변환하는 명령어 역할
+	- 이 변환 함수는 리턴형 선언하지 않고 매개변수도 사용하지 않는다.
+	- operator typeName() 형식의 클래스 멤버
+	- 객체를 어떤 데이터형의 변수에 대입하면, 그 변수의 데이터형에 해당하는 변환 함수가 자동으로 호출됨.
+
+
+변환과 프렌드
+
+예시 - 덧셈
+```
+// 변환 함수
+Stonewt Stonwt::operator+(const Stonewt& st) const
+{
+	double pds = pounds + st.pounds;
+	Stonewt sum(pds);
+	return sum;
+}
+// 프렌드 함수
+Stonewt operator+(const Stonewt& st1, const Stone& st2) { /*...*/ }
+// 사용
+total = operator+(jennySt, kennyD);
+```
+
+- 덧셈을 프렌드로 정의하는 것은, 프로그램이 자동 데이터형 변환을 더 쉽게 처리하도록 한다.
+
+선택
+- 프렌드 함수 정의하고, Stonewt(double) 생성자를 사용하여 double형 매개변수를 Stonewt형 매개변수로 변환
+	- 프로그램 짧아짐.
+	- 변환이 필요할 때 변환 생성자를 호출해야 하므로 시간이 더 걸리고 메모리에 추가 부담
+- double형 매개변수를 명시적으로 사용하는 함수들로 뎃셈 연산자를 한 번 더 오버로딩
+	- 위와 반대
+```
+	Stonewt operator+(double x);
+	friend Stonewt operator+(double x, Stonewt& s);			// double + Stonewt
+```
+
+
+요약
+- 연산자 오버로딩
+- ostream& operator<<(ostream& os, const c_name& obj);
+- explicit
+- 프렌드: 피연산자가 클래스 객체가 아닌 것으로 정의하고 싶을 때 사용
+- 변환 함수 
+	- Vector::operator double();
+	- 리턴형 선언 x, 매개변수 사용 X
+
+
+
+연습 문제
+1. Stonewt operator*(double d);
+
+2. 
+멤버 함수: 클래스 정의의 일부, 객체에 의해 호출됨. 호출한 객체의 멤버에 암시적 접근
+프렌드 함수: 클래스 멤버에 암시적 접근 불가, 멤버 연산자 사용
+
+3. private 멤버에 접근하고 싶을 때만 프렌드 사용
+
+4. friend Stonewt operator*(double d, const Stonewt& other);
+
+5. sizeof 
+. 
+.* 
+:: 
+?:
+
+6. 멤버 함수로 정의되어야 한다.
+
+7. Vector::operator double() {}
+=> but, 변환 함수 정의보다 메서드를 사용하는 것이 더 바람직
+
+
+
+프로그래밍 연습
+[생략]
