@@ -1,0 +1,465 @@
+
+1. 동적 메모리와 클래스
+
+static class member
+
+예시
+
+```
+// strngbad.h		결함이 있는 string 클래스
+#include <iostream>
+
+class StringBad
+{
+private:
+	char* str;
+	int len;
+	static int num_strings;		
+public:
+	StringBad(const char* s);
+	StringBad();
+	~StringBad();
+
+	friend std::ostream& operator<<(std::ostream& os,
+		const StringBad& st);
+};
+
+
+// strngbad.cpp
+#include <cstring>
+// #include "strngbad.h";
+using std::cout;
+
+// static 클래스 멤버 초기화
+int StringBad::num_strings = 0;
+
+StringBad::StringBad(const char* s)
+{
+	len = std::strlen(s);
+	str = new char[len + 1];
+	std::strcpy(str, s);
+	num_strings++;
+	cout << num_strings << ": \"" << str << "\" 객체 생성\n";
+}
+
+StringBad::StringBad()
+{
+	len = 4;
+	str = new char[4];
+	std::strcpy(str, "C++");
+	num_strings++;
+	cout << num_strings << ": \"" << str << "\" 디폴트 객체 생성\n";
+}
+
+StringBad::~StringBad()
+{
+	cout << ": \"" << str << "\" 객체 파괴, ";
+	--num_strings;
+	cout << "남은 객체 수: " << num_strings << '\n';
+	delete[] str;
+}
+
+std::ostream& operator<<(std::ostream& os, const StringBad& st)
+{
+	os << st.str;
+	return os;
+}
+```
+
+static 멤버
+- 클래스 선언 바깥에서 별개의 구문을 사용하여 독립적으로 초기화
+	- 객체의 일부분으로 저장되는 것이 아니라 별도로 저장되기 때문.
+- 메서드 구현 파일에 넣는다.
+	- 헤더 파일은 여러 파일에 포함시킬 수 있기 때문
+	- 초기화 구문을 클래스 선언 파일에 넣는다면, 초기화 구문을 여러 벌 만드는 셈이 되므로 에러.
+- 정수형 or 열거형의 const인 경우, 클래스 선언 안에 넣고 초기화할 수 있는 예외가 있음
+
+
+잘못된 main 사용 예시 [생략]
+
+
+- Debug Assertion Failed! 에러 or General Protection Fault(GRT; 일반 보호 오류) 보고
+
+- 객체 카운트(num_strings)가 그것이 증가된 횟수보다 2만큼 더 감소함.
+```
+StringBad sailor = sprots;
+// 는 다음과 같다.
+StringBad sailor = StringBad(sports);
+```
+
+- 하나의 객체를 다른 객체로 초기화하면,
+- 컴파일러는 복사 생성자(copy constructor) 라 부르는 생성자를 자동 발생
+- 복사 생성자는 객체의 사본을 만든다.
+
+
+특별 멤버 함수
+
+~을 정의하지 않았을 경우 ~자동 제공
+- 생성자 -> 디폴트 생성자
+- 디폴트 파괴자 -> 디폴트 파괴자
+- 복사 생성자
+- 대입 연사낮
+- 주소 연산자
+
+C++11 2가지 추가적인 멤버 함수 제공   => 18장에서 설명
+- move 생성자(move constructor)
+- move 대입 연산자(move assignment operator)
+
+
+디폴트 생성자
+```
+Klunk() { klunk_ct = 0; }
+Klunk(int n = 0) { klunk_ct = n; }	// 모호한 생성자
+
+Klunk kar(10);	// Klunk(int n)에 명백하게 부합됨
+Klunk bus;		// 두 생성자에 모두 부합됨
+```
+컴파일러 에러 메시지
+
+
+복사 생성자
+
+원형
+- Class_name(const Class_name&);
+
+언제 사용?
+- 새로운 객체가 생성되어 같은 종류의 기존의 객체로 초기화될 때마다 호출됨
+- 새로운 객체를 기존의 객체로 명시적으로 초기화할 때.
+
+- 다음 네 가지 선언이 복사 생성자를 호출
+
+```
+	StringBad a(b);
+	StringBad a = b;
+	StringBad a = StringBad(b);
+	StringBad* p = new StringBad(a);
+```
+
+- 객체를 값으로 전달하면 복사 생성자가 호출되기 때문에,
+- 참조로 전달하는 것이 더 좋다.
+- 생성자를 호출하는 시간과, 새 객체를 저장하는 메모리 공간이 절약된다.
+
+
+무슨 일함?
+- 디폴트 복사 생성자는 static 멤버를 제외한 멤버들을 멤버별로 복사
+- 멤버별 복사 or 얕은 복사라 한다.
+
+```
+StringBad sailor = sports;
+// 는 각 멤버끼리 대입하는 것과 같다.
+```
+
+
+- 암시적 복사 생성자가 값으로 복사하는 것이 문제 원인
+- 함수가 문자열 출력 위해 그 포인터를 사용할 때에는 문제가 없으나,
+- 파괴자를 호출할 때 문제를 일으킴
+
+
+명시적 복사 생성자로 해결하자!
+- 깊은 복사(deep copy)를 하게 만든다.
+- 즉, 복사 생성자가 포인터 자체를 복사하는 것이 아니라, 포인터가 지시하는 데이터를 복사
+- 문자열 자체를 복사하고, 그 복사본의 주소를 str 멤버에 대입
+
+```
+StringBad::StringBad(const StringBad& st)
+{
+	num_strings++;
+	len = st.len;
+	str = new char[len + 1];
+	std::strcpy(str, st.str);
+	cout << num_strings << ": \"" << str << "\" 객체 생성\n";
+}
+
+
+얕은 복사 vs 깊은 복사
+- 클래스가 new에 의해 초기화되는 포인터들을 멤버로 가질 경우
+- 포인터 자체를 복사하는 것이 아니라, 그 포인터가 지시하는 데이터를 복사하는 복사 생성자를 정의
+- 이것을 깊은 복사라고 한다.
+- 얕은 복사는 포인터가 지시하는 데이터들을 복사하기 위해 포인터 정보만 복사는
+
+
+복사 대입 연산자
+- 깊은 복사를 하는 대입 연산자 정의
+
+복사 생성자와의 차이
+- 타깃 객체가 이전 대입된 데이터를 참조하고 있을 수 있으므로,
+	- 그 함수는 delete [] 를 사용하여 이전의 의무를 해제해야 한다.
+- 그 함수는 어떤 객체를 자기 자신에게 대입하지 못하게 막아야 한다.
+	- 막지 않으면 메모리의 해제가, 내용을 다시 대입하기도 전에 그 객체의 내용을 먼저 지울 수 있다.
+- 그 함수는 호출한 객체에 대한 참조를 리턴한다.
+
+```
+StringBad& StringBad::operator=(const StringBad& st)
+{
+	if (this == &st)	// 객체가 자기 자신에 대입되었다면
+		return *this;	// 이것으로 끝낸다.
+
+	delete [] str;				// 옛 문자열을 해제한다.
+	len = st.len;
+	str = new char[len + 1];	// 새 문자열을 위한 공간 확보
+	str::strcpy(str, st.str);
+	return *this;				// 호출한 객체에 대한 참조를 리턴
+}
+```
+
+- 메모리를 해제하는 이유는 str에 새 문자열 주소가 대입될 예정이기 때문.
+- delete 연산자를 먼저 적용하지 않으면 옛 문자열이 메모리에 그대로 살아 있음
+- 그런데 프로그램은 옛 문자열을 지시하는 포인터를 가지고 있지 않으므로
+- 메모리가 낭비될 것!
+
+- 대입은 새로운 객체를 만들지 않으므로 num_strings 값을 조정할 필요 없음
+
+
+
+
+2. 새롭게 개선된 String 클래스
+
+다음 메서드들 추가
+```
+int length() const { return len; }
+friend bool operator<(const String& t1, const String& st2);
+friend bool operator>(const String& t1, const String& st2);
+friend bool operator==(const String& t1, const String& st2);
+friend istream& operator>>(istream& is, String& st);
+char& operator[](int i);
+const char& operator[](int i) const;
+static int Howmany();
+```
+
+개선된 디폴트 생성자
+```
+String::String()
+{
+	len = 0;
+	str = new char[1];		// new char가 아닌 이유?
+	str[0] = '\0';	// 디폴트 문자열
+}
+```
+- new char는 클래스 파괴자 delete[] str; 과 호환되지 않지만, new char[1]; 은 호환됨
+
+
+C++11 nullptr의 등장
+```
+str = nullptr;
+```
+
+
+비교 멤버
+```
+bool operator<(const String& st1, const String& st2)
+{
+	return (std::strcmp(st1.str, st2.str) < 0);
+}
+// [이하 생략]
+```
+
+[] 표기
+```
+char& String::operator[](int i)
+{
+	return str[i];
+}
+```
+
+const 가 없다면..
+```
+const String answer("asdf");
+cout << answer[1];		// 컴파일 할 때 에러
+```
+
+- answer가 const인데 메서드가 데이터를 변경하지 않는다는 약속을 하지 않기 때문에 에러
+
+```
+// const String 객체 사용 위해
+const char& String::operator[](int i) const
+{
+	return str[i];
+}
+```
+
+
+static 클래스 멤버 함수
+- 멤버함수 static 선언
+- 함수 정의와 선언 분리되어 있다면, 함수 정의가 아니라 함수 선언에 나타나야 함
+
+2가지 중요 성질
+1. 객체에 의해 호출될 필요가 없다.
+	- static 멤버 함수는 this 포인터도 갖지 않는다.
+	- static 멤버 함수가 public 부분에 선언되면, 
+		- 그 함수는 클래스 이름과 사용 범위 결정 연산자를 사용하여 호출된다.
+
+```
+static int HowMany() { return num_strings; }
+int count = String::HowMany();		// static 멤버 함수를 호출한다.
+```
+
+2. 둘째, static 멤버 함수는 어떤 특정 객체와도 결합하지 않기 때문에, 
+	사용할 수 있는 데이터 멤버는 static 멤버밖에 없다.
+	- static 메서드 HowMany()는 str나 len에는 접근할 수 없고,
+	- static 멤버 num_strings에만 접근할 수 있다.
+
+- static 멤버 함수를 사용해 클래스 인터페이스의 몇 가지 상황을 어떻게 처리할 것인지 제어하는,
+	- 클래스 사용 범위의 플래그(flag)를 설정할 수 있다.
+
+
+사용할 때 그냥 대입해버리면, 비효율적
+- 생성자로 임시 객체 생성-> 객체에 복사-> 파괴자로 임시 객체 파괴
+
+대입 연산자 오버로딩
+- 임시 객체 생성 및 파괴 절차 생략
+
+```
+String& String::operator=(const char* s)
+{
+	delete [] str;
+	len = std::strlen(s);
+	str = new char[len + 1];
+	std::strcpy(str, s);
+	return *this;
+}
+```
+
+
+String 클래스
+[생략]	// 이미 다 작성해봤었고, 이후 이동연산자까지 하면 또 정리하자
+
+```
+if (!cin || temp[0] == '\0') // 입력이 실패했거나 빈 줄 입력이면
+```
+
+
+
+
+3. 생성자에 new를 사용할 때 주의할 사항
+
+0 NULL '\0' nullptr
+
+new 	delete
+new []  delete []
+
+
+
+
+4. 객체 리턴에 대한 관찰
+
+const 객체에 대한 참조 리턴
+
+중요
+1. 객체를 리턴하는 것은 복사 생성자를 호출하지만,
+	참조를 리턴하는 것은 그렇지 않다.
+
+2. 참조는 호출하는 함수가 실행 중일 때 존재하는 객체에 대한 참조여야 한다.
+
+3. const 참조로 선언되어 있으면 그와 부합되도록 리턴형이 const가 되어야 한다.
+
+
+
+const가 아닌 객체에 대한 참조 리턴
+
+사용
+- cout 과 함께 사용하기 위한 대입 연산자의 오버로딩, << 연산자의 오버로딩
+
+리턴형
+- ostream &
+- ostream 클래스는 public 복사 생성자를 만들지 않는다.
+- cout에 대한 참조를 리턴하는 것은, 호출하는 함수의 사용 범위 안에 이미 cout이 들어 있기 때문에, 문제를 일으키지 않는다.
+
+
+
+객체 리턴
+
+- 리턴되는 객체가 피호출 함수에 지역적이면, 
+	- 함수가 종료될 때 그 지역적인 객체가 파괴자를 호출하기 때문에
+	- 참조로 리턴하면 안 된다.
+
+사용
+- 오버로딩 산술 연산자
+```
+Vector force1(50, 60);
+Vector force2(10, 70);
+Vector net;
+net = force1 + force2;
+
+// ...
+
+Vector Vector::operator+(const Vector& b) const
+{
+	return Vector(x + b.x, y + b.y);
+}
+```
+
+
+
+const 객체 리턴
+
+앞에서 제시한 방법은 다음 이상한 프로그래밍이 가능해진다.
+```
+force1 + force2 = net;
+cout << (force1 + force2 = net).magval() << endl;
+```
+
+리턴값을 나타내기 위해 복사 생성자가 임시 객체를 생성하기 때문에 코드가 가능함.
+
+const 객체로 선언하면 막을 수 있다!
+
+
+
+
+5. 객체를 지시하는 포인터
+
+```
+String* a;
+String* b = &as[0];
+String* c = new String(as[2]);	// 복사 생성자 호출
+```
+
+파괴자 호출 상황
+- 그 객체가 정의된 블록을 벗어날 때
+- 객체가 (external, static, static external, 또는 이름 공간 안에 있는) static 변수면,
+	- 프로그램이 종료될 때
+- new에 의해 생성된 객체면, 그 객체에 대해 명시적으로 delete를 사용할 때
+
+
+위치 지정 new 다시 살펴보기
+
+```
+char* buffer = new char[BUF];
+JustTesting* p1, * pc2, * pc3, * pc4;
+
+pc1 = new (buffer) JustTesting;
+pc2 = new JustTesting("Heap1", 20);
+pc3 = new (buffer) JustTesting("Bad Idea", 6);		// 안돼!
+pc4 = new JustTesting("Heap2", 10);
+
+// 다음으로 수정 필요
+pc1 = new (buffer) JustTesting;
+pc3 = new (buffer + sizeof(JustTesting)) JustTesting("Better Idea", 6);
+```
+
+delete pc1; delete pc3; 불가능
+- 위치 지정 new가 아니라 new와 연계하여 동작하기 때문에
+- pc3은 new가 리턴하는 주소를 받아들이지 않는다.
+
+
+답은 위치 지정 new에 의해 생성되는 객체들을 위한 파괴자를 명시적으로 호출
+
+```
+delete pc2;
+delete pc4;
+
+// 명시적 파괴
+pc3->~JustTesting();
+pc1->~JustTesting();
+
+delete [] buffer;
+```
+
+- 생성 역순으로 파괴하기
+- 버퍼는 버퍼에 들어있는 모든 객체가 파괴된 후에 해제
+
+
+
+
+6. 테크닉의 복습
+
+- 
