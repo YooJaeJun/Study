@@ -462,4 +462,273 @@ delete [] buffer;
 
 6. 테크닉의 복습
 
-- 
+<< 연산자의 오버로딩
+```
+ostream& operator<<(ostream& os, const c_name& obj) 
+{ os << asdf; return os; }
+```
+
+
+변환 함수들
+```
+c_name(type_name value);
+operator type_name();
+```
+explicit
+
+
+생성자가 new를 사용하는 클래스
+- new delete
+- 메모리 해제 후 널 포인터로 초기화
+- 복사 생성자
+- 대입 연산자 오버로딩
+```
+c_name& c_name::operator=(const c_name& cn)
+{
+	if (this == &cn)	// 객체가 자기 자신에 대입되었다면 자기 리턴
+		return *this;
+	delete [] c_pointer;
+	c_pointer = new type_name[size];
+	// ...
+	return *this;
+}
+
+
+
+
+7. 큐 시뮬레이션
+
+큐
+- 항목들을 순서대로 보관하는 추상화 데이터형(ADT)
+- 스택이 LIFO(후입선출) 구조 / 큐는 FIFO(선입선출)
+
+구조체, 클래스, 열거체가 어떤 클래스 안에서 선언되면, 그 클래스에 내포된다고 말한다.
+- 그 선언은 그 클래스의 사용 범위를 가진다.
+- 그 선언은 데이터 객체를 생성하지 않고, 클래스 안에서 내부적으로 사용할 수 있는 데이터형을 기술한다.
+
+링크드 리스트로 구현
+
+초기자 리스트 (member initializer list)
+- const 멤버, 참조 선언 멤버
+
+In-Class 초기화
+```
+class Classy
+{
+	int mem1 = 10;			// in-class 초기화
+	const int mem2 = 20;
+}
+```
+- 생성자 내의 멤버 초기화 리스트를 사용하는 것과 동일
+- 만약 멤버 초기화 리스트를 사용하는 생성자가 호출되지 않았다면, 각 멤버변수 초기화
+- 실질적인 리스트가 기본 초기화 값들을 수정
+```
+Classy::Classy(int n) : mem1(n) {}
+```
+- 이 경우, 생성자는 mem1을 초기화하는 데 n 값 사용, mem2는 여전히 20
+
+
+복사 생성자, 복사 대입 연산자 private 선언
+	// Queue snick(q);	// 허용하지 않음
+	// q1 = q2;			// 허용하지 않음
+- 복사되어선 안 되는 클래스 정의 시 유용
+
+
+Customer 클래스 [큐만 구현함]
+
+```
+// Node.h
+#include <iostream>
+
+using Item = int;
+
+struct Node
+{
+	Item item;
+	struct Node* next;
+};
+
+// Queue.h
+class Queue
+{
+	enum { Q_SIZE = 10 };
+private:
+	struct Node { Item item; struct Node* next; };
+	enum { Q_SIZE = 10 };
+
+	Node* front;
+	Node* rear;
+	int items;
+	const int qsize;
+
+public:
+	Queue(int qs = Q_SIZE);
+	~Queue();
+	bool isempty() const;
+	bool isfull() const;
+	int queuecount() const;
+	bool enqueue(const Item& item);
+	bool dequeue(Item& item);
+
+private:				
+	Queue(const Queue& q) : qsize(0) {}
+	Queue& operator=(const Queue& q) { return *this; }
+};
+
+
+// Queue.cpp
+Queue::Queue(int qs) : qsize(qs)
+{
+	front = rear = nullptr;
+	items = 0;
+}
+
+bool Queue::enqueue(const Item& item)
+{
+	if (isfull())
+		return false;
+	Node* add = new Node;
+
+	add->item = item;
+	add->next = nullptr;
+	items++;
+	if (front == nullptr)
+		front = add;
+	else
+		rear->next = add;
+	rear = add;
+	return true;
+}
+
+bool Queue::dequeue(Item& item)
+{
+	if (front == nullptr)
+		return false;
+	item = front->item;
+	items--;
+	Node* temp = front;
+	front = front->next;
+	delete temp;
+	if (items == 0)
+		rear = nullptr;
+	return true;
+}
+
+Queue::~Queue()
+{
+	Node* temp;
+	while (front != nullptr)
+	{
+		temp = front;
+		front = front->next;
+		delete temp;
+	}
+}
+```
+
+
+요약
+- 복사 생성자
+- 생성자 new, 파괴자 delete
+- 초기화되거나 대입 후 어떤 오리지널 멤버가 데이터의 한 블록을 지시하고 있다면, 복사본 멤버도 동일한 그 블록을 지시한다.
+	- 이때 두 객체 파괴하면, 클래스 파괴자는 같은 메모리 블록을 두 번 삭제하려고 시도하는 에러 발생
+	- 해결방법: 초기화를 다시 정의하는 특별한 복사 생성자를 정의하고, 대입 연산자를 오버로딩
+	- 깊은 복사: 데이터를 지시하는 포인터만 복사하는 것이 아니라 실제 데이터를 복사하게 만드는 것
+- 초기자 리스트
+- in-class 초기화
+- 멤버십 초기화 리스트를 사용하는 모든 생성자는 그에 상응하는 in-class 초기화를 무효화한다.
+
+
+
+연습 문제
+1. a. 멤버변수 초기화 안 되었음. NULL or new []
+b. 오리지널 문자열의 주소만 복사함. new [] 와 strcpy()
+c. 문자열을 저장할 공간을 대입하지 않은 채 그 문자열을 복사함
+	 new char[len + 1]
+
+2.
+	1 delete 하지 않을 때 메모리 누수
+		- 파괴자에서 delete 변수
+	2 객체를 다른 객체로 초기화한 후, delete를 사용한 파괴자가 그러한 메모리를 두 번 삭제하려고 시도
+		- 한 객체를 다른 객체로 디폴트 초기화하면, 포인터가 지시하는 데이터는 복사되지 않고
+		- 포인터 값만 복사되기 때문에, 같은 데이터를 지시하는 두 개의 포인터가 만들어진다.
+		- 이를 위해 초기화할 때 포인터가 지시하는 데이터를 복사하는, 복사 생성자를 정의.
+	3 한 객체를 다른 객체에 대입할 때에도 같은 데이터를 지시하는 두 개의 포인터 발생할 수 있음
+		- 포인터가 아니라 데이터 자체가 복사되도록 대입 연산자를 오버로딩
+
+3. 생성자-디폴트 생성자, 
+디폴트 파괴자-디폴트 파괴자, 
+복사 생성자, 
+복사 대입 연산자
+주소 연산자
+
+디폴트 생성자: 배열과 초기화되지 않은 객체를 선언할 수 있게 함
+디폴트 파괴자: 아무 일도 하지 않음
+암시적 주소 연산자: 호출한 객체의 주소(this 포인터의 값)를 리턴
+
+4.
+배열을 정적 데이터로 선언해버림. 포인터로 선언 or 배열 크기 명시 선언
+	char* personality;
+오버로딩 생성자 문자열 const
+	nifty(const char* s);
+<<연산자 오버로딩 friend
+	friend ostream& operator<<(ostream& os, const nifty& n);
+생성자에서 배열 초기화
+	personality[0] = '\0';
+대입할 때 포인터만 복사함. 깊은 복사하기
+	strcpy_s(personality, strlen(s), s);
+
+```
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+class nifty
+{
+private:
+	char * personality;
+	int talents;
+	public:
+	nifty();
+	nifty(const char* s);
+	nifty(const nifty& n);
+	~nifty() { delete [] personality; }
+	nifty& operator=(const nifty& n) const;
+	friend ostream& operator<<(ostream& os, const nifty& n);
+};
+
+nifty::nifty()
+{
+	personality = NULL;
+	talents = 0;
+}
+
+nifty::nifty(const char* s)
+{
+	personality = new char [strlen(s) + 1];
+	strcpy(personality, s);
+	talents = 0;
+}
+
+ostream& operator<<(ostream& os, const nifty& n)
+{
+	os << n.personality << '\n';
+	os << n.talents << '\n';
+	return os;
+}
+```
+
+
+5. 
+a.
+	1 디폴트 생성자
+	2 오버로딩 생성자
+	3 오버로딩 생성자
+	4 디폴트 생성자
+	5 복사 생성자
+	6 오버로딩 생성자
+	7 디폴트 대입 연산자
+	8 디폴트 대입 연산자
+b. 복사 대입 연산자
+
+
