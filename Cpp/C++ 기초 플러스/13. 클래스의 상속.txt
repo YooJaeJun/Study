@@ -286,4 +286,259 @@ public:
 6. 추상화 기초 클래스 (abstract base class; ABC)
 
 is-a 규칙 적용 어려움
+ex.
 - 원과 타원 그리는 프로그램
+- 원은 타원의 특별한 경우로서, 장경과 단경의 길이가 같은 타원
+- 모든 원은 타원.
+- 그럼 Ellipse 클래스부터 Circle 클래스 파생?
+- 멤버: 타원 중심, 반장경(긴 지름의 반), 반단경(짧은 지름의 반), 방위각, 
+	타원 이동, 면적 구하기, 회전, 장경 크기 조절
+
+```
+class Ellipse
+{
+private:
+	double x, y, a, b, angle;	// a 반장경, b 반단경
+public:
+	void Move(int nx, int ny) { x = nx; y = ny; }
+	virtual double Area() const { return 3.14159 * a * b; }
+	virtual void Rotate(double nang) { angle += nang; }
+	virtual void Scale(double sa, double sb) { a *= sa; b *= sb; }
+}
+
+class Circle : public Ellipse
+{
+private:
+	// 반장경, 반단경 필요 없는데....
+	double x, y, r;
+public:
+	void Move(int nx, int ny) { x = nx; y = ny; }
+	double Area() const { return 3.14159 * r * r; }
+	void Scale(double sr) { r *= sr; }
+}
+```
+
+- 공통적인 것 추출해 추상화 기초 클래스에 넣기
+
+```
+class BaseEllipse
+{
+private:
+	double x, y;
+public:
+	BaseEllipse(double x0 = 0, double y0 = 0) : x(x0), y(y0) {}
+	virtual ~BaseEllipse() {}
+	void Move(int nx, int ny) { x = nx; y = ny; }
+	virtual double Area() const = 0;
+}
+```
+
+- 클래스 선언에 순수 가상 함수가 들어 있으면, 그 클래스의 객체를 생성할 수 없다.
+- 어떤 클래스가 추상화 기초 클래스가 되려면, 적어도 하나의 순수 가상 함수를 가져야 한다.
+	= 0
+- Circle이나 Ellipse 같은 클래스를 구체화 클래스(concrete class) 라고 한다.
+
+예시 [생략]
+
+- 구체화 클래스들은 기초 클래스 역할 하지 말기
+- 추상화 기초 클래스의 사용은, 컴포넌트 설계자가 "인터페이스 약정"을 만드는 것을 허용한다.
+- 이 인터페이스 약정은 ABC로부터 파생되는 모든 컴포넌트들이 최소한 ABC가 규정하는 공통 기능을 지원함을 보장
+
+
+
+
+7. 상속과 동적 메모리 대입
+
+파생 클래스에서 new 하지 않을 경우
+- 디폴트 파괴자만 있어도 충분
+- 대입도 동일
+
+파생 클래스가 new를 사용할 경우
+- 멤버 초기자 리스트
+
+```
+Derived::Derived(const Derived& hs)
+	: Base(hs)
+{}
+```
+
+- 기초 클래스 객체를 위한 대입
+
+```
+Derived& Derived::operator=(const Derived& hs)
+{
+	if (this == &hs) return *this;
+	Base::operator=(hs);		// 기초 클래스 부분을 복사	// *this = hs;
+	delete [] style;
+	style = new char[std::strlen(hs.style) + 1];
+	std::strcpy(style, hs.style);
+	return *this;
+}
+```
+
+- 기초 클래스와 파생 클래스가 둘 다 동적 메모리 대입, 파생 클래스 파괴자, 복사 생성자, 대입 연산자를 사용할 때,
+	- 이들은 모두 기초 클래스 성분을 처리하기 위해 그들의 기초 클래스 대응물을 사용해야 한다.
+	1. 파괴자 - 자동적
+	2. 생성자 - 멤버 초기자 리스트에서 기초 클래스 복사 생성자 호출 or 디폴트 생성자 자동 호출
+	3. 대입 연산자 - 기초 클래스 대입 연산자의 명시적 호출에서 사용 범위 결정 연산자를 사용
+
+
+동적 메모리 대입과 프렌드
+
+- 프렌드는 멤버 함수가 아니기 때문에 사용 범위 결정 연산자를 사용할 수 없는 문제가 있다.
+- 상속 관계의 다른 클래스를 알 도리가 없다.
+
+해결책: 강제 데이터형 변환
+
+```
+std::ostream& operator<<(std::ostream& os, const hasDMA& hs)
+{
+	// operator<<(ostream&, const  baseDMA&) 를 위해 강제 데이터형 변환
+	os << (const baseDMA&) hs;
+	os << "스타일: " << hs.style << std::endl;
+	return os;
+}
+```
+
+
+
+
+8. 클래스 설계 복습
+
+컴파일러가 자동 생성하는 멤버 함수들
+- 디폴트 생성자 없으면 -> 디폴트 생성자
+- 복사 생성자
+	- 생성 조건
+		- 새 객체를 동일한 클래스의 다른 객체로 초기화할 때
+		- 객체가 함수에 값으로 전달될 때
+		- 함수가 객체를 값으로 리턴할 때
+		- 컴파일러가 임시 객체를 생성할 때
+	- 멤버별 초기화를 수행하는데, 멤버가 클래스 객체면 해당 클래스에 정의된 복사 생성자 사용됨
+	- new 초기화 멤버 포인터들은 깊은 복사 필요
+
+- 대입 연산자
+	- 이후 18장 move 설명
+
+explicit 암시적 변환 x
+
+참조 전달, 참조 리턴
+
+허용되는 캐스팅
+```
+Base b;
+Derived d;
+
+Base* pb = &d;		// 허용되는 암시적 업캐스팅
+Derived* pd = (Base*)&b;	// 허용되는 명시적 다운캐스팅
+
+pb->show_name();		// 부모의 메서드. 안전한 업캐스팅
+pd->range();			// 자식의 메서드. 불안한 다운캐스팅
+```
+
+파생 클래스 객체를 기초 클래스 객체에 대입할 수 있으나, 기초 클래스 멤버들만 대입이 이루어진다.
+
+변환 생성자는 기초 클래스 매개변수뿐만 아니라 부가적인 매개변수들도 사용하는 생성자
+```
+Derived(const Base& ba, double ml = 500, double r = 0.1);
+```
+
+기초 클래스를 파생 클래스 객체에 대입할 수 있는가?
+	1. 기초 클래스 객체를 파생 객체로 변환하는 것을 정의한 생성자를 가지고 있고,
+	2. 기초 클래스 객체를 파생 클래스 객체에 대입하는 대입 연산자를 정의하고 있으면, 대입 가능
+	3. 위 두 가지 중 하나라도 만족하지 못하면, 명시적 데이터형 캐스트를 사용해야 함
+
+```
+void show(const Base& rba)
+{
+	rba.ViewAct();
+	cout << endl;
+}
+void inadequate(Base ba)
+{
+	ba.ViewAct();
+	cout << endl;
+}
+
+Base buzz();
+show(buzz);			// Derived 버전으로 해석
+inadequate(buzz);	// Base 버전으로 해석
+```
+
+
+파생 클래스의 프렌드를 기초 클래스의 프렌드로 사용하기를 원할 때
+
+```
+ostream& operator<<(ostream& os, const Derived& hs)
+{
+	os << (const Base&) hs;
+	os << "스타일:  << hs.style << endl;
+	return os;
+}
+
+// or
+
+os << dynamic_cast<const Base&>(hs);
+```
+
+dynamic_cast 가 데이터형 캐스트의 가장 바람직한 형태 (15장)
+
+
+
+요약
+- public 상속은 is-a 관계
+- 추상화 기초 클래스
+- 순수 가상 메서드들은 파생 클래스들이 공통으로 사용하는 인터페이스
+
+
+
+연습 문제
+1. 멤버변수, 멤버함수
+
+2. 생성자, 파괴자, 대입 연산자, 프렌드 !!!
+
+3. 
+- 대입에 대입(연쇄대입)이 불가능  a = b = c;
+- 메모리와 시간이 낭비
+
+4. 기초 클래스 생성자 - 파생 클래스 생성자 - 파생 클래스 파괴자 - 기초 클래스 파괴자
+
+5. 그렇다. 생성자를 상속받을 수 없다.
+
+6. 파생 클래스 메서드.
+기초 클래스 정의를 무시함
+
+7. 
+- 파생 클래스 생성자가 new나 new[] 연산자를 사용해 멤버인 포인터를 초기화한다면,
+	- 파생 클래스는 대입 연산자를 정의해야 한다.
+- 디폴트 대입이 파생 클래스 멤버들에 적합하지 않으면, 파생 클래스는 대입 연산자를 정의해야 한다.
+
+8. // 4번이랑 완전 똑같잖아. 문제 번역 잘못됨.
+
+9. 
+- 예
+- 상황이나 조건에 따라 다르다. 강제적 타입 캐스팅 매개변수로 기초 클래스 객체를 받는 변환 연산자, 혹은 대입 연산자 추가 정의할 때만 가능.
+
+10. 암시적 디폴트 복사 생성자
+기초 클래스에 대한 참조가, 그 기초 클래스로부터 파생된 모든 파생 클래스를 참조할 수 있기 때문이다.
+
+11. 부모는 자식을 가리킬 수 있다. 부모 클래스 객체에 파생 클래스 객체가 복사되는 업캐스팅이 일어난다.
+
+- 객체를 값으로 전달하면 복사 생성자 호출
+- 형식 매개변수가 기초 클래스 객체이므로, 기초 클래스 복사 생성자 호출
+- 이 복사 생성자는 기초 클래스에 대한 참조를 매개변수로 사용하는데,
+- 그 참조가 매개변수로 전달된 파생 객체를 참조할 수 있다.
+
+
+12. 메모리와 시간 절약
++ 가상 함수 사용 가능
+
+13. 
+a. 기초 클래스 메서드 호출
+b. 파생 클래스 메서드 호출
+
+14. 
+- 파생 클래스 생성자에서 기초 클래스의 private으로 선언된 kit_sq_ft 멤버에 접근할 수 없다.
+	// 답지에 이거 없는데 이거도 추가 필요
+- 상황이 is-a 모델에 맞지 않다. public 상속 부적절.
+- House()에 있는 area()의 정의가 Kitchen에 있는 area()를 보이지 않게 가린다. 서로 다른 시그내처 사용하기 때문.
+
