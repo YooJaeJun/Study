@@ -1,0 +1,13 @@
+
+다른 클래스에 속하는 객체를 클래스 멤버로 사용
+- Containment, Composition, layering 이라 부름
+
+private 상속, protected 상속
+- has-a 관계
+
+
+
+
+1. 객체 멤버를 가지는 클래스
+
+valarray 클래스
