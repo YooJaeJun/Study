@@ -666,3 +666,253 @@ Trio<int, short> t2;
 Trio<char, char*, char*> t3;
 ```
 
+
+
+멤버 템플릿
+
+```
+// TempMember.cpp
+#include <iostream>
+using std::cout;
+using std::endl;
+
+template <typename T>
+class beta
+{
+private:
+	template <typename V>	// 내포된 템플릿 클래스 멤버
+	class hold
+	{
+	private:
+		V val;
+	public:
+		hold(V v = 0) : val(v) {}
+		void show() const { cout << val << endl; }
+		V Value() const { return val; }
+	};
+	hold<T> q;	// 템플릿 객체
+	hold<int> n;
+public:
+	beta(T t, int i) : q(t), n(i) {}
+	template <typename U>	// 템플릿 메서드
+	U blab(U u, T t) { return (n.Value() + q.Value()) * u / t; }
+	void Show() const { q.show(); n.show(); }
+};
+
+int main()
+{
+	beta<double> guy(3.5, 3);
+	guy.Show();
+	cout << guy.blab(10, 2.3) << endl;
+}
+```
+
+
+
+매개변수 템플릿
+
+```
+template <template<typename T> class Thing>
+class Crab
+{
+private:
+    Thing<int> s1;
+    Thing<double> s2;
+public:
+    Crab() {};
+    bool push(int a, double x) { return s1.push(a) && s2.push(x); }
+    bool pop(int& a, double& x) { return s1.pop(a) && s2.pop(x); }
+}
+```
+
+
+- 템플릿 매개변수를 일반 매개변수와 혼합하여 사용할 수도 있다.
+
+```
+template <template <typename T> class Thing, typename U, typename V>
+class C
+{
+private:
+    Thing<U> s1;
+    Thing<V> s2;
+}
+//
+Crab<Stack, int, double> nebula;        // T = Stack, U = int, V = double
+```
+
+
+템플릿 클래스와 프렌드 함수
+
+템플릿의 프렌드 종류
+1 템플릿이 아닌 프렌드
+2 바운드 템플릿 프렌드. 클래스가 구체화될 때 클래스의 데이터형에 의해 프렌드의 데이터형이 결정됨
+3 언바운드 템플릿 프렌드. 프렌드의 모든 특수화가 그 클래스의 각 특수화에 대해 프렌드들이다.
+
+
+템플릿 클래스에 대한 템플릿이 아닌 프렌드 함수
+
+```
+template <class T>
+class HasFriend
+{
+    friend void counts();
+};
+```
+
+- 전역 포인터를 사용하여 전역이 아닌 객체에 접근
+
+
+```
+template <typename T>
+class HasFriend
+{
+private:
+    T item;
+    static int ct;
+public:
+    HasFriend(const T& i) : item(i) { ct++; }
+    ~HasFriend() { ct--; }
+    friend void counts();
+    friend void report(HasFriend<T>&);      // 템플릿 매개변수
+}
+
+// 각 특수화는 자신만의 static 데이터 멤버를 가진다.
+template <typename T>
+int HasFriend<T>::ct = 0;
+
+// 모든 HasFriend<T> 클래스에 대해 템플릿이 아닌 프렌드
+void counts()
+{
+    cout << "int 카운트: " << HasFriend<int>::ct << "; ";
+}
+```
+
+```
+// tmp2tmp.cpp
+#include <iostream>
+using namespace std;
+
+template <typename T> void counts();
+template <typename T> void report(T&);
+
+// 템플릿 클래스
+template <typename TT>
+class HasFriendT
+{
+private:
+    TT item;
+    static int ct;
+public:
+    // 생략
+    friend void counts<TT>();
+    friend void report<>(HasFriendT<TT>&);
+}
+
+template <typename T>
+int HasFriend<T>::ct = 0;
+
+// 템플릿 프렌드 함수들의 정의
+template <typename T>
+void counts()
+{
+    cout << "템플릿 크기: " << sizeof(HasFriendT<T>) << "; ";
+}
+
+template <typename T>
+void report(T& hf)
+{
+    cout << hf.item << endl;
+}
+```
+
+
+언바운드 템플릿 프렌드 함수
+- 클래스 바깥에서 선언된 템플릿의 템플릿 특수화들
+
+```
+template <typename T>
+class ManyFriend
+{
+    template <typename C, typename D> friend void show2(C&, D&);
+}
+```
+
+
+
+템플릿 별칭 (C++ 11)
+
+```
+typedef std::array<double, 12> arrad;
+
+template<typename T>
+using arrtype = std::array<T, 12>
+```
+
+
+
+요약
+- 다중상속
+- public, protected, private 상속
+- template
+- 명시적 구체화, 명시적 특수화, 부분적 특수화
+
+
+
+연습문제
+1. 
+public
+private
+public
+private
+public, private
+
+2. 
+```
+Gloam::Gloam(int g, const char* s) : glip(g), fb(s) {}
+Gloam::Gloam(int g, const Frabjous& fr) : glip(g), fb(fr) {}
+void Gloam::tell()
+{
+    fb.tell();
+    cout << glip << endl;
+}
+```
+
+3. 
+```
+Gloam::Gloam(int g, const char* s) : glip(g), Frabjous(s) {}
+Gloam::Gloam(int g, const Frabjous& fr) : glip(g), Frabjous(fr) {}
+void Gloam::tell()
+{
+    Frabjous::tell();
+    cout << glip << endl;
+}
+```
+
+4. 
+class Stack<Worker*>
+{
+private:
+    enum { MAX = 10; }
+    Worker* items[MAX];
+    int top;
+public:
+    Stack();
+    bool isempty();
+    bool isfull();
+    bool push(const Worker*& item);
+    bool pop(Worker*& item);
+};
+
+5. 
+ArrayTP<string> sa;
+Stack<ArrayTP<double>> st;
+ArrayTP<Stack<Worker*>>;
+
+6. 어떤 클래스의 두 갈래 상속 경로가 하나의 공통 조상을 공유한다면,
+그 클래스는 그 공통 조상의 멤버들의 복사본을 두 벌 가지게 된다.
+그러나 그 공통 조상 클래스를 직계 인접한 후손들의 가상 기초 클래스로 만들면 이 문제가 해결된다.
+
+
+
+프로그래밍 연습
+[생략]
