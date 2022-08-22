@@ -10,4 +10,659 @@ private 상속, protected 상속
 
 1. 객체 멤버를 가지는 클래스
 
-valarray 클래스
+템플릿
+
+has-a 관게 모델링하는 일반적인 테크닉
+- 컴포지션(컨테인먼트)을 사용
+
+```
+class Student
+{
+private:
+    string name;
+    valarray<double> scores;
+}
+```
+
+인터페이스와 구현
+public 상속
+- 클래스는 인터페이스와 구현을 상속
+- 인터페이스를 획득하는 것은 is-a 관계의 역할
+
+컨테인먼트
+- 어떤 클래스가 인터페이스 없이 구현을 획득
+- 인터페이스를 상속하지 않음
+
+
+```
+// Studentc.h
+#include <iostream>
+#include <string>
+#include <valarray>
+
+class Student
+{
+private:
+	typedef std::valarray<double> ArrayDb;
+	std::string name;
+	ArrayDb scores;
+	// scores 출력을 위한 private 함수
+	std::ostream& arr_out(std::ostream& os) const;
+public:
+	Student() : name("Null Student"), scores() {}
+	explicit Student(const std::string& s)
+		: name(s), scores() {}
+	explicit Student(int n) : name("Nully"), scores(n) {}
+	Student(const std::string& s, int n)
+		: name(s), scores(n) {}
+	Student(const std::string& s, const ArrayDb& a)
+		: name(s), scores(a) {}
+	Student(const char* str, const double* pd, int n)
+		: name(str), scores(pd, n) {}
+	~Student() {}
+	double Average() const;
+	const std::string& Name() const;
+	double& operator[](int i);
+	double operator[](int i) const;
+	//
+	friend std::istream& operator>>(std::istream& is, Student& stu);
+	friend std::istream& getline(std::istream& is, Student& stu);
+	friend std::istream& operator<<(std::ostream& os, const Student& stu);
+};
+```
+
+explicit
+- 객체 = 5; 이런 실수 에러로 잡아냄
+
+초기자 리스트
+- name(str)은 string(const char*) 생성자를 호출
+- scores(pd, n)은 ArrayDb(const double*, int) 생성자 == valarray<double<(...)를 호출
+
+
+초기화 순서
+- 초기자 리스트 순서가 아니라 그들이 선언된 순서대로 초기화된다.
+
+
+
+
+2. private 상속
+
+has-a 관계를 구현하는 제2의 수단, private 상속
+- 기초 클래스의 public 멤버와 protected 멤버가 파생 클래스의 private 멤버가 된다.
+- 즉, 기초 클래스의 메서드들이 파생 객체의 public 인터페이스의 일부가 되지 않는다.
+- 그러나 파생 클래스의 멤버 함수들 안에서 그것들을 사용할 수 있다.
+
+- is-a 관계에서 파생 클래스는 기초 클래스의 인터페이스를 상속한다.
+- has-a 관계에서 파생 클래스가 기초 클래스의 인터페이스를 상속하지 않는다.
+
+```
+class Student : private std::string, private std::valarray<double>
+{ };
+```
+
+- 기초 클래스가 하나 이상일 경우, 다중 상속(multiple inheritance; MI)이라 부른다.
+- 일반적으로 MI(특히 public MI)를 사용하면, 부가적인 문법 규칙을 통해 해결해야 하는 몇 가지 문제 발생
+- 지금은 MI가 문제 일으키지 않음
+
+- 다음같이 멤버 이름 대신 클래스 이름 사용
+```
+Student(const char* str, const double* pd, int n)
+    : std::string(str), ArrayDb(pd, n) {}
+```
+
+```
+// Studentc.h
+#include <iostream>
+#include <string>
+#include <valarray>
+
+class Student : private std::string, private std::valarray<double>
+{
+private:
+	typedef std::valarray<double> ArrayDb;
+	// scores 출력을 위한 private 함수
+	std::ostream& arr_out(std::ostream& os) const;
+public:
+	Student() : std::string("Null Student"), ArrayDb() {}
+	explicit Student(const std::string& s)
+		: std::string(s), ArrayDb() {}
+	explicit Student(int n) : std::string("Nully"), ArrayDb(n) {}
+	Student(const std::string& s, int n)
+		: std::string(s), ArrayDb(n) {}
+	Student(const std::string& s, const ArrayDb& a)
+		: std::string(s), ArrayDb(a) {}
+	Student(const char* str, const double* pd, int n)
+		: std::string(str), ArrayDb(pd, n) {}
+	~Student() {}
+	double Average() const;
+	const std::string& Name() const;
+	double& operator[](int i);
+	double operator[](int i) const;
+	//
+	friend std::istream& operator>>(std::istream& is, Student& stu);
+	friend std::istream& getline(std::istream& is, Student& stu);
+	friend std::istream& operator<<(std::ostream& os, const Student& stu);
+};
+```
+
+```
+double Student::Average() const
+{
+    if (ArrayDb::size() > 0)
+        return ArrayDb::sum() / ArrayDb::size();
+    else
+        return 0;
+}
+```
+
+- private 상속은 클래스 이름과 사용 범위 결정 연산자 사용
+
+
+Name() 메서드 어떻게 구현?
+- 타입 캐스팅 사용하여 참조 만들기
+```
+const string& Student::Name() const
+{
+    return (const string&) *this;
+}
+```
+
+프렌드 접근
+```
+ostream& operator<<(ostream& os, const Student& stu)
+{
+    os << (const string&) stu << " 학생의 성적표: \n";
+}
+```
+
+- 타입 캐스팅 없으면 재귀 호출이니 주의
+
+
+
+컨테인먼트 vs private 상속
+- 대부분 c++플머는 컨테인먼트 선호
+    - 사용하기 쉽다. 객체 명시적으로 이름 지정, 프로그램에서 객체 이름 사용하여 참조
+    - 여러 기초 클래스 상속 문제가 컨테인먼트는 문제 일으킬 소지가 더 적다.
+
+private 상속 장점 !!!
+- 컨테인먼트는 protected 멤버에 접근할 수 없다.
+    - private 상속은 protected 멤버에 접근할 수 있다.
+- 가상 함수를 다시 정의할 필요가 있을 때
+    - 다시 정의된 함수들을 public으로 사용할 수 없고 그 클래스 안에서만 사용
+
+
+
+protected 상속
+
+- private 상속의 변종
+
+```
+class Student : protected std::string,
+                protected std::valarray<double>
+{};
+```
+
+- 기초 클래스의 public 멤버와 protected 멤버가 파생 클래스의 protected 멤버가 된다.
+- private 상속과 마찬가지로, 기초 클래스의 인터페이스를 파생 클래스에서 사용할 수 있지만, 바깥 세계에서는 사용할 수 없다.
+
+차이점
+- 파생 클래스로부터 또 다른 클래스를 파생시킬 때
+    - private 상속에서는 3세대 클래스가 기초 클래스 인터페이스의 내부적인 사용권을 얻지 못한다.
+        - public 기초 클래스 메서드들은 파생 클래스에서 private이 되기 때문
+    - protected 상속에서는, public 기초 메서드들이 2세대에서 protected가 된다.
+
+
+암시적 업캐스팅(implicit upcasting)
+- 명시적 데이터형 변환 없이 기초 클래스 포인터나 참조가 파생 클래스 객체를 참조할 수 있음
+
+
+
+특성                public 상속                             protected 상속                          private 상속
+public 멤버         파생 클래스의 public 멤버                파생 클래스의 protected 멤버             파생 클래스의 private 멤버
+protected 멤버      파생 클래스의 protected 멤버             파생 클래스의 protected 멤버             파생 클래스의 private 멤버
+private 멤버        기초 클래스 인터페이스 통해서만 접근       기초 클래스 인터페이스 통해서만 접근      기초 클래스 인터페이스 통해서만 접근
+암시적 업캐스팅      가능                                    파생 클래스 안에서만 가능                불가능
+
+
+
+using 사용하여 접근 다시 정의하기
+- protected 파생이나 private 파생 사용할 때, 기초 클래스의 public 멤버들은 protected 멤버 or private 멤버가 된다.
+- 파생 클래스에서 public으로 사용하고 싶을 때...
+
+```
+double Student::sum() const
+{
+    return std::valarray<double>::sum();
+}
+```
+
+혹은
+
+```
+class Student : private std::string, private std::valarray<double>
+{
+    // ...
+public:
+    using std::valarray<double>::min;
+    using std::valarray<double>::max;
+};
+```
+
+min, max 메서드를 마치 public의 Student 메서드인 것처럼 사용할 수 있게 만듦.
+
+```
+cout << "최고 점수: " << ada[i].max() << endl;
+```
+
+using 선언은 소괄호, 함수 시그내처, 리턴형 없이 멤버 이름만 사용!
+```
+using std::valarray<double>::operator[];
+```
+
+- 위 버전은 두 가지 버전(const, const 아닌)을 Student 클래스에서 모두 사용할 수 있게 만듦
+
+- using 선언 접근은 상속에만 적용되고, 컨테인먼트에는 적용되지 않는다.
+
+
+또 다른 방법
+파생 클래스의 public 부분에 그 메서드 이름을 넣기
+```
+public:
+std::valarray<double>::operator[];
+```
+- using 키워드가 없는 using 선언. 원래 의도 퇴색되는 구식 방법
+
+
+
+
+3. 다중 상속
+
+다중 상속 (multiple inheritance; MI)
+
+```
+class SingingWaiter : public Waiter, Singer {};
+```
+- 위처럼 하면 디폴트 private Singer로 상속. public Waiter, public Singer 해줘야 함
+
+
+- 다중 상속 절제하여 사용하자
+
+예시
+
+            Worker
+Singer                  Waiter
+        SingingWaiter
+
+
+- 순수 가상 파괴자도 구현해야 한다!!
+
+파생 클래스 객체의 주소를 기초 클래스 포인터에 대입할 때
+```
+SingingWaiter ed;
+Worker* pw = &ed;       // 모호하다.
+Worker* pw1 = (Waiter*)&ed;
+Worker* pw2 = (Singer*)&ed;
+```
+
+- 기초 클래스 포인터들의 배열을 사용하여 다양한 종류의 객체를 참조하는 기법(다형; polymorphism)을 어렵게 만듦
+
+
+진짜 문제
+- Worker 객체의 복사본 2개
+    - Singer에도 Worker객체 멤버들이 있고, Waiter에도 Worker객체 멤버들이 있다.
+
+해결책
+가상 기초 클래스
+- 하나의 공통 조상을 공유하는 여러 개의 기초 클래스로부터 공통 조상의 유일 객체를 상속하는 방식으로 객체 파생
+- 클래스 선언에 virtual을 선언하여 Worker를 Singer와 Waiter의 가상 기초 클래스로 만듦
+- public과 virtual 순서 상관 없다.
+
+```
+class Singer : virtual public Worker {};
+class Waiter : public virtual Worker {};
+class SingingWaiter : public Singer, public Waiter {};
+```
+
+이제 SingingWaiter 객체는 Worker 객체의 복사본 하나만 내포함
+
+
+왜 용어가 가상?
+- virtual 키워드 오버로딩
+
+
+왜 기초 클래스들을 가상으로 선언하고, 가상 행동을 다중 상속의 표준으로 삼지 않나?   // 뒤에 건 먼 솔????
+- 하나의 기초에 대해 여러 벌의 복사본을 원하는 경우가 있다.
+- 기초 클래스를 가상으로 만드려면 프로그램이 추가 작업을 해야 한다.
+
+
+추가로 해야 할 일?
+- Singer 클래스와 Waiter 클래스로 돌아가 virtual 키워드를 추가해야 한다.
+
+
+새로운 생성자 규칙
+- 가상 아닌 기초 클래스에서는, 직계의 인접한 기초 클래스들의 생성자들만이 멤버 초기자 리스트에 생성자로 나타남
+- 이 정보 전달은 가상 기초 클래스일 때 동작하지 않음
+
+```
+SingingWaiter(const Worker& wk, int p = 0, int v = Singer::other)
+    : Waiter(wk, p), Singer(wk, v) {}       // 결함이 있다
+```
+
+서로 다른 두 경로 거쳐 Worker 객체에 전달되는데, 이 같은 잠재적인 충돌을 피하기 위해
+- C++은 중간 클래스를 통해 기초 클래스에 자동으로 정보를 전달하는 기능을 정지시킴
+- wk 정보는 Waiter 객체에 전달되지 않음
+- 이 경우 디폴트 Worker 생성자가 사용될 것.
+
+```
+SingingWaiter(const Worker& wk, int p = 0, int v = Singer::other)
+    : Wokrer(wk), Waiter(wk, p), Singer(wk, v) {}
+```
+
+- 위처럼 기초 클래스 생성자를 명시적으로 호출.
+
+
+어느 메서드 사용?
+- 파생 클래스에서 메서드 새 버전 생략하고, 상속 받은 메서드를 호출할 때
+- 단일 상속에서는 가장 가까운 조상의 정의가 사용되지만,
+- 다중 상속에서는 직계의 인접한 조상이 메서드를 함수를 각각 하나씩 가지고 있으므로 호출을 모호하게 만든다.
+
+- 이때 사용 범위 결정 연산자를 사용하면 확실히 할 순 있다.
+- 더 나은 방법은 파생 클래스에 대해 메서드 다시 정의하고, 사용할 버전 지정
+
+```
+void SingingWaiter::Show()
+{
+    Singer::Show();
+}
+```
+
+
+
+
+4. 클래스 템플릿
+
+매개변수화(parameterized)되는 데이터형
+
+
+- 어떤 템플릿의 특별한 현실화를 구체화(instantiation) 또는 특수화(specialization)라 한다.
+
+
+```
+// StackTp.h
+template <typename T>
+class Stack
+{
+private:
+	enum { MAX = 10 };
+	T items[MAX];
+	int top;
+public:
+	Stack();
+	bool isempty();
+	bool isfull();
+	bool push(const T& item);
+	bool pop(T& item);
+};
+
+template <class T>
+Stack<T>::Stack()
+{
+	top = 0;
+}
+
+template <class T>
+bool Stack<T>::isempty()
+{
+	return top == 0;
+}
+
+template <class T>
+bool Stack<T>::isfull()
+{
+	return top == MAX;
+}
+
+template <class T>
+bool Stack<T>::push(const T& item)
+{
+	if (top < MAX)
+	{
+		items[top++] = item;
+		return true;
+	}
+	else
+		return false;
+}
+
+template <class T>
+bool Stack<T>::pop(T& item)
+{
+	if (top > 0)
+	{
+		item = items[--top];
+		return true;
+	}
+	else
+		return false;
+}
+```
+
+
+포인터들의 스택
+
+포인터들의 배열 제공
+
+```
+// StackTp.h
+#pragma once
+template <typename T>
+class Stack
+{
+private:
+	enum { SIZE = 10 };
+	int stacksize;
+	T* items;
+	int top;
+public:
+	explicit Stack(int ss = SIZE);
+	Stack(const Stack& st);
+	~Stack() { delete[] items; }
+	bool isempty() { return top == 0; }
+	bool isfull() { return top == stacksize; }
+	bool push(const T& item);
+	bool pop(T& item);
+	Stack& operator=(const Stack& st);
+};
+
+template <class T>
+Stack<T>::Stack(int ss) : stacksize(ss), top(0)
+{
+	items = new T[stacksize];
+}
+
+template <class T>
+Stack<T>::Stack(const Stack& st)
+{
+	stacksize = st.stacksize;
+	top = st.top;
+	items = new T[stacksize];
+	for (int i = 0; i < top; i++)
+		items[i] = st.items[i];
+}
+
+
+template <class T>
+bool Stack<T>::push(const T& item)
+{
+	if (top < stacksize)
+	{
+		items[top++] = item;
+		return true;
+	}
+	else
+		return false;
+}
+
+template <class T>
+bool Stack<T>::pop(T& item)
+{
+	if (top > 0)
+	{
+		item = items[--top];
+		return true;
+	}
+	else
+		return false;
+}
+
+template <class T>
+Stack<T>& Stack<T>::operator=(const Stack<T>& st)
+{
+	if (this == &st)
+		return *this;
+	delete[] items;
+	stacksize = st.stacksize;
+	top = st.top;
+	items = new T[stacksize];
+	for (int i = 0; i < top; i++)
+		items[i] = st.items[i];
+	return *this;
+}
+```
+
+
+
+배열 템플릿
+
+```
+#pragma once
+#include <iostream>
+#include <cstdlib>
+
+template <class T, int n>
+class ArrayTP
+{
+private:
+	T ar[n];
+public:
+	ArrayTP() {}
+	explicit ArrayTP(const T& v);
+	virtual T& operator[](int i);
+	virtual T operator[](int i) const;
+};
+
+template <class T, int n>
+ArrayTP<T, n>::ArrayTP(const T& v)
+{
+	for (int i = 0; i < n; i++)
+		ar[i] = v;
+}
+
+template <class T, int n>
+T& ArrayTP<T, n>::operator[](int i)
+{
+	if (i < 0 || i >= n)
+	{
+		std::cerr << "배열의 경계를 벗어나는 에러: "
+			<< i << "--> 잘못된 인덱스입니다.\n";
+		std::exit(EXIT_FAILURE);
+	}
+	return ar[i];
+}
+
+template <class T, int n>
+T ArrayTP<T, n>::operator[](int i) const
+{
+	if (i < 0 || i >= n)
+	{
+		std::cerr << "배열의 경계를 벗어나는 에러: "
+			<< i << "--> 잘못된 인덱스입니다.\n";
+		std::exit(EXIT_FAILURE);
+	}
+	return ar[i];
+}
+```
+
+데이터형이 아닌 매개변수(non-type argument) 또는 수식 매개변수(expression argument)라고 한다.
+```
+ArrayTP<double, 12> eggweights;
+```
+
+수식 매개변수 접근 방식은 자동 변수들을 관리하는 스택 메모리 사용
+
+단점
+- 각 배열 크기가 자신만의 템플릿을 각자 생성
+
+```
+ArrayTP<double, 12> a;
+ArrayTP<double, 13> b;  // 서로 다른 클래스 선언 생성!
+
+Stack<int> c(12);
+Stack<int> d(13);   // 클래스 선언을 하나만 생성!
+```
+
+
+디폴트 데이터형 매개변수
+```
+template <class T1, class T2 = int> class Topo {};
+```
+
+- STL에서 자주 사용
+
+
+
+템플릿 특수화
+- 암시적 구체화 + 명시적 구체화 + 명시적 특수화
+
+- 지금까진 암시적 구체화 사용 (implicit instantiation)
+- 컴파일러는 객체가 요구될 때까지 그 클래스의 암시적 구체화를 생성하지 않는다.
+```
+ArrayTP<double, 30> * pt;       // 포인터, 아직 객체가 필요 없다.
+pt = new ArrayTP<double, 30>;   // 이제 객체가 요구된다.
+```
+
+
+명시적 구체화 (explicit instantiation)
+
+```
+template class ArrayTP<string, 100>;
+```
+- 컴파일러가 그 클래스 정의 생성
+
+
+명시적 특수화 (explicit specialization)
+- 템플릿이 특정형에 맞게 구체화될 때 조금 다르게 행동하도록 수정
+
+```
+template <> class Classname<specialized-type-name> {};
+// template <> 을 생략 가능 (구형 컴파일러는 생략 버전만 인식)
+
+SortedArray<int> scores;        // 포괄적인 정의 사용
+SortedArray<char *> dates;      // 특수화된 정의 사용
+```
+
+부분적인 특수화 (partial specialization)
+```
+// 포괄적인 템플릿
+template <class T1, class T2> class Pair {};
+// T2를 int로 설정한, 부분적인 특수화
+template <class T1> class Pair<T1, int> {};
+```
+
+- 포인터 위한 특별한 버전 제공 가능
+
+```
+Feeb<char> fb1;
+Feeb<char*> fb2;        // T* 특수화 사용. T는 char
+```
+
+```
+template <class T1, class T2, class T3> class Trio {};
+template <class T1, class T2> class Trio<T1, T2, T2> {};
+template <class T1> class Trio<T1, T1*, T1*> {};
+
+Trio<int, short, char *> t1;
+Trio<int, short> t2;
+Trio<char, char*, char*> t3;
+```
+
