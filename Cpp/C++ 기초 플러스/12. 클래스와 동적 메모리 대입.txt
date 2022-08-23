@@ -538,6 +538,7 @@ Customer 클래스 [큐만 구현함]
 
 ```
 // Node.h
+#pragma once
 #include <iostream>
 
 using Item = int;
@@ -549,6 +550,7 @@ struct Node
 };
 
 // Queue.h
+#pragma once
 class Queue
 {
 	enum { Q_SIZE = 10 };
@@ -577,6 +579,8 @@ private:
 
 
 // Queue.cpp
+#include "Queue.h"
+
 Queue::Queue(int qs) : qsize(qs)
 {
 	front = rear = nullptr;

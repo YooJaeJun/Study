@@ -1,0 +1,417 @@
+
+RTTI(runtime type information; 실행 시간 데이터형 정보)
+
+
+1. 프렌드
+
+- 클래스도 프렌드가 될 수 있다.
+
+프렌드 클래스
+- ex. Tv, Remote
+
+```
+// tv.h
+#pragma once
+
+class Tv
+{
+public:
+	friend class Remote;		// Remote는 Tv의 private 부분에 접근할 수 있다.
+	enum { Off, On };
+	enum { MinVal, MaxVal = 20 };
+	enum { Antenna, Cable };
+	enum { TV, DVD };
+
+	Tv(int s = Off, int mc = 125) : state(s), volume(5),
+		maxchannel(mc), channel(2), mode(Cable), input(TV) {}
+	void onoff() { state = (state == On) ? Off : On; }
+	bool ison() const { return state == On; }
+	bool volup();
+	bool voldown();
+	void chanup();
+	void chandown();
+	void set_mode() { mode = (mode == Antenna) ? Cable : Antenna; }
+	void set_input() { input = (input == TV) ? DVD : TV; }
+	void settings() const;
+private:
+	int state;	// On 또는 Off
+	int volume;
+	int maxchannel;
+	int channel;
+	int mode;
+	int input;
+};
+
+class Remote
+{
+private:
+	int mode;
+public:
+	Remote(int m = Tv::TV) : mode(m) {}
+	bool volup(Tv& t) { return t.volup(); }
+	bool voldown(Tv& t) { return t.voldown(); }
+	void onoff(Tv& t) { t.onoff(); }
+	void chanup(Tv& t) { t.chanup(); }
+	void chandown(Tv& t) { t.chandown(); }
+	void set_chan(Tv& t, int c) { t.channel = c; }
+	void set_mode(Tv& t) { t.set_mode(); }
+	void set_input(Tv& t) { t.set_input(); }
+};
+```
+
+- 클래스 프렌드가 어떤 관계 표현에 매우 자연스러운 방법
+- 프렌드 관계가 없다면, Tv 클래스의 private 부분들을 public으로 만들거나, 
+	- Tv, 리모콘이 함께 들어간 더 큰 클래스 구성해야 함
+	- 그러면 하나의 리모콘으로 여러 대의 tv 제어할 수 있다는 사실을 반영할 수 없음
+
+
+프렌드 멤버 함수
+
+- Remote에서 Tv의 private 멤버에 직접 접근하는 메서드는 Remote::set_chan() 뿐.
+- 원하는 메서드들만 프렌드로 만드려면, 선언들과 정의들을 배치하는 순서에 신경 써야함
+
+```
+class Tv
+{
+	friend void Remote::set_chan(Tv& t, int c);
+};
+```
+- 위 코드는 Remote 정의를 미리 알고 있어야 한다.
+
+
+사전 선언 (forward declaration) 사용
+
+```
+class Tv;
+class Remote { /*...*/ };
+class Tv { /*...*/ };
+```
+- 또 문제는 Remote::onoff() 같은 인라인 코드.
+- 이 시점에 컴파일러가 Tv 클래스 선언, Tv가 어떤 메서드를 가지는지 알아야 한다.
+- Remote를 메서드 선언(declaration)으로 제한하고, 실제 정의(definition)들은 Tv 클래스 뒤에 두자
+
+```
+class Tv;					// 사전 선언
+class Remote { /*...*/ };	// Tv를 사용하는 Remote 메서드들의 원형
+class Tv { /*...*/ };		// 여기에 Remote 메서드들의 실제 정의들을 넣는다.
+```
+
+클래스 멤버 프렌드
+
+```
+// tv.h
+#pragma once
+
+class Tv;
+
+class Remote
+{
+public:
+	enum State{ Off, On };
+	enum { MinVal, MaxVal = 20 };
+	enum { Antenna, Cable };
+	enum { TV, VCR };
+private:
+	int mode;
+public:
+	Remote(int m = TV) : mode(m) {}
+	bool volup(Tv& t);		// 원형만
+	bool voldown(Tv& t);
+	void onoff(Tv& t);
+	void chanup(Tv& t);
+	void chandown(Tv& t);
+	void set_mode(Tv& t);
+	void set_input(Tv& t);
+	void set_chan(Tv& t, int c);
+};
+
+class Tv
+{
+public:
+	friend void Remote::set_chan(Tv& t, int c);
+	enum State{ Off, On };
+	enum { MinVal, MaxVal = 20 };
+	enum { Antenna, Cable };
+	enum { TV, DVD };
+
+	Tv(int s = Off, int mc = 125) : state(s), volume(5),
+		maxchannel(mc), channel(2), mode(Cable), input(TV) {}
+	void onoff() { state = (state == On) ? Off : On; }
+	bool ison() const { return state == On; }
+	bool volup();
+	bool voldown();
+	void chanup();
+	void chandown();
+	void set_mode() { mode = (mode == Antenna) ? Cable : Antenna; }
+	void set_input() { input = (input == TV) ? DVD : TV; }
+	void settings() const;
+private:
+	int state;	// On 또는 Off
+	int volume;
+	int maxchannel;
+	int channel;
+	int mode;
+	int input;
+};
+
+
+inline bool Remote::volup(Tv& t) { return t.volup(); }
+inline bool Remote::voldown(Tv& t) { return t.voldown(); }
+inline void Remote::onoff(Tv& t) { t.onoff(); }
+inline void Remote::chanup(Tv& t) { t.chanup(); }
+inline void Remote::chandown(Tv& t) { t.chandown(); }
+inline void Remote::set_mode(Tv& t) { t.set_mode(); }
+inline void Remote::set_input(Tv& t) { t.set_input(); }
+inline void Remote::set_chan(Tv& t, int c) { t.channel = c; }
+
+```
+
+- 인라인 함수들은 내부 링크를 가진다.
+- 함수 정의가 그 함수를 사용하는 파일 안에 들어 있어야 한다.
+
+
+
+
+2. 내포 클래스
+
+내포 클래스(nested class)
+- 새 타입에 클래스 사용 범위 제공해 이름 충돌 막음
+
+```
+class Queue
+{
+	struct Node 
+	{ 
+		Item item; 
+		struct Node* next; 
+	};
+};
+```
+
+- 적절한 생성자 및 유일하게 Node 객체가 생성되는 enqueue 메서드 수정
+
+```
+class Queue
+{
+	class Node 
+	{ 
+	public:
+		Item item; 
+		Node* next; 
+		Node(const Item& i) : item(i), next(0) {}
+	};
+};
+
+- 포인터를 0(널 포인터)로 설정
+
+
+```
+bool Queue::enqueue(const Item& item)
+{
+	if (isfull())
+		return false;
+	Node* add = new Node(item);
+}
+```
+
+- 정의 파일에 생성자 정의 따로 뺀다면, :: 두 번 사용
+
+```
+Queue::Node::Node(const Item& i) : item(i), next(0) {}
+```
+
+
+
+내포 클래스와 접근
+
+두 종류의 접근 형태
+- 내포 클래스가 선언된 장소
+- 접근 제한자
+
+
+사용 범위
+
+```
+class Team
+{
+public:
+	class Coach {};
+};
+
+Team:: Coach forhire;
+```
+
+
+접근 제어
+
+
+
+템플릿에서의 내포
+
+```
+// queuetp.h
+#pragma once
+
+template <class Item>
+class QueueTP
+{
+private:
+	enum { Q_SIZE = 10 };
+	// Node는 내포 클래스 정의이다.
+	class Node
+	{
+	public:
+		Item item;
+		Node* next;
+		Node(const Item& i) : item(i), next(0) {}
+	};
+	Node* front;
+	Node* rear;
+	int items;
+	const int qsize;
+	QueueTP(const QueueTP& q) : qsize(0) {}
+	QueueTP& operator=(const QueueTP& q) { return *this; }
+public:
+	QueueTP(int qs = Q_SIZE);
+	~QueueTP();
+	bool isempty() const
+	{
+		return items == 0;
+	}
+	bool isfull() const
+	{
+		return items == qsize;
+	}
+	int queuecount() const
+	{
+		return items;
+	}
+	bool enqueue(const Item& item);
+	bool dequeue(Item& item);
+};
+
+// QueueTP 메서드들
+template <class Item>
+QueueTP<Item>::QueueTP(int qs) : qsize(qs)
+{
+	front = rear = 0;
+	items = 0;
+}
+
+template <class Item>
+QueueTP<Item>::~QueueTP()
+{
+	Node* temp;
+	while (front != 0)
+	{
+		temp = front;
+		front = front->next;
+		delete temp;
+	}
+}
+
+template <class Item>
+bool QueueTP<Item>::enqueue(const Item& item)
+{
+	if (isfull())
+		return false;
+	Node* add = new Node(item);
+	// 실패하면, new 연산자는 std::bad_alloc 예외 발생
+	items++;
+	if (front == 0)
+		front = add;
+	else
+		rear->next = add;
+	rear = add;
+	return true;
+}
+
+template <class Item>
+bool QueueTP<Item>::dequeue(Item& item)
+{
+	if (front == 0)
+		return false;
+	item = front->item;
+	items--;
+	Node* temp = front;
+	front = front->next;
+	delete temp;
+	if (items == 0)
+		rear = 0;
+	return true;
+}
+```
+
+
+
+
+3. 예외
+
+exception
+
+abort()
+- <cstdlib>
+- abnormal program termination
+
+```
+if (a == -b) std::abort();
+```
+
+
+에러 코드 리턴
+
+- ostream 클래스의 get(void) 멤버는 다음 번 입력되는 문자의 아스키 코드 리턴
+- 그러나 파일 끝을 만났을 경우 EOF 리턴
+
+errno
+- C 수학 라이브러리가 사용하는 전역 변수
+
+
+
+예외 메커니즘
+
+- 에외 핸들러(exception handler)로 예외 포착
+	- catch
+- 특별한 예외들이 발생할 수 있는 하나의 코드 블록
+	- try
+
+```
+// error3.cpp
+#include <iostream>
+
+int main()
+{
+	int x = 1, y = 0;
+	try {
+		if (y == 0) throw "잘못됨";
+	}
+	catch (const char* s)
+	{
+		std::cout << s << '\n';
+		std::cout << "x: " << x << '\n' << "y: " << y << '\n';
+	}
+	return 0;
+}
+```
+
+
+
+예외로 객체 사용하기
+
+```
+class bad
+{
+};
+inline void bad::mesg()
+{
+	cout << "잘못";
+}
+int main()
+{
+	...
+	if (a == -b)
+	throw bad(a, b);	// 매개변수로 참조 객체가 올 수도 있음
+}
+```
+
+try -> throw -> catch
