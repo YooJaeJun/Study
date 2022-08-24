@@ -415,3 +415,113 @@ int main()
 ```
 
 try -> throw -> catch
+
+operand가 exception 발생할 수 있는지 보고하는 noexcept() 오퍼레이터도 있다.
+
+
+스택 풀기
+
+스택 풀기(unwinding the stack)
+
+정상
+- 호출한 함수 구문의 주소를 스택에 올려 놓는다.
+- 호출된 함수의 실행이 끝나면, 프로그램은 스택에 올려 놓은 그 주소를 사용하여 프로그램 실행을 계속할 장소를 결정한다.
+- 함수 호출은, 자동 변수로 취급되는 함수 매개변수들을 스택에 올려 놓는다.
+
+- 호출된 함수가 새로운 자동 변수를 생성하면 그것도 스택에 추가된다.
+- 호출된 함수가 또 다른 함수를 호출하면 그 정보도 스택에 추가된다.
+- 어떤 함수가 종료되면, 프로그램 실행이 그 함수가 호출될 때까지 스택에 저장해 둔 주소로 넘어가고, 스택의 꼭대기가 해제된다.
+- 각 함수는 자동 변수들을 해제한다.
+- 자동 변수가 클래스 객체일 경우, 클래스 파괴자가 호출된다.
+
+예외 종료
+- 똑같이 프로그램은 스택에서 메모리를 해제한다.
+- 그러나 스택에서 만나는 첫 번째 리턴 주소에서 멈추지 않고,
+- try 블록에 들어 있는 리턴 주소에 도달할 때까지 계속해서 스택을 해제한다.
+- 이때 제어는 try 블록 끝에 이어지는 에외 핸들러로 넘어간다.
+- 이 과정을 스택 풀기라 부른다.
+- 함수 리턴과 마찬가지로, 스택에 올라와 있는 모든 자동 클래스 객체들에 대해 클래스 파괴자 호출됨
+
+- 프로그램이 예외가 잡히는 곳까지 도달하기 위해 스택을 풀 때, 
+- 프로그램은 스택에 있는 자동 기억공간 변수들을 해제한다. (클래스 객체 => 파괴자)
+
+또 하나의 차이
+- 컴파일러는 언제나 예외가 발생할 때 임시 복사본을 만든다.
+
+```
+class problem {};
+void super() throw(problem)
+{
+	if (oh_no)
+	{
+		problem oops();	// 객체 생성
+		throw oops;		// 그 객체를 예외로 발생시킴
+	}
+}
+try {
+	super();
+}
+catch(problem& p)
+{}
+```
+- oops의 복사본 참조. super가 종료된 후에 oops는 더 이상 존재하지 않으므로.
+
+
+예외 클래스들의 상속 계층을 사용할 경우,
+- 가장 늦게 파생된 클래스의 예외가 가장 먼저 포착되고, 기초 클래스 예외가 마지막에 포착되도록
+	- catch 블록의 순서를 배치
+
+
+
+exception 클래스
+
+exception 헤더 파일
+
+```
+class bad_hmean : public std::exception
+{
+	public:
+	string what() { return "hmean에 잘못된 매개변수"; }
+};
+```
+
+
+stdexcept 헤더 파일
+- logic_error와 runtime_error 클래스 정의
+```
+class bad_hmean : public logic_error
+{};
+```
+
+
+에러 종류
+
+logic_error 패밀리
+- domain_error
+	- 매개변수가 정의역 벗어날 때 
+- invalid_argument
+	- 기대하지 않는 값이 함수에 전달되었을 때
+- length_error
+	- 원하는 액션 할 만큼 충분한 공간이 없을 때
+- out_of_bounds
+	- 인덱싱 에러
+
+runtime_error 패밀러
+- 예측, 예방이 어려운, 실행하는 동안 나타날 수 있는 에러
+- range_error
+	- 계산 결과가 함수의 적절한 치역을 벗어날 수도 있을 때
+- overflow_error
+	- 데이터형이 나타낼 수 있는 최대 크기 초과
+- underflow_error
+	- 부동소수점형이 나타낼 수 있는 0이 아닌 최소 크기가 존재하는데,
+	- 더 작은 값을 산출하는 계산이 언더플로 에러 발생
+
+```
+try {}
+catch(out_of_bounds& oe) {}
+catch(logic_error& oe) {}	// out_of_bounds 제외 나머지 로직 에러 패밀리 포착
+catch(exception& oe) {}		// runtime_error, exception 객체들을 포착
+
+
+
+bad_alloc 예외와 new
