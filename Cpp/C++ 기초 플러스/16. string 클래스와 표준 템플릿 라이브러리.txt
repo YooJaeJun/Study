@@ -1,1 +1,360 @@
 
+1. string 클래스
+
+헤더
+- string 헤더
+- string.h와 cstring은 C스타일 문자열 함수들을 지원하는 것임
+
+string
+- 템플릿 특수화 basic_string<char>에 대한 typedef
+
+- string::npos를 문자열의 최대 길이로 정의 (unsigned int의 최대값)
+
+NBTS(null-byte-terminated-string) 사용
+
+생성자
+	string(const char* s);
+	string(size_type n, char c);							// 문자 c로 초기화된 원소 n개의 string 객체
+	string(const string& str);
+	string();
+	string(const char* s, size_type n);						// 문자 n개까지 제한
+	template<class Iter> string(Iter begin, Iter end);		// [begin, end) 범위 값들로 초기화
+	string(const string& str, size_type pos, size_type n = npos);	
+		// str의 pos에서 시작해서 str의 끝까지 가거나, n 문자를 사용하되 str의 끝을 넘어갈 수 없다.
+	string(string&& str) noexcept;							// (C++11) str은 바뀔 수 있다. (move 생성자)
+	string(initializer_list<char> il);						// (C++11) 초기화 리스트 il에 있는 문자로 초기화
+
+
+```
+#include <iostream>
+#include <string>
+using std::cout;
+
+int main()
+{
+	using namespace std;
+
+	string one("Lottery Winner!");
+	cout << one << endl;
+
+	string two(20, '$');
+	cout << two << endl;
+
+	string three(one);
+	cout << three << endl;
+
+	one += " Ooops!";
+	cout << one << endl;
+	
+	two = "Sorry! that was ";
+	three[0] = 'P';
+	string four;
+	four = two + three;
+	cout << four << endl;
+
+	char alls[] = "All's well that ends well";
+	string five(alls, 20);
+	cout << five << "!\n";
+
+	string six(alls + 6, alls + 10);
+	cout << six << ", ";					// ctor #6
+	string seven(&five[6], &five[10]);
+	cout << seven << "...\n";				// ctor #6 again
+
+	string eight(four, 7, 16);
+	cout << eight << "in motion!" << endl;
+
+	return 0;
+}
+```
+```
+Lottery Winner!
+$$$$$$$$$$$$$$$$$$$$
+Lottery Winner!
+Lottery Winner! Ooops!
+Sorry! that was Pottery Winner!
+All's well that ends!
+well, well...
+that was Potteryin motion!
+```
+
+ctor #6
+- alls + 6 등은 char* 형이다.
+- 템플릿의 Iter가 char* 형으로 대체되어 사용된다.
+
+
+
+C++11 생성자들
+
+string(string&& str) noexcept 생성자
+- 이동 생성자
+- str이 반드시 const인 것만은 아님
+- 18장
+
+string(initializer_list<char> il) 생성자
+- 클래스의 리스트 초기화가 가능
+```
+string p = { 'L', 'i'. 's' };
+string c = { 'L', 'a' };
+```
+
+
+
+string 클래스 입력
+
+c 스타일 문자열
+```
+char info[100];
+cin >> info;
+cin.getline(info, 100);		// 한 행을 읽되, \n은 내버린다.
+cin.get(info, 100);			// 한 행을 읽되, \n은 큐에 남겨둔다.
+```
+
+string 객체
+```
+string s;
+cin >> s;
+getline(cin, stuff);		// 한 행을 읽되, \n은 내버린다.
+```
+
+getline() 두 버전
+```
+cin.getline(info, 100, ':');		// :까지 읽고, :은 내버린다.
+getline(s, ':');					// 위와 동일하나, 잘림 없음
+```
+
+```
+cin.operator>>(fname);		// ostream 클래스 메서드
+operator>>(cin, lname);		// 일반 함수
+```
+
+
+string 제한
+- string::npos로 나타내는 문자열의 최대 허용 크기
+	- unsigned int의 최대 크기
+
+getline() 함수: 다음 세 가지 중 하나 일어날 때까지, 문자들 읽어 하나의 문자열로 저장
+- 파일의 끝을 만났을 때, 입력 스트림의 eofbit가 설정된다.
+	- fail()과 eof() 메서드가 true
+- 구분 문자(디폴트는 \n)에 도달했을 때, 구분 문자는 입력 스트림으로부터 제거되고 저장되지 않음
+- 가능한 최대 문자 수(string::npos와 대입에 사용할 수 있는 메모리의 바이트 수 중 더 적은 것)을 읽었을 때,
+	- 입력 스트림의 failbit가 설정됨
+	- fail() 메서드가 true를 리턴
+
+
+파일 입출력 [생략]
+
+
+
+문자열 작업
+
+<, ==, != 비교
+- 아스키 코드상 
+
+
+- length()는 string 클래스의 오래된 버전
+- size()는 STL 호환성을 위해 추가됨
+- 둘 다 결과는 같음
+
+
+find
+
+size_type find(const string& str, size_type pos = 0) const;
+	- pos부터 탐색. 부분 문자열 발견 시 첫 문자 인덱스 반환. 없으면 string::npos 리턴
+
+size_type find(const char* s, size_type pos = 0) const;
+
+size_type find(const char* s, size_type pos = 0, size_type n) const;
+	- n개의 문자로 구성되는 부분 처음 나오는 곳
+
+size_type find(char ch, size_type pos = 0) const;
+
+
+rfind()
+- 가장 마지막으로 발생하는 부분 문자열 또는 문자
+
+
+find_first_of()
+- 호출한 문자열에서 매개변수에 있는 문자들 중 가장 먼저 발생하는 문자?
+```
+string snake = "cobra";
+int where = snake.find_first_of("hark");
+cout << where;
+```
+```
+3			// 'r'이 위치한 인덱스 3
+```
+
+
+find_last_of()
+- 가장 나중에 발생하는 문자
+- 'a'가 위치한 인덱스 4 리턴
+
+
+find_first_not_of()
+- 'c' 위치 0 리턴
+
+
+
+행맨 예제
+
+```
+// hangman.cpp
+#include <iostream>
+#include <string>
+#include <cstdlib>
+#include <ctime>
+#include <cctype>
+using std::string;
+
+const int num = 4;
+const string wordlist[num] = { "as", "df", "qwer", "zxcvb" };
+
+int main()
+{
+	using namespace std;
+
+	srand(time(0));
+
+	char play;
+	cout << "행맨 ㄱㄱ? <y/n> ";
+	cin >> play;
+	play = tolower(play);
+	while (play == 'y')
+	{
+		string target = wordlist[rand() % num];
+		int length = target.length();
+		string attempt(length, '-');
+		int guesses = 6;
+		cout << "--------------------------\n" 
+			<< "단어 추측해봐!\n"
+			<< length << "개의 문자로 이루어져 있어.\n"
+			<< "한 번에 한 문자씩 추측해봐.\n"
+			<< "틀릴 수 있는 기회: " << guesses << "번\n";
+		cout << "추측하는 단어: " << attempt << '\n'
+			<< "--------------------------\n";
+
+		string badchars;
+		while (guesses > 0 && attempt != target)
+		{
+			char letter;
+			cout << "문자 추측해봐: ";
+			cin >> letter;
+
+			if (badchars.find(letter) != string::npos ||
+				attempt.find(letter) != string::npos)
+			{
+				cout << "이미 추측한 문자야!! 다시 해!!! \n";
+				continue;
+			}
+			int loc = target.find(letter);
+			if (loc == string::npos)
+			{
+				cout << "땡! 틀렸지롱 \n";
+				--guesses;
+				badchars += letter;
+			}
+			else
+			{
+				cout << "딩동댕! 맞았엉 \n";
+				attempt[loc] = letter;
+				// 같은 문자가 또 있는지 검사
+				loc = target.find(letter, loc + 1);
+				while (loc != string::npos)
+				{
+					attempt[loc] = letter;
+					loc = target.find(letter, loc + 1);
+				}
+			}
+
+			cout << "추측하는 단어: " << attempt << '\n';
+			if (attempt != target)
+			{
+				if (badchars.length() > 0)
+					cout << "틀리게 추측한 문자들: " << badchars << '\n';
+				cout << "틀릴 수 있는 기회: " << guesses << "번\n";
+			}
+			cout << "--------------------------\n";
+		}
+
+		cout << "--------------------------\n";
+		if (guesses > 0)
+			cout << "그렇다. 그것이 수수께끼 단어다! \n";
+		else 
+			cout << "안타깝구만. 수수께끼 단어는 " << target << "이다! \n";
+
+		cout << "게임을 다시 시작할래? <y/n> ";
+		cin >> play;
+		play = tolower(play);
+	}
+
+	cout << "프로그램 종료한다. 빠이 \n";
+	return 0;
+}
+```
+
+
+capacity()
+- 현재 블록의 크기 리턴
+
+reserve()
+- 블록을 위한 최소 크기를 사용자가 요청
+
+
+```
+// str2.cpp
+#include <iostream>
+#include <string>
+
+int main()
+{
+	using namespace std;
+	string empty;
+	string small = "bit";
+	string larger = "asdf zxcv";
+	cout << "크기: \n";
+	cout << "\tempty: " << empty.size() << endl;
+	cout << "\tsmall: " << small.size() << endl;
+	cout << "\tlarger: " << larger.size() << endl;
+
+	cout << "용량: \n";
+	cout << "\tempty: " << empty.capacity() << endl;
+	cout << "\tsmall: " << small.capacity() << endl;
+	cout << "\tlarger: " << larger.capacity() << endl;
+
+	empty.reserve(50);
+	cout << "empty.reserve(50) 이후 용량: "
+		<< empty.capacity() << endl;
+	return 0;
+}
+```
+```
+크기:
+        empty: 0
+        small: 3
+        larger: 9
+용량:
+        empty: 15
+        small: 15
+        larger: 15
+empty.reserve(50) 이후 용량: 63
+```
+
+
+
+string 다양성
+
+템플릿 클래스에 기초
+```
+template<class charT, class traits = char _traits<charT>,
+			class Allocator = allocator<charT>>
+basic_string {...};
+```
+
+char, wchar_t, char16_t, char32_t 형 문자열 사용할 수 있음
+특수화
+
+
+
+
+2. 스마트 포인터 템플릿 클래스
