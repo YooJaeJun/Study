@@ -525,3 +525,488 @@ catch(exception& oe) {}		// runtime_error, exception 객체들을 포착
 
 
 bad_alloc 예외와 new
+
+C++ new 메모리 대입 문제 2가지 방벙 제공
+1. new가 널 포린터를 리턴
+2. new가 bad_alloc 예외를 발생
+
+```
+// newexcp.cpp
+#include <iostream>
+#include <new>
+#include <cstdlib>
+using namespace std;
+
+struct Big
+{
+	double stuff[20000];
+};
+
+int main()
+{
+	Big* pb;
+	try {
+		cout << "큰 메모리 블록 대입을 요청하고 있습니다. \n";
+		pb = new Big[1000000];
+		cout << "메모리 블록 대입 요청이 거부되었습니다. \n";
+	}
+	catch (bad_alloc& ba)
+	{
+		cout << "예외 감지! \n";
+		cout << ba.what() << endl;
+		exit(EXIT_FAILURE);
+	}
+	cout << "메모리 블록이 성공적으로 대입되었습니다. \n";
+	pb[0].stuff[0] = 4;
+	cout << pb[0].stuff[0] << endl;
+	delete[] pb;
+	return 0;
+}
+```
+```
+큰 메모리 블록 대입을 요청하고 있습니다.
+예외 감지!
+bad allocation
+```
+
+
+NULL 포인터와 new
+
+일부 컴파일러는 플래그나 스위치로 세팅한 new 제공
+- new (std::nothrow) T;
+
+```
+// newexcp.cpp
+#include <iostream>
+#include <new>
+#include <cstdlib>
+using namespace std;
+
+struct Big
+{
+	double stuff[20000];
+};
+
+int main()
+{
+	int* pi = new (std::nothrow) int;
+	int* pa = new (std::nothrow) int[500];
+
+	Big* pb;
+	pb = new (std::nothrow) Big[1000000];
+	if (pb == 0)
+	{
+		cout << "메모리 블록 대입 요청이 거부\n";
+			exit(EXIT_FAILURE);
+	}
+}
+```
+
+
+
+예외, 클래스, 상속
+- 하나의 예외 클래스를 다른 것으로부터 파생
+- 클래스 정의 안에 클래스 선언을 내포시킴으로써 예외들을 클래스 안에 병합시킬 수 있다.
+- 그렇게 내포된 선언들은 상속될 수 있다. (자신이 기초 클래스의 역할)
+
+
+```
+// sales.h
+#include <stdexcept>
+#include <string>
+
+class Sales
+{
+public:
+	enum { MONTHS = 12 };
+	class bad_index : public std::logic_error
+	{
+	private:
+		int bi;
+	public:
+		explicit bad_index(int ix,
+			const std::string& s = "Sales 객체에서 인덱스 에러\n");
+		int bi_val() const { return bi; }
+		virtual ~bad_index() throw() {}
+	};
+	explicit Sales(int yy = 0);
+	Sales(int yy, const double* gr, int n);
+	virtual ~Sales() {}
+	int Year() const { return year; }
+	virtual double operator[](int i) const;
+	virtual double& operator[](int i);
+private:
+	double gross[MONTHS];
+	int year;
+};
+
+class LabeledSales : public Sales
+{
+public:
+	class nbad_index : public Sales::bad_index
+	{
+	private:
+		std::string lbl;
+	public:
+		nbad_index(const std::string& lb, int ix,
+			const std::string& s = "LabeledSales 객체에서 인덱스 에러\n");
+		const std::string& label_val() const { return lbl; }
+		virtual ~nbad_index() throw() {}
+	};
+	explicit LabeledSales(const std::string& lb = "없음", int yy = 0);
+	LabeledSales(const std::string& lb, int yy, const double* gr, int n);
+	virtual ~LabeledSales() {}
+	const std::string& Label() const { return label; }
+	virtual double operator[](int i) const;
+	virtual double& operator[](int i);
+private:
+	std::string label;
+};
+```
+
+```
+// sales.cpp
+// #include "sales.h"
+using std::string;
+
+Sales::bad_index::bad_index(int ix, const string& s)
+	: std::logic_error(s), bi(ix) {}
+
+Sales::Sales(int yy)
+{
+	year = yy;
+	for (int i = 0; i < MONTHS; i++)
+		gross[i] = 0;
+}
+
+Sales::Sales(int yy, const double* gr, int n)
+{
+	year = yy;
+	// 생략
+}
+
+double Sales::operator[](int i) const
+{
+	if (i < 0 || i >= MONTHS)
+		throw bad_index(i);
+	return gross[i];
+}
+
+// 이하 생략
+```
+
+```
+// main.cpp
+try {}
+catch (LabeledSales::nbad_index& bad) {}
+catch (Sales::bad_index& bad) {}
+```
+
+
+
+잘못된 예외
+
+```
+terminate_handler set_terminate(terminate_handler f) noexcept;
+```
+
+- terminate_handler는 exception 헤더 파일에 선언되어 있음
+
+```
+double argh(double, double) throw(out_of_bounds);
+
+try {
+	x = argh(a, b);
+}
+catch (out_of_bounds& ex)
+{}
+```
+
+
+```
+unexpected_handler set_unexpected(unexpected_handler f) noexcept;
+```
+
+- set_terminate 함수보다 더 세밀하게 제공하는 set_unexpected
+- terminate() (디폴트), abort(), exit()를 호출하여 프로그램을 종료시킬 수 있음
+- 예외를 발생시킬 수 있음
+
+```
+double argh(double, double) throw(out_of_bounds, bad_exception);
+try {
+	x = argh(a, b);
+}
+catch(out_of_bounds& ex) {}
+catch(bad_exception& ex) {}
+```
+
+
+
+예외 주의사항
+- 프로그램 크기가 커지고, 실행 속도가 떨어짐
+- 템플릿과 어울리지 않음
+	- 템플릿 특수화에 따라 다른 종류 예외 발생하기 때문.
+
+
+
+
+4. RTTI
+
+runtime type identification
+- 실행 시간 데이터형 정보
+
+
+RTTI의 목적
+- 기초 클래스 포인터에 대입하기 위해 포인터가 지시하는 객체의 종류 파악
+- 가상 함수의 경우 굳이 그 객체형을 알 필요 없으나, 
+- 파생 객체가 상속되지 않은 메서드를 가지고 있을 때,
+- 일부 객체들만이 그 메서드를 사용하기 위해, 혹은
+- 디버깅 목적으로 어떤 종류의 객체들이 생성되는지 추적하 싶다.
+
+
+
+RTTI의 동작 방식
+
+dynamic_cast 연산자
+- 기초 클래스형을 지시하는 포인터로부터 파생 클래스형을 지시하는 포인터를 생성한다.
+- 가능하지 않다면, 널 포인터인 0을 리턴한다.
+
+typeid 연산자
+- 어떤 객체의 정확한 데이터형을 식별하는 하나의 값을 리턴한다.
+
+type_info 구조체
+- 어떤 특별한 데이터형에 대한 정보를 저장한다.
+
+
+RTTI는 가상 함수들을 가지고 있는 클래스에 대해서만 사용할 수 있다.
+
+
+
+dynamic_cast 연산자
+- 가장 많이 사용되는 RTTI 요소
+- 객체의 주소를 특정형의 포인터에 안전하게 대입할 수 있는지 알려줌
+
+```
+
+
+- 데이터형 변환이 안전한지 물어보는 것이, 어떤 종류의 객체를 지시하는지 물어보는 것보다 더 유용
+
+```
+	class Grand {};
+	class Superb : public Grand {};
+	class Magnificent : public Superb {};
+
+	Grand* pg = new Grand;
+	Grand* ps = new Superb;
+	// Grand* pm = new Magnificent;
+
+	Superb* pm = dynamic_cast<Superb*>(pg);		// 다형형식이어야 함
+```
+
+
+```
+if (ps = dynamic_cast<Superb*>(pg))		// 'ps = ' 으로 널포인터 체크
+	ps->say();
+```
+
+
+부적절한 요청이 제시될 때, dynamic_cast는 bad_cast형의 예외 발생
+
+```
+#include <typeinfo>
+
+try {
+	Superb& rs = dynamic_cast<Superb&>(rg);
+}
+catch (bad_cast&)
+{ }
+```
+
+
+typeid 연산자와 type_info 클래스
+- typeid 연산자를 사용해 두 객체의 데이터형이 같은지 결정
+- 클래스 이름, 객체로 평가되는 식
+- type_info 객체에 대한 참조를 리턴
+- type_info는 typeinfo 헤더 파일에 정의된 클래스
+```
+typeid(Magnificent) == typeid(*pg);
+```
+- pg가 널포인터면 bad_typeid 예외 발생
+
+```
+typeid(*pg).name;
+```
+- 포인터가 지시하는 객체의 클래스 이름 출력
+
+
+
+RTTI의 오용
+- if else 구문들의 확장된 연쇄에서 typeid를 사용할 경우,
+- dynamic_cast와 가상 함수들을 대신 사용할 수 있는지 확인
+
+
+
+
+5. 데이터형 변환 연산자
+
+dynamic_cast
+const_cast
+static_cast
+reinterpret_cast
+
+
+
+dynamic_cast
+
+```
+High* ph = new High;
+Low* pl = new Low;
+
+pl = dynamic_cast<Low*> ph;
+```
+
+- 업캐스트 허용, 다른 타입캐스팅 노허용
+
+
+
+const_cast
+- 어떤 값을 const나 volatile로, 혹은 그 반대로 변경
+
+```
+High bar;
+const High* pbar = &bar;
+
+High* pb = const_cast<High*>(pbar);				// 맞다
+const Low* pl = const_cast<const Low*>(pbar);	// 틀리다
+```
+
+- C 스타일 일반적인 데이터형 변환은 const성도 변경하고, 데이터형도 바꿀 수 있으므로 위험
+
+
+```
+// constcast.cpp
+#include <iostream>
+using std::cout;
+using std::endl;
+
+void change(const int* pt, int n)
+{
+	int* pc;
+	pc = const_cast<int*>(pt);
+	*pc += n;
+}
+
+int main()
+{
+	int pop1 = 1;
+	const int pop2 = 2;
+	cout << "pop1, pop2: " << pop1 << ", " << pop2 << endl;
+	change(&pop1, -100);
+	change(&pop2, -100);	// 원래 값이 const가 아니어야 const_cast 타입캐스팅이 가능하다.
+	cout << "pop1, pop2: " << pop1 << ", " << pop2 << endl;
+	return 0;
+}
+```
+```
+pop1, pop2: 1, 2
+pop1, pop2: -99, 2
+```
+
+
+
+static_cast
+- 암시적으로 변환할 수 있을 때만 유효
+- ex. High가 Low가 상속관계면 서로 변환은 유효. 관계없는 클래스 간 변환은 비허용
+
+```
+High bar;
+Low blow;
+
+High* pb = static_cast<High*>(&blow);	// 유효한 업캐스트
+Low* pl = static_cast<Low*>(&bar);		// 유효한 다운캐스트
+Pont* pmer = static_cast<Pond*>(&blow);	// 유효하지 않다.
+```
+
+- 다운캐스트 명시적인 데이터형 변환 없이 암시적인 데이터형 변환으로 이루어질 수 있으므로 유효
+
+
+
+reinterpret_cast
+- 위험한 데이터형 변환하기 위한 것
+
+```
+#include <iostream>
+using std::cout;
+
+int main()
+{
+	struct dat { short a; short b; };
+	long value = 0xA224B118;
+	dat* pd = reinterpret_cast<dat*>(&value);
+	cout << pd->a;	// 그 값의 처음 2바이트 출력
+	return 0;
+}
+```
+-20200
+```
+
+모든 것을 허용하진 않는다.
+- 포인터형을, 포인터 표기를 충분히 저장할 수 있는 큰 정수형으로 캐스트할 수 있지만,
+	- 포인터형을 보다 작은 정수형으로 또는 부동소수점형으로는 캐스트할 수 없다.
+- 함수 포인터를 데이터 포인터로, or 데이터 포인터를 함수 포인터로 캐스트할 수 없다.
+
+C++에서는 다음 타입 캐스팅 안됨
+```
+char ch = char (&d);		// char형의 크기가 너무 작아 포인터 구현을 담을 수 없다.
+```
+
+
+
+
+요약
+1. 사전선언
+2. 내포된 클래스
+3. 예외 try catch
+4. RTTI
+5. dynamic_cast: 파생 클래스 포인터를 기초 클래스 포인터로 변환하는 데 사용
+	- 가상 함수 호출에 문제가 없도록 보장
+
+
+
+
+연습문제
+1. 
+	a. friend class clasp;
+	b. class muff; 전방선언 필요
+	c. 컴파일러가 cuff::snip() 항을 인식할 수 있도록 cuff 클래스 선언이 muff 클래스 선언보다 앞에 와야 한다.
+		컴파일러가 snip(muff&)를 인식할 수 있도록 muff에 대한 전방선언이 필요하다.
+
+2. 만들 수 없다.
+- 클래스 A가 클래스 B의 멤버 함수를 프렌드로 가지려면,
+- B 선언이 A 선언보다 앞에 와야 한다. 즉, 전방선언으로 충분하지 않다.
+- 전방선언이 A에게 B가 클래스라는 사실을 알려주지만, B의 멤버 이름들은 알려 주지 않는다.
+- 같은 논리로, B가 A의 멤버 함수를 프렌드로 가지려면, A선언이 B선언보다 앞에 와야 한다.
+- 이 두 요구는 배타적이어서 양립될 수 없다.
+
+
+3. 클래스에 대한 접근은 public 인터페이스를 통해서만 이루어져야 한다.
+
+
+4. 
+throw 구문은 그 함수에 대한 호출을 포함하는 try 구문을 발견할 때까지, 함수 호출들의 연쇄를 거슬러 올라간다.
+try 블록을 발견하면, 프로그램 실행은 그 다음의 일치하는 catch 블록으로 넘어간다.
+
+
+5. 가장 늦은 파생 클래스로부터 가장 이른 파생 클래스 순서로 catch 블록들을 배치해야 한다.
+
+6. 
+- dynamic_cast 방식: Superb 이하 파생된 객체에 대해 true
+- typeid 방식: Superb 객체에 대해서만 true
+
+7. static_cast는 암시적인 타입캐스팅이 모두 허용된다. 업캐스팅은 물론, 다운캐스팅도 허용된다. + 정수형<->열거형 변환 허용 + 수치형들 간 변환 허용
+dynamic_cast는 업캐스팅만을 허용한다. 다운캐스팅 혹은 다른 캐스팅 시도 시 nullptr(0)을 반환한다.
+
+
+
+프로그래밍 연습
+[생략]
