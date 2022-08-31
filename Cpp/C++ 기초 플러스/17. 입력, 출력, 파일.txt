@@ -1,0 +1,1104 @@
+
+1. string 클래스
+
+헤더
+- string 헤더
+- string.h와 cstring은 C스타일 문자열 함수들을 지원하는 것임
+
+string
+- 템플릿 특수화 basic_string<char>에 대한 typedef
+
+- string::npos를 문자열의 최대 길이로 정의 (unsigned int의 최대값)
+
+NBTS(null-byte-terminated-string) 사용
+
+생성자
+	string(const char* s);
+	string(size_type n, char c);							// 문자 c로 초기화된 원소 n개의 string 객체
+	string(const string& str);
+	string();
+	string(const char* s, size_type n);						// 문자 n개까지 제한
+	template<class Iter> string(Iter begin, Iter end);		// [begin, end) 범위 값들로 초기화
+	string(const string& str, size_type pos, size_type n = npos);	
+		// str의 pos에서 시작해서 str의 끝까지 가거나, n 문자를 사용하되 str의 끝을 넘어갈 수 없다.
+	string(string&& str) noexcept;							// (C++11) str은 바뀔 수 있다. (move 생성자)
+	string(initializer_list<char> il);						// (C++11) 초기화 리스트 il에 있는 문자로 초기화
+
+
+```
+#include <iostream>
+#include <string>
+using std::cout;
+
+int main()
+{
+	using namespace std;
+
+	string one("Lottery Winner!");
+	cout << one << endl;
+
+	string two(20, '$');
+	cout << two << endl;
+
+	string three(one);
+	cout << three << endl;
+
+	one += " Ooops!";
+	cout << one << endl;
+	
+	two = "Sorry! that was ";
+	three[0] = 'P';
+	string four;
+	four = two + three;
+	cout << four << endl;
+
+	char alls[] = "All's well that ends well";
+	string five(alls, 20);
+	cout << five << "!\n";
+
+	string six(alls + 6, alls + 10);
+	cout << six << ", ";					// ctor #6
+	string seven(&five[6], &five[10]);
+	cout << seven << "...\n";				// ctor #6 again
+
+	string eight(four, 7, 16);
+	cout << eight << "in motion!" << endl;
+
+	return 0;
+}
+```
+```
+Lottery Winner!
+$$$$$$$$$$$$$$$$$$$$
+Lottery Winner!
+Lottery Winner! Ooops!
+Sorry! that was Pottery Winner!
+All's well that ends!
+well, well...
+that was Potteryin motion!
+```
+
+ctor #6
+- alls + 6 등은 char* 형이다.
+- 템플릿의 Iter가 char* 형으로 대체되어 사용된다.
+
+
+
+C++11 생성자들
+
+string(string&& str) noexcept 생성자
+- 이동 생성자
+- str이 반드시 const인 것만은 아님
+- 18장
+
+string(initializer_list<char> il) 생성자
+- 클래스의 리스트 초기화가 가능
+```
+string p = { 'L', 'i'. 's' };
+string c = { 'L', 'a' };
+```
+
+
+
+string 클래스 입력
+
+c 스타일 문자열
+```
+char info[100];
+cin >> info;
+cin.getline(info, 100);		// 한 행을 읽되, \n은 내버린다.
+cin.get(info, 100);			// 한 행을 읽되, \n은 큐에 남겨둔다.
+```
+
+string 객체
+```
+string s;
+cin >> s;
+getline(cin, stuff);		// 한 행을 읽되, \n은 내버린다.
+```
+
+getline() 두 버전
+```
+cin.getline(info, 100, ':');		// :까지 읽고, :은 내버린다.
+getline(s, ':');					// 위와 동일하나, 잘림 없음
+```
+
+```
+cin.operator>>(fname);		// ostream 클래스 메서드
+operator>>(cin, lname);		// 일반 함수
+```
+
+
+string 제한
+- string::npos로 나타내는 문자열의 최대 허용 크기
+	- unsigned int의 최대 크기
+
+getline() 함수: 다음 세 가지 중 하나 일어날 때까지, 문자들 읽어 하나의 문자열로 저장
+- 파일의 끝을 만났을 때, 입력 스트림의 eofbit가 설정된다.
+	- fail()과 eof() 메서드가 true
+- 구분 문자(디폴트는 \n)에 도달했을 때, 구분 문자는 입력 스트림으로부터 제거되고 저장되지 않음
+- 가능한 최대 문자 수(string::npos와 대입에 사용할 수 있는 메모리의 바이트 수 중 더 적은 것)을 읽었을 때,
+	- 입력 스트림의 failbit가 설정됨
+	- fail() 메서드가 true를 리턴
+
+
+파일 입출력 [생략]
+
+
+
+문자열 작업
+
+<, ==, != 비교
+- 아스키 코드상 
+
+
+- length()는 string 클래스의 오래된 버전
+- size()는 STL 호환성을 위해 추가됨
+- 둘 다 결과는 같음
+
+
+find
+
+size_type find(const string& str, size_type pos = 0) const;
+	- pos부터 탐색. 부분 문자열 발견 시 첫 문자 인덱스 반환. 없으면 string::npos 리턴
+
+size_type find(const char* s, size_type pos = 0) const;
+
+size_type find(const char* s, size_type pos = 0, size_type n) const;
+	- n개의 문자로 구성되는 부분 처음 나오는 곳
+
+size_type find(char ch, size_type pos = 0) const;
+
+
+rfind()
+- 가장 마지막으로 발생하는 부분 문자열 또는 문자
+
+
+find_first_of()
+- 호출한 문자열에서 매개변수에 있는 문자들 중 가장 먼저 발생하는 문자?
+```
+string snake = "cobra";
+int where = snake.find_first_of("hark");
+cout << where;
+```
+```
+3			// 'r'이 위치한 인덱스 3
+```
+
+
+find_last_of()
+- 가장 나중에 발생하는 문자
+- 'a'가 위치한 인덱스 4 리턴
+
+
+find_first_not_of()
+- 'c' 위치 0 리턴
+
+
+
+행맨 예제
+
+```
+// hangman.cpp
+#include <iostream>
+#include <string>
+#include <cstdlib>
+#include <ctime>
+#include <cctype>
+using std::string;
+
+const int num = 4;
+const string wordlist[num] = { "as", "df", "qwer", "zxcvb" };
+
+int main()
+{
+	using namespace std;
+
+	srand(time(0));
+
+	char play;
+	cout << "행맨 ㄱㄱ? <y/n> ";
+	cin >> play;
+	play = tolower(play);
+	while (play == 'y')
+	{
+		string target = wordlist[rand() % num];
+		int length = target.length();
+		string attempt(length, '-');
+		int guesses = 6;
+		cout << "--------------------------\n" 
+			<< "단어 추측해봐!\n"
+			<< length << "개의 문자로 이루어져 있어.\n"
+			<< "한 번에 한 문자씩 추측해봐.\n"
+			<< "틀릴 수 있는 기회: " << guesses << "번\n";
+		cout << "추측하는 단어: " << attempt << '\n'
+			<< "--------------------------\n";
+
+		string badchars;
+		while (guesses > 0 && attempt != target)
+		{
+			char letter;
+			cout << "문자 추측해봐: ";
+			cin >> letter;
+
+			if (badchars.find(letter) != string::npos ||
+				attempt.find(letter) != string::npos)
+			{
+				cout << "이미 추측한 문자야!! 다시 해!!! \n";
+				continue;
+			}
+			int loc = target.find(letter);
+			if (loc == string::npos)
+			{
+				cout << "땡! 틀렸지롱 \n";
+				--guesses;
+				badchars += letter;
+			}
+			else
+			{
+				cout << "딩동댕! 맞았엉 \n";
+				attempt[loc] = letter;
+				// 같은 문자가 또 있는지 검사
+				loc = target.find(letter, loc + 1);
+				while (loc != string::npos)
+				{
+					attempt[loc] = letter;
+					loc = target.find(letter, loc + 1);
+				}
+			}
+
+			cout << "추측하는 단어: " << attempt << '\n';
+			if (attempt != target)
+			{
+				if (badchars.length() > 0)
+					cout << "틀리게 추측한 문자들: " << badchars << '\n';
+				cout << "틀릴 수 있는 기회: " << guesses << "번\n";
+			}
+			cout << "--------------------------\n";
+		}
+
+		cout << "--------------------------\n";
+		if (guesses > 0)
+			cout << "그렇다. 그것이 수수께끼 단어다! \n";
+		else 
+			cout << "안타깝구만. 수수께끼 단어는 " << target << "이다! \n";
+
+		cout << "게임을 다시 시작할래? <y/n> ";
+		cin >> play;
+		play = tolower(play);
+	}
+
+	cout << "프로그램 종료한다. 빠이 \n";
+	return 0;
+}
+```
+
+
+capacity()
+- 현재 블록의 크기 리턴
+
+reserve()
+- 블록을 위한 최소 크기를 사용자가 요청
+
+
+```
+// str2.cpp
+#include <iostream>
+#include <string>
+
+int main()
+{
+	using namespace std;
+	string empty;
+	string small = "bit";
+	string larger = "asdf zxcv";
+	cout << "크기: \n";
+	cout << "\tempty: " << empty.size() << endl;
+	cout << "\tsmall: " << small.size() << endl;
+	cout << "\tlarger: " << larger.size() << endl;
+
+	cout << "용량: \n";
+	cout << "\tempty: " << empty.capacity() << endl;
+	cout << "\tsmall: " << small.capacity() << endl;
+	cout << "\tlarger: " << larger.capacity() << endl;
+
+	empty.reserve(50);
+	cout << "empty.reserve(50) 이후 용량: "
+		<< empty.capacity() << endl;
+	return 0;
+}
+```
+```
+크기:
+        empty: 0
+        small: 3
+        larger: 9
+용량:
+        empty: 15
+        small: 15
+        larger: 15
+empty.reserve(50) 이후 용량: 63
+```
+
+
+
+string 다양성
+
+템플릿 클래스에 기초
+```
+template<class charT, class traits = char _traits<charT>,
+			class Allocator = allocator<charT>>
+basic_string {...};
+```
+
+char, wchar_t, char16_t, char32_t 형 문자열 사용할 수 있음
+특수화
+
+
+
+
+2. 스마트 포인터 템플릿 클래스
+
+포인터처럼 행동하는 클래스 객체
+
+기존 포인터 문제
+- 예외 종료 시 지역 변수가 스택 메모리로부터 자동 삭제되는 문제
+
+auto_ptr은 이제 표준에서 삭제됨
+
+```
+shared_ptr<double> pd;
+double* p_reg = new double;
+pd = p_reg;							// 허용되지 않는다 (암시적 변환)
+pd = shared_ptr<double>(p_reg);		// 허용된다 (명시적 변환)
+shared_ptr<double> pshared = p_reg;	// 허용되지 않는다 (암시적 변환)
+shared_ptr<double> pshared(p_reg);	// 허용된다 (명시적 변환)
+```
+
+같은 객체 두 번 해제 방지
+- 복사를 수행하도록 대입 연산자를 정의
+	- 한 객체가 다른 객체의 복사본이 되므로, 두 포인터는 서로 다른 객체 지시
+- 하나의 스마트 포인터만이 특정 객체를 소유할 수 있도록 소유권 개념 도입
+	- 객체 소유 중일 때만, 파괴자가 그 객체 삭제
+	- 그러고 대입을 통해 소유권을 이전
+	- auto_ptr, unique_ptr
+- 하나의 특정한 객체를 참조하는 스마트 포인터들이 몇 개인지 추적
+	- 참조 카운팅(reference counting)
+	- 대입할 때마다 참조 카운팅이 1씩 증가
+	- 어떤 스마트 포인터의 수명이 다할 때마다 참조 카운팅 1씩 감소
+	- 마지막 스마트 포인터의 수명이 다했을 때 delete 호출
+	- shared_ptr
+
+
+unique_ptr vs auto_ptr
+- 소유권 인수(대입) 시 컴파일 에러 시킴 vs 크래시
+
+unique_ptr 소유권 이전 방법
+
+```
+unique_ptr<string> demo(const char* s)
+{
+	unique_ptr<string> temp(new string(s));
+	return temp;
+}
+unique_ptr<string> ps;
+ps = demo("asdf zxcv");
+```
+
+- demo()가 임시 unique_ptr 리턴.
+- ps는 리턴된 객체 소유권 얻음
+- 리턴된 unique_ptr 삭제
+- ps가 문자열 객체의 소유권을 가지고 있기 때문에 문제 발생하지 않음
+
+- 즉, 하나의 unique_ptr에서 다른 unique_ptr에 대입을 시도할 때,
+	- 원본 객체가 임시 rvalue라면 컴파일러는 시도 허용
+
+
+std::move()
+- 이렇게 unique_ptr to unique_ptr로 대입해주는 표준 라이브러리 함수
+
+```
+unique_ptr<string> ps1, ps2;
+ps1 = demo("asdf zxcv");
+ps2 = move(ps1);				// 가능함
+ps1 = demo(" and qwer");
+```
+
+
+unique_ptr은 new[], delete[] 가지고 있음
+```
+std::unique_ptr<double[]> pda(new double[5]);	// delete[] 사용해야 함
+```
+
+
+```
+#include <bits/stdc++.h>
+using namespace std;
+
+unique_ptr<int> make_int(int n)
+{
+	return unique_ptr<int>(new int(n));
+}
+
+int main()
+{
+	unique_ptr<int> pup(make_int(rand() % 1000));
+	shared_ptr<int> spp(pup);		// pup가 lvalue이기 때문에 허용되지 않음
+	shared_ptr<int> spr(make_int(rand() % 1000));
+}
+```
+
+- shared_ptr 템플릿은 rvalue인 unique_ptr을 shared_ptr로 변환하기 위해 명시적 생성자를 포함하고 있다.
+- shared_ptr이 unique_ptr이 소유했던 객체의 소유권을 이전받는다.
+
+
+
+
+3. 표준 템플릿 라이브러리
+
+STL(Standard Template Library)
+- 컨테이너(container)
+	- 여러 값을 저장할 수 있는 구성 단위
+- 이터레이터(iterator)
+	- 컨테이너 안에서 위치를 옮길 수 있도록 도와주는 객체들
+	- 포인터의 일반화
+- 함수 객체(function object)
+	- 함수와 비슷한 일을 하는 객체
+	- 클래스 객체일 수도 있고, 함수 포인터일 수도 있다.
+		- 함수 이름은 포인터 역할을 하기 때문에 함수 이름도 여기 포함
+- 알고리즘(algorithm)
+
+
+vector
+
+allocator
+- STL 컨테이너 템플릿들이 메모리 관리에 사용할 allocator 객체를 지정하는 선택적 매개변수 사용
+```
+template<class T, class Allocator = allocator<T>>
+class vector {...};
+```
+
+
+[p1, p2)
+- p1부터 p2 바로 앞까지
+- past-the-end를 리턴한다고 한다.
+
+```
+insert(old.begin(), new.begin() + 1, ned.end());
+// old.begin 앞!!에 삽입임
+```
+
+
+STL은 동일한 작업을 하는 비멤버 함수가 있더라도 멤버 함수를 따로 만드는 경우가 있다.
+- 클래스 특화된 알고리즘이 더 효율적이기 때문
+- 벡터 swap()이 비멤버 swap()보다 더 효율적이다!
+- 반면 비멤버 버전은 두 개의 다른 종류의 컨테이너 사이에 내용물 교환을 허용한다.
+
+
+for_each
+
+```
+#include <bits/stdc++.h>
+using namespace std;
+
+void show()
+{
+	cout << "ㅎ" << '\n';
+}
+
+int main()
+{
+	vector<int> v;
+
+	vector<int>::iterator pr;
+	for (pr = v.begin(); pr != v.end(); pr++)
+		show();
+
+	for_each(v.begin(), v.end(), show);		// 위와 같다.
+}
+```
+
+
+random_shuffle
+- 특정 컨테이너만 허용
+
+```
+random_shuffle(v.begin(), v.end());
+```
+
+
+sort
+bool operator<(cons T& r1, const T& r2) { ... }
+
+
+
+for_each도 Range loop로 대체 가능
+
+
+
+
+4. 일반화 프로그래밍
+
+목적
+- 데이터형과 무관한 코드 작성
+
+
+이터레이터 특성
+- 내용 참조(dereference) 가능해야 함
+- 다른 이터레이터에 대입할 수 있어야 함
+- 다른 이터레이터와 비교할 수 있어야 함
+- 모든 원소 훑고 지나갈 수 있어야 함. ++p, p++
+
+```
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Node
+{
+	double item;
+	Node* p_next;
+};
+
+class iterator
+{
+	Node* pt;
+public:
+	iterator() : pt(0) {}
+	iterator(Node* pn) : pt(pn) {}
+	double operator*() { return pt->item; }
+	iterator& operator++()
+	{
+		pt = pt->p_next;
+		return *this;
+	}
+	iterator operator++(int)
+	{
+		iterator tmp = *this;
+		pt = pt->p_next;
+		return tmp;
+	}
+	// 등등
+};
+```
+
+
+5가지 종류 이터레이터
+- 입력
+	- find
+- 출력
+- 전방
+- 전후방(bidirectional)
+- 임의 접근
+	- sort
+
+
+입력 이터레이터
+- 프로그램의 관점에서의 입력
+- 값 변경 x
+- ++p, p++
+- 일회성 읽기
+- 일방향: 증가시킬 순 있지만 되돌릴 순 없다.
+
+
+출력 이터레이터
+- 프로그램에서 컨테이너로 정보 보내려고 이터레이터 사용
+- 값 변경 허용
+- 읽지는 못하지만 쓸 수는 있다.
+- cout은 디스플레이로 보내지는 문자들의 스트림을 변경할 수 있지만,
+	- 화면에 표시된 것들을 읽지 못한다.
+- 일회성 쓰기
+
+
+전방 이터레이터
+- ++연산자
+- 연속된 값들을 반드시 같은 순서로 훑고 지나감
+- 증가된 후에도 저장했다면 그 이전 이터레이터 값 내용 참조 가능
+- 다중 패스 알고리즘
+- 읽기/쓰기 이터레이터
+	int* pi;
+- 일기 전용 이터레이터
+	const int* pi;
+
+
+전후방 이터레이터
+- 전방 후방 탐색
+- reverse
+- --p, p--
+
+
+임의 접근 이터레이터
+- 표준 정렬, 이진 탐색
+- 식
+	a + n
+	r += n
+	*(a + n)
+	등등
+
+
+
+이터레이터 계층
+
+이터레이터 기능			입력	출력	전방	전후방	 임의 접근
+내용 참조해 읽기		o		x		o		o		o
+내용 참조해 쓰기		x		o		o		o		o
+고정 반복 가능한 순서	x		x		o		o		o
+++i, i++			   o	   o	  o		  o		  o
+--i, i--			   x		x	  x		  o		  o
+i[n]					x		x		x		x		o
+i + n					x		x		x		x		o
+i - n					x		x		x		x		o
+i += n					x		x		x		x		o
+i -= n					x		x		x		x		o
+
+
+
+개념, 개량, 모델
+
+전후방 이터레이터
+- 개량(refinement)
+- 전방 이터레이터 개념의 개량
+
+어떤 개념의 특별한 한 구현을 모델이라고 한다.
+
+int 포인터
+- 임의 접근 이터레이터 개념의 한 모델
+
+
+이터레이터
+- 포인터를 일반화한 것
+
+
+copy()
+- 배열을 벡터에 복사할 수 있음
+```
+int arr[4] = {1,2,3,4};
+vector<int> v(4);
+copy(arr, arr + 4, v.begin());
+// 입력, 입력, 출력 이터레이터
+```
+
+
+어댑터
+- 다른 어떤 인터페이스를 STL이 사용하는 인터페이스로 변환하는 클래스나 함수
+
+```
+#include <iterator>
+ostream_iterator<int, char> out_iter(cout, " ");
+
+out_iter++ = 15;
+copy(v.begin(), v.end(), out_iter);
+```
+
+```
+copy(istream_iterator<int, char>(cin),
+	istream_iterator<int, char(), v.begin());
+	```
+
+
+rbegin(), rend()
+
+
+
+컨테이너의 종류
+
+- deque, list, queue, priority_queue, stack, vector, map, multimap, set, multiset, bitset
+- forward_list, unordered_map, unordered_multimap, unordered_set, unordered_multiset
+
+
+복잡성
+- 컴파일 시간
+	iterator
+	value_type
+
+- 고정 시간
+	- 실행 시간에 수행
+	- 객체의 원소 수에 영향받지 않음
+	X u;
+	X();
+	a.begin()
+	a.end()
+	a.size()
+	a.swap(b)
+	
+- 비례 시간
+	- 실행 시간에 수행
+	- 객체의 원소 수에 영향받음
+	X u(a);
+	X u = a;
+	r = a;
+	(&a)->~X();
+	a == b
+	a != b
+
+
+// 보통 대입, 옮기는 게 비례 시간
+
+
+"시간 복잡성"
+- 선형
+	X u(rv);
+	X u = rv;
+	a = rv;
+- 상수
+	a.cbegin()
+	a.cend()
+
+
+시퀀스
+- 기본 컨테이너 개념 개량
+- deque, list 등등 템플릿 클래스들이 모두 시퀀스 개념의 모델
+- 아래 연산 모두 제공
+	X a(n, t)
+	X(n, t)
+	X a(i, j);
+	X(i, j);
+	a.insert(p, t);
+	a.insert(p, n, t);
+	a.insert(p, i, j);
+	a.erase(p);
+	a.erase(p, q);
+	a.clear();
+
+
+선택적 시퀀스 요구사항
+a.front()			vetor, list, deque
+a.back()
+a.push_front(t)		list, deque
+q.push_back(t)		vector, list, deque
+a.pop_front(t)		list, deque
+a.pop_back(t)		vector, list, deque
+a[n]				vector, deque
+a.at(n)				vector, deque
+
+
+a[n] vs a.at(n)
+- a.at(n)은 경계 검사를 수행하여 n이 컨테이너의 유효 범위 위치를 벗어나면 out_of_range 예외 발생
+
+
+
+vector 첫 원소 삽입 시간
+
+deque 첫 원소 삽입 시간
+
+list 배열 표기, 임의 접근 안됨
+	더블 링크드 리스트
+	merge 		두 정렬된 리스트 합병,
+	remove, 	해당 var 있는 노드 모두 제거
+	sort(N log N), 
+	splice(pos, list x) 	pos 앞에 리스트 x 내용 삽입
+	unique 		같은 원소들의 연속된 그룹을 하나의 원소로
+
+forward_list
+	단순 링크드 리스트
+	일방향 이터레이터
+
+queue
+
+priority_queue
+	priority_queue<int> pq2(greater<int>);	// 첨본다
+
+stack
+
+array
+
+
+
+결합 컨테이너 associative container
+	키-값
+	tree 기반
+	
+set, map, multiset, multimap
+
+set
+	set<string, less<string>> A;
+
+set_union
+```
+	set<int, less<int>> a{4,3};
+	set<int, less<int>> b{1,2};
+	set<int, less<int>> c;
+	set_union(a.begin(), a.end(), b.begin(), b.end(), 
+		std::inserter(c, c.begin()));
+
+	for (auto& elem : c) cout << elem << ' ';
+```
+```
+1 2 3 4
+```
+
+set_intersection()
+	교집합
+set_difference()
+	차집합
+
+lower_bound()
+	키 없으면 키보다 큰 가장 작은 정수 위치
+upper_bound()
+	키보다 큰 가장 첫 번째 원소의 위치
+
+	iterator 반환
+
+
+multimap
+	pair 클래스 템플릿 사용
+
+
+순서가 부여되지 않은 결합 컨테이너
+	unordered associative container
+	hash table 데이터 구조에 기반. tree 기반이 아님
+	unordered_set, unordered_multiset, unordered_map, unordered_multimap
+
+
+
+
+5. 함수 객체(Functor)
+
+펑크터, 함수 객체, function object
+
+```
+template<class InputIterator, class Function>
+Function for_each(InputIterator first, InputIterator last, Function f);		// Function f
+```
+
+펑크터 개념
+	제너레이터 generator 는 매개변수 없이 호출하는 함수
+	단항 함수 unary function 는 하나의 매개변수로 호출하는 함수
+	이항 함수 binary function 는 두 개의 매개변수로 호출하는 함수
+
+bool 값 리턴하는 단항 함수는 조건(predicate)
+bool 값을 리턴하는 이항 함수는 이항 조건(binary predicate)
+
+```
+a.remove_if(comp<int>(200));
+```
+
+
+
+미리 정의된 펑크터
+
+
+ostream_iterator<double, char> out(cout, " ");
+// <- 이거 transform 펑터로 못 받는 걱 같은데??
+```
+	const int lim = 5;
+	double arr1[lim] = { 36, 39, 42, 45, 48 };
+	vector<double> v(arr1, arr1 + lim);
+	transform(v.begin(), v.end(), v.begin(), [](int n) { return n * 2; });
+	for (auto& elem : v) cout << elem << ' ';
+```
+
+functional 헤더 파일
+	plus<>()를 포함한 여러 템플릿 클래스 함수 객체들을 정의
+
+
+연산자 - 펑크터 표 [생략]
+
+
+
+어댑터블(순응성, adaptable) 펑크터와 함수 어댑터
+	미리 정의된 펑크터들은 모두 순응성이다.
+
+개념
+	순응성 제너레이터
+	순응성 단항 함수
+	순응성 이항 함수
+	순응성 조건
+	순응성 이항 조건
+
+typedef 멤버
+	result_type
+	first_argument_type
+	second_argument_type
+	등등
+
+펑크터가 순응성?
+	typedef 멤버들의 존재를 가정하는 함수 어댑터 객체에 그것을 사용할 수 있다는 것
+
+
+함수
+	bind1st, bind2nd
+
+펑터 대안: 람다 - 18장
+
+
+
+
+6. 알고리즘
+
+알고리즘 그룹
+	변경 불가 시퀀스 연산
+	변경 가능 시퀀스 연산
+	정렬 및 그와 관련된 연산
+	일반화한 수치 연산
+
+	처음 3그룹은 algorithm 헤더에 정의
+	4번째 그룹은 numeric 헤더에 정의
+
+변경 불가 시퀀스 연산
+	find
+	for_each
+
+변경 가능 시퀀스 연산
+	컨테이너 내용 변경 가능 == 값이나 값이 저장되는 순서 변경 가능
+	transform
+	random_shuffle
+	copy
+
+정렬 및 그와 관련된 연산
+	sort
+	집합연산 등
+
+일반화한 수치 연산
+	범위 내 두 내용 더하기
+	내적 inner product
+	부분합 partial sum
+	인접차 adjacent set_difference
+
+
+알고리즘 분류 또 다른 기준
+	알고리즘의 결과가 놓이는 위치
+		제자리에서 작용 or 복사본 생성
+
+	sort는 제자리 알고리즘(in-place algorithm)
+	copy는 복사 알고리즘(copying algorithm)
+	transform은 둘 다 가능
+
+	replace
+	replace_copy
+
+	함수 원형에 Predicate pred --> 조건(predicate)은 bool 값을 리턴하는 단항 함수
+
+
+
+string 클래스는 STL의 일부는 아니지만, STL을 염두에 두고 설계됨
+
+nextPermutaion 알고리즘
+	사전순
+	범위가 이미 최종 시퀀스 안에 있으면 false 리턴
+
+
+
+함수와 컨테이너 메서드
+
+STL 메서드와 STL 함수 중 어느 것 선택?
+	일반적으로 메서드 사용이 더 낫다.
+		1 특별한 컨테이너를 위해 최적화 되어 있기 때문
+		2 멤버 함수이기 때문에 템플릿 클래스의 메모리 관리 기능을 이용할 수 있고,
+			필요한 경우 컨테이너의 크기를 조정할 수 있다.
+	
+```
+list la;
+la.remove(4);		// 리스트에서 값 4를 모두 삭제한다. 그 후 리스트의 크기를 자동으로 조절한다.
+remove(la.begin(), la.end(), 4);		
+// 리스트의 크기를 조절하지 않고, 남은 원소들을 리스트의 앞쪽에다 놓는다. 
+// 그리고 새로운 끝 다음(past-the-end) 값을 지시하는 이터레이터를 리턴한다. 
+// 그러면 이 이터레이터를 사용해 리스트의 크기를 조절할 수 있다.
+```
+
+```
+#include <bits/stdc++.h>
+using namespace std;
+
+int main()
+{
+	list<int> la{ 1,2,3,3,4 };
+	// la.remove(3);
+	// cout << "size: " << la.size() << '\n';
+	// for (auto& l : la) cout << l << ' ';
+	// cout << '\n';
+
+	remove(la.begin(), la.end(), 3);
+	cout << "size: " << la.size() << '\n';
+	for (auto& l : la) cout << l << ' ';
+}
+```
+```
+size: 5
+1 2 4 3 4
+```
+
+// 위험하네
+
+
+
+
+7. 기타 라이브러리
+
+더 특수화된 클래스 라이브러리
+	complex 헤더 파일
+	valarray 헤더 파일
+
+
+vector / valarray / array ?
+
+valarray
+	STL 아님
+	수치 계산을 지향
+array
+	기존 배열형을 대체
+	여러 STL 메서드 지원
+
+
+
+initializer_list 템플릿(C++11)
+
+초기화용
+```
+vector<int> v{1,2,3};
+vector<int> v({1,2,3});
+```
+	매개변수를 받아들이는 생성자 하나를 클래스가 보유하고 있을 경우,
+	{} 구문을 사용하는 것은 특정한 생성자를 불러온다.
+
+
+
+
+연습문제
+1. 
+```
+class RQ
+{
+private:
+	string st;
+public:
+	RQ(const const char* s) : st(s) {}
+	RQ(const string s) : st(s) {}
+	~RQ() {}
+	RQ& operator=(const RQ& rq);
+};
+```
+생성자, 복사 생성자, 파괴자, 대입 연산자 명시적 정의 필요없음
+
+2. 
+동적할당을 사용하지 않아 사용자의 실수를 막는다.
+편리한 메서드들 사용
+
+3. 
+void ToUpper(string& s)
+{
+	for(auto& ch : s) if (ch >= 'a' && ch <= 'z') ch += ('A' - 'a');
+}
+
+4. [생략]
+
+5. 쓴 것만 계속 쓸 것
+필요한 클럽에 손이 닿기 위해서 많은 클럽들을 먼저 꺼내야 함
+
+6. 중복 시 원소가 추가되지 않는다.
+
+7. 이터레이터는 포인터와 비슷한 인터페이스를 가진 객체를 사용하여 
+배열과 다른 형식의 데이터 구조(더블 링크드 리스트 등)을 훑고 지나갈 수 있다.
+
+8. STL 접근방식은, STL 함수들을 STL 컨테이너 클래스에 대한 이터레이터들과 함께 사용할 수 있을 뿐만 아니라
+보통의 배열을 지시하는 보통의 포인터들에도 STL 함수들을 사용할 수 있게 함으로써 일반성을 높이는 것이다.
+
+9. 
+	1 편리한 메서드들
+	2 동적할당 직접 할 필요없이 추가, 삭제됨
+	3 초기화가 편리함
+
+10. list 객체는 전후방 이터레이터만 가지고 있다.
+sort(), random_shuffle() 함수는 임의 접근 이터레이터를 요구한다.
+
+11. 10 < 15 ? true 리턴
+
