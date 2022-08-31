@@ -804,6 +804,301 @@ array
 
 
 결합 컨테이너 associative container
+	키-값
 	tree 기반
 	
+set, map, multiset, multimap
+
+set
+	set<string, less<string>> A;
+
+set_union
+```
+	set<int, less<int>> a{4,3};
+	set<int, less<int>> b{1,2};
+	set<int, less<int>> c;
+	set_union(a.begin(), a.end(), b.begin(), b.end(), 
+		std::inserter(c, c.begin()));
+
+	for (auto& elem : c) cout << elem << ' ';
+```
+```
+1 2 3 4
+```
+
+set_intersection()
+	교집합
+set_difference()
+	차집합
+
+lower_bound()
+	키 없으면 키보다 큰 가장 작은 정수 위치
+upper_bound()
+	키보다 큰 가장 첫 번째 원소의 위치
+
+	iterator 반환
+
+
+multimap
+	pair 클래스 템플릿 사용
+
+
+순서가 부여되지 않은 결합 컨테이너
+	unordered associative container
+	hash table 데이터 구조에 기반. tree 기반이 아님
+	unordered_set, unordered_multiset, unordered_map, unordered_multimap
+
+
+
+
+5. 함수 객체(Functor)
+
+펑크터, 함수 객체, function object
+
+```
+template<class InputIterator, class Function>
+Function for_each(InputIterator first, InputIterator last, Function f);		// Function f
+```
+
+펑크터 개념
+	제너레이터 generator 는 매개변수 없이 호출하는 함수
+	단항 함수 unary function 는 하나의 매개변수로 호출하는 함수
+	이항 함수 binary function 는 두 개의 매개변수로 호출하는 함수
+
+bool 값 리턴하는 단항 함수는 조건(predicate)
+bool 값을 리턴하는 이항 함수는 이항 조건(binary predicate)
+
+```
+a.remove_if(comp<int>(200));
+```
+
+
+
+미리 정의된 펑크터
+
+
+ostream_iterator<double, char> out(cout, " ");
+// <- 이거 transform 펑터로 못 받는 걱 같은데??
+```
+	const int lim = 5;
+	double arr1[lim] = { 36, 39, 42, 45, 48 };
+	vector<double> v(arr1, arr1 + lim);
+	transform(v.begin(), v.end(), v.begin(), [](int n) { return n * 2; });
+	for (auto& elem : v) cout << elem << ' ';
+```
+
+functional 헤더 파일
+	plus<>()를 포함한 여러 템플릿 클래스 함수 객체들을 정의
+
+
+연산자 - 펑크터 표 [생략]
+
+
+
+어댑터블(순응성, adaptable) 펑크터와 함수 어댑터
+	미리 정의된 펑크터들은 모두 순응성이다.
+
+개념
+	순응성 제너레이터
+	순응성 단항 함수
+	순응성 이항 함수
+	순응성 조건
+	순응성 이항 조건
+
+typedef 멤버
+	result_type
+	first_argument_type
+	second_argument_type
+	등등
+
+펑크터가 순응성?
+	typedef 멤버들의 존재를 가정하는 함수 어댑터 객체에 그것을 사용할 수 있다는 것
+
+
+함수
+	bind1st, bind2nd
+
+펑터 대안: 람다 - 18장
+
+
+
+
+6. 알고리즘
+
+알고리즘 그룹
+	변경 불가 시퀀스 연산
+	변경 가능 시퀀스 연산
+	정렬 및 그와 관련된 연산
+	일반화한 수치 연산
+
+	처음 3그룹은 algorithm 헤더에 정의
+	4번째 그룹은 numeric 헤더에 정의
+
+변경 불가 시퀀스 연산
+	find
+	for_each
+
+변경 가능 시퀀스 연산
+	컨테이너 내용 변경 가능 == 값이나 값이 저장되는 순서 변경 가능
+	transform
+	random_shuffle
+	copy
+
+정렬 및 그와 관련된 연산
+	sort
+	집합연산 등
+
+일반화한 수치 연산
+	범위 내 두 내용 더하기
+	내적 inner product
+	부분합 partial sum
+	인접차 adjacent set_difference
+
+
+알고리즘 분류 또 다른 기준
+	알고리즘의 결과가 놓이는 위치
+		제자리에서 작용 or 복사본 생성
+
+	sort는 제자리 알고리즘(in-place algorithm)
+	copy는 복사 알고리즘(copying algorithm)
+	transform은 둘 다 가능
+
+	replace
+	replace_copy
+
+	함수 원형에 Predicate pred --> 조건(predicate)은 bool 값을 리턴하는 단항 함수
+
+
+
+string 클래스는 STL의 일부는 아니지만, STL을 염두에 두고 설계됨
+
+nextPermutaion 알고리즘
+	사전순
+	범위가 이미 최종 시퀀스 안에 있으면 false 리턴
+
+
+
+함수와 컨테이너 메서드
+
+STL 메서드와 STL 함수 중 어느 것 선택?
+	일반적으로 메서드 사용이 더 낫다.
+		1 특별한 컨테이너를 위해 최적화 되어 있기 때문
+		2 멤버 함수이기 때문에 템플릿 클래스의 메모리 관리 기능을 이용할 수 있고,
+			필요한 경우 컨테이너의 크기를 조정할 수 있다.
+	
+```
+list la;
+la.remove(4);		// 리스트에서 값 4를 모두 삭제한다. 그 후 리스트의 크기를 자동으로 조절한다.
+remove(la.begin(), la.end(), 4);		
+// 리스트의 크기를 조절하지 않고, 남은 원소들을 리스트의 앞쪽에다 놓는다. 
+// 그리고 새로운 끝 다음(past-the-end) 값을 지시하는 이터레이터를 리턴한다. 
+// 그러면 이 이터레이터를 사용해 리스트의 크기를 조절할 수 있다.
+```
+
+```
+#include <bits/stdc++.h>
+using namespace std;
+
+int main()
+{
+	list<int> la{ 1,2,3,3,4 };
+	// la.remove(3);
+	// cout << "size: " << la.size() << '\n';
+	// for (auto& l : la) cout << l << ' ';
+	// cout << '\n';
+
+	remove(la.begin(), la.end(), 3);
+	cout << "size: " << la.size() << '\n';
+	for (auto& l : la) cout << l << ' ';
+}
+```
+```
+size: 5
+1 2 4 3 4
+```
+
+// 위험하네
+
+
+
+
+7. 기타 라이브러리
+
+더 특수화된 클래스 라이브러리
+	complex 헤더 파일
+	valarray 헤더 파일
+
+
+vector / valarray / array ?
+
+valarray
+	STL 아님
+	수치 계산을 지향
+array
+	기존 배열형을 대체
+	여러 STL 메서드 지원
+
+
+
+initializer_list 템플릿(C++11)
+
+초기화용
+```
+vector<int> v{1,2,3};
+vector<int> v({1,2,3});
+```
+	매개변수를 받아들이는 생성자 하나를 클래스가 보유하고 있을 경우,
+	{} 구문을 사용하는 것은 특정한 생성자를 불러온다.
+
+
+
+
+연습문제
+1. 
+```
+class RQ
+{
+private:
+	string st;
+public:
+	RQ(const const char* s) : st(s) {}
+	RQ(const string s) : st(s) {}
+	~RQ() {}
+	RQ& operator=(const RQ& rq);
+};
+```
+생성자, 복사 생성자, 파괴자, 대입 연산자 명시적 정의 필요없음
+
+2. 
+동적할당을 사용하지 않아 사용자의 실수를 막는다.
+편리한 메서드들 사용
+
+3. 
+void ToUpper(string& s)
+{
+	for(auto& ch : s) if (ch >= 'a' && ch <= 'z') ch += ('A' - 'a');
+}
+
+4. [생략]
+
+5. 쓴 것만 계속 쓸 것
+필요한 클럽에 손이 닿기 위해서 많은 클럽들을 먼저 꺼내야 함
+
+6. 중복 시 원소가 추가되지 않는다.
+
+7. 이터레이터는 포인터와 비슷한 인터페이스를 가진 객체를 사용하여 
+배열과 다른 형식의 데이터 구조(더블 링크드 리스트 등)을 훑고 지나갈 수 있다.
+
+8. STL 접근방식은, STL 함수들을 STL 컨테이너 클래스에 대한 이터레이터들과 함께 사용할 수 있을 뿐만 아니라
+보통의 배열을 지시하는 보통의 포인터들에도 STL 함수들을 사용할 수 있게 함으로써 일반성을 높이는 것이다.
+
+9. 
+	1 편리한 메서드들
+	2 동적할당 직접 할 필요없이 추가, 삭제됨
+	3 초기화가 편리함
+
+10. list 객체는 전후방 이터레이터만 가지고 있다.
+sort(), random_shuffle() 함수는 임의 접근 이터레이터를 요구한다.
+
+11. 10 < 15 ? true 리턴
 
