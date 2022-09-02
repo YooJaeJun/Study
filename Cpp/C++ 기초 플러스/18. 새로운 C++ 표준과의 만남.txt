@@ -9,3 +9,346 @@
 	char ch = {1.57e26};
 
 std::initializer_list
+```
+vector<int> a2{10};
+vector<int> a3{10,11,12};
+```
+
+
+선언
+
+auto 
+
+decltype
+	decltype(x) y;		y를 x와 같은 타입으로 만들어라.
+	template 타입 결정하기 전 사용
+
+```
+template<typename T, typename U>
+void ef(T t, U u)
+{
+	decltype(T*U) tu;
+}
+```
+```
+decltype(j) i2;			int
+decltype((j)) i3;		int&
+```
+
+
+반환 타입 추적
+
+auto f2(double, int) -> double
+
+템플릿 함수 반환 타입 특정지음
+
+```
+template<typename T, typename U)
+auto eff(T t, U u) -> decltype(T*U)
+{}
+```
+
+
+템플릿 별칭: using = 
+
+별칭
+
+
+nullptr
+
+
+스마트 포인터
+
+
+예외 지정(Exception Specification) 변화
+
+noexcept
+	예외를 발생하지 않는 함수 명시 키워드
+
+
+범위가 지정된 열거체
+
+enum class
+enum struct
+
+
+클래스 변화
+
+explicit 변환 연산자
+	암시적 변환 (클래스 객체) = 0.5; 등이 허용되지 않음
+
+```
+operator int() const;
+explicit operator double() const;
+// ...
+int n = a;		// 허용됨
+double x = b;	// 허용되지 않음
+x = double(b);	// 명시적 변환, 허용됨
+```
+
+
+클래스 내 멤버 초기화
+	기본 값은 생성자가 멤버 초기화 리스트에 적용한 값이 오버라이딩 된 것
+
+
+
+템플릿과 STL 변화
+
+범위 기반 반복문
+
+
+새 STL 컨테이너
+	forward_list, unordered_map 등
+
+
+새 STL 함수
+	cbegin(), cend()
+	move semantics 이따가 설명
+
+
+valarray 업그레이드
+
+
+export 제거
+
+
+꺾쇠 괄호 공백 노필수
+
+
+
+rvalue 참조
+
+```
+int x = 10;
+int y = 23;
+int&& r1 = 13;
+int&& r2 = x + y;
+double&& r3 = std::sqrt(2.0);
+```
+
+
+
+
+2. Move Semantics과 Rvalue 참조
+
+임시 객체 생성 낭비
+주 데이터 이동시키는 것을 피하고 관리 정보만 조정
+
+```
+// 일반적인 깊은 복사 방식
+Useless::Useless(const Useless& f) : n(f.n)
+{
+	++ct;
+	pc = new char[n];
+	for(int i=0; i<n; i++)
+		pc[i] = f.pc[i];
+}
+
+// 이동 생성자
+Useless::Useless(Useless&& f) : n(f.n)
+{
+	++ct;
+	pc = f.pc;		// 주소 가로챔
+	f.pc = nullptr;	// 이전 객체가 아무것도 반환하지 않도록 함
+	f.n = 0;
+}
+```
+
+delete[] 가 널 포인터에 적용될 때 에러가 발생하지 않으므로,
+	생성자는 원래 포인터를 널 포인터로 설정한다.
+
+이런 소유권 도용은 종종 pilfering(필퍼링, 좀도둑질)이라 불린다.
+
+
+
+이동 생성자 분석
+```
+Useless four(one + three);
+// Useless::Useless(Useless&&) 호출
+```
+
+lvalue 참조를 갖는 1개의 생성자와 rvalue 참조를 가진 두 번째 생성자의 존재
+
+복사생성자라면 임시 객체로 초기화될 것
+
+
+
+대입
+
+이동 대입 연산자
+
+```
+// 복사 대입 연산자
+Useless& Useless::operator=(const Useless& f)
+{
+	if (this == &f) return *this;
+	delete[] pc;
+	n = f.n;
+	pc = new char[n];
+	for(int i=-; i<n; i++)
+		pc[i] = f.pc[i];
+	return *this;
+}
+
+// 이동 대입 연산자
+Useless& Useless::operator=(Useless&& f)
+{
+	if (this == &f) return *this;
+	delete[] pc;
+	n = f.n;
+	
+	pc = f.pc;
+	f.n = 0;
+	f.pc = nullptr;
+	return *this;
+}
+```
+원래 데이터를 지우고 소스 객체를 가로챈다.
+	한 포인터만 데이터 가리키는 것이 중요하므로 소스 객체에서 포인터를 널 포인터로 설정한다.
+
+
+
+강제 이동
+
+std::move(one);
+	이동 대입 호출
+
+STL 클래스는 복사 생성자, 이동 생성자, 복사 대입 연산자, 이동 대입 연산자 모두 가지고 있다.
+
+
+
+
+3. 새로운 클래스 형태
+
+
+
+특별한 멤버 함수들
+	6종 기본 생성자, 소멸자 + 저 위 4개
+
+
+
+기본과 삭제 함수
+
+default 키워드
+delete 키워드
+
+복사 생성 및 대입이 불가능하게 하고, 이동 생성 및 대입을 사용할 때.
+
+
+
+위임 생성자
+
+위임(delegation)
+	다른 생성자의 정의의 일부를 생성자로 사용할 수 있게 함
+
+
+
+상속 생성자
+
+상속된 클래스에서 생성자로 사용
+
+
+
+가상 함수 관리: override와 final
+
+	의미를 갖는 식별자
+
+
+
+
+4. 람다 함수들
+
+```
+[&count](int x){count += (x % 13 == 0);}
+```
+
+
+함수 포인터, 펑크터, 그리고 람다 사용법
+
+```
+bool f(int x) { return x % 13 == 0; }
+int count3 = std::count_if(numbers.begin(), numbers.end(), f);		// 함수 포인터
+
+class ...
+{
+	bool operator()(int x) { return x % dv == 0; }
+};
+count3 = std::count_if(numbers.begin(), numbers.end(), f_mod(3));	// 함수 객체 Functor
+
+
+int count3 = std::count_if(numbers.begin(), numbers.end(), 
+	[](int x){ return x % 3 == 0; });		// 람다
+
+```
+
+람다에서 본문이 단일 구문을 반환하는 구조라면 타입은 자동으로 결정된다.
+	그렇지 않다면   ->T   문법 필요
+
+
+
+왜 람다인가
+	사용하고 싶은 곳 가까이에 필요한 것 정의
+	코드 수정 시 모든 컴포넌트가 손에 닿기 쉬운 곳에 있길 원함
+
+람다 한 번만 작성
+	auto mod3 = [](int x) { return x % 3 == 0; } 
+	bool result = mod3(z);
+
+
+[&]
+	참조한 모든 자동화된 변수 접근
+[=]
+	값으로 모든 자동화된 변수 접근
+
+[=, &ed] 등 혼합 사용법
+
+```
+int count13 = 0;
+std::for_each(ns.begin(), ns.end(), [&count13]
+	(int x) { count13 += x % 13 == 0; });
+```
+
+
+
+
+5. 래퍼(Wrapper)
+
+C++은 각 래퍼와 어댑터 제공
+
+
+
+함수 래퍼와 템플릿 비효율성
+
+인스턴스를 1개 가지고 호출하는 형태로 수정하자.
+
+```
+function<double(double)> ef1 = dub;
+function<double(double)> ef2 = square;
+function<double(double)> ef3 = Fq(10.0);
+function<double(double)> ef4 = Fp(10.0);
+function<double(double)> ef5 = [](double u) { return u * u; };
+function<double(double)> ef6 = [](double u) { return u + u / 2.0; };
+```
+
+
+
+더 많은 옵션
+
+```
+typedef function<double(double)> fdd;		// 타입 선언 간소화
+cout << use_f(y, fdd(dub)) << endl;			// 생성하고 dub에 객체 초기화
+```
+
+```
+#include <functional>
+template <typename T>
+T use_f(T v, std::function<T(T)> f)
+{ ... }
+// ...
+cout << use_f<double(y, dub) << endl;
+```
+
+
+
+
+6. 가변인자 템플릿
