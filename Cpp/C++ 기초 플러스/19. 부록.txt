@@ -28,5 +28,303 @@ C. ASCII 문자 세트
 
 D. 연산자 우선순위
 
-우선순위 같은 결합성
+결합성
+	왼쪽에서 오른쪽(L-R) 결합성
+	오른쪽에서 왼쪽(R-L) 결합성
+
+	같은 그룹에 속해 있는  연산자들은 같은 우선순위와 같은 결합성을 가진다.
+
+우선순위 그룹
+순위	연산자			결합규칙	의미	
+1		::						사용 범위 결정 연산자
+2		(expression)			괄호로 묶기
+		()				L-R		함수 호출
+		()						값 생성, 즉 type(expr)
+		[]						배열 인덱스
+		.						직접 멤버 연산자
+		->						간접 멤버 연산자
+		++						증가 연산자, 접미어
+		--						감소 연산자, 접미어
+		const_cast				특수화된 데이터형 변환
+		dynamic_cast			특수화된 데이터형 변환
+		reinterpret_cast		특수화된 데이터형 변환
+		static_cast				특수화된 데이터형 변환
+		typeid					데이터형 인식
+3		!				R-L		논리 부정
+		~						비트 부정
+		+						단항 플러스
+		-						단항 마이너스
+		++						증가 연산자, 접두어
+		--						감소 연산자, 접두어
+		&						주소
+		*						내용 참조(간접 값)
+		()						데이터형 변환, (type) expr
+		sizeof					바이트 단위의 크기
+		alignof					alignment 요구치
+		new						동적으로 메모리 대입
+		new []					동적으로 배열 대입
+		delete					동적으로 대입된 메모리 해제
+		delete []				동적으로 대입된 배열 해제
+		noexcept				연산이 예외를 나타낼 경우 거짓을 리턴한다.
+4		.*				L-R		멤버 내용 참조
+		->*						간접멤버 내용 참조
+5		*, /, %			L-R 
+6		+, -			L-R		
+7		<<, >>			L-R		비트들을 왼, 오른쪽으로 시프트
+8		<, <=, >=, >	L-R		
+9		==, !=			L-R
+10		&				L-R		비트 AND
+11		^				L-R		비트 XOR(배타적 OR)
+12		|				L-R		비트 OR
+13		&&				L-R		논리 AND
+14		||				L-R		논리 OR
+15		:?				R-L		조건식
+16		=, *=, /=, %=	R-L		00 후 대입
+		+=, -=
+		&=, ^=, |=				비트 AND, XOR, OR 후 대입
+		<<=, >>=
+17		throw			L-R		예외 발생
+18		,				L-R		두 수식을 하나로 결합
+
+
+단항(unary), 이항(binary) 연산자
+
+```
+	char* str = "Whoa";
+	char ch = *str++ 
+	char ch = *++str;
+```
+	에서 ++가 *보다 연산자 우선순위가 더 높다. 
+	*str 대입 후, 포인터 str++ 증가. 위에선 'h' 지시함
+
+	++ 접두는 *와 우선순위 같다. R-L
+	포인터 str이 증가된 후 str이 지시하는 내용이 ch 대입
+
+
+		
+
+E. 다른 연산자들
+
+<<, >>
+
+```
+int x = 20;
+int y = x << 3;
+```
+	x의 값 변경하지 않음
+
+어떤 시스템에선 시프트 연산자 사용이 곱셈 나눗셈 연산보다 더 빠르나,
+	컴파일러가 점점 더 코드를 최적화하고 있기 때문에 그러한 차이가 없어지고 있다.
+
+
+
+비트 논리 연산자
+
+~x
+	보수(complement)
+	1-0 전환
+|, ^ 등
+
+
+
+비트 연산자의 다른 표기 방식
+	comple, bitand 등 비트연산자 기호들이 문자 세트에 업는 국가들을 위한 것
+
+
+
+자주 사용하는 비트 연산자 테크닉
+
+비트 연산자
+
+비트 on
+```
+target = target | bit;
+target |= bi;
+```
+	비트 항상 1로 설정
+	1또는0을 1과 OR연산하면 항상 1
+
+
+비트 반전
+```
+target = target ^ bit;
+target ^= bit;
+```
+	1 XOR 0 == 1
+
+
+비트 off
+```
+target = target & ~bit;
+// target &= ~bit;
+```
+
+
+비트 값 검사
+```
+if (target & bit)
+```
+	특정 비트 1로 설정됐는지 알고 싶을 때
+
+
+
+E2. 멤버 내용 참조 연산자
+
+```
+int Example::*pt = &Exaple::inches;
+cout << ob1.*pt << endl;	// ob1의 inches 멤버를 출력한다.
+```
+
+.*와 ->*
+	멤버 내용 참조 연산자(member dereferencing operator)
+
+
+
+E3. alignof(C++11)
+
+데이터가 메모리에 저장되는 방식에 제한둘 수 있다.
+
+alignof(int)	// 4
+	4의 배수의 정렬 범위
+
+
+구조체 크기
+
+```
+#include <bits/stdc++.h>
+using namespace std;
+
+struct things1
+{
+	char ch;
+	int a;
+	double x;
+};
+
+struct things2
+{
+	int a;
+	double x;
+	char ch;
+};
+
+int main()
+{
+	cout << sizeof(things1) << endl;	// 16
+	cout << sizeof(things2) << endl;	// 24
+	return 0;
+}
+```
+```
+16
+24
+```
+
+
+
+E4. noexcept(C++11)
+
+예외-->거짓 리턴
+
+
+
+
+F. string 템플릿 클래스
+F1. 13개의 데이터형과 하나의 상수
+F2. 데이터 정보, 생성자, 기타
+
+size capacity
+
+resize
+	n > npos면 out_of_range 예외 발생
+	그렇지 않으면 문자열 크기를 n으로 변경함
+	n < size()면, 문자열의 끝을 잘라 버린다.
+	n > size()면 문자열 charT(0) (== null)문자로 그 문자열을 채운다.
+
+reserve
+	capacity()를 res_arg보다 크거나 같게 설정함
+	문자열을 다시 대입하므로 이전 참조, 이터레이터, 이전 문자열 포인터가 더 이상 유효하지 않다.
+
+
+
+F3. 문자열 접근
+
+reference
+
+
+
+F4. 기본적인 대입
+F5. 문자열 검색
+
+검색 실패 string::npos
+
+rfind 등
+
+
+
+F6. 비교 메서드와 함수
+
+compare(처음, 끝, 비교할 문자);
+
+
+
+F7. 문자열 변경
+
+append
+assign
+insert
+erase
+replace
+copy
+swap
+
+
+
+F8. 출력과 입력
+
+
+
+
+G. STL 메서드와 함수
+
+1. STL과 C++11
+
+vector emplace_back
+
+```
+vi.emplace_back(8.2, 2.8, 3);
+```
+가변인자 템플릿
+
+
+
+2. 모든 컨테이너에 공통인 멤버들
+value_type
+reference
+difference_type		이터레이터 사이의 거리
+등
+
+
+X u = a;		복사 생성자
+등
+
+
+
+
+G3. 시퀀스 컨테이너를 위한 추가 멤버들
+
+시퀀스 컨테이너
+
+splice
+remove_if
+unique
+merge
+
+
+
+
+G4. 집합과 맵에 사용되는 다른 멤버들
+
+결합 컨테이너
+
 
