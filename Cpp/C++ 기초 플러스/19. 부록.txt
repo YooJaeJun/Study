@@ -328,3 +328,66 @@ G4. 집합과 맵에 사용되는 다른 멤버들
 결합 컨테이너
 
 
+
+G5. 순서가 부여되지 않은 연관 컨테이너(C++11)
+
+unordered_
+
+
+
+G6.  STL 함수들
+
+무변경(non-modifying) 시퀀스 연산
+변경(multating) 시퀀스 연산
+소밑 및 관련된 연산자
+수치 연산
+
+is_permutation
+
+copy_n
+shuffle
+move
+
+includes
+minmax	pair로 반환
+
+accumulate
+
+
+
+
+H. 좋은 읽을거리와 인터넷 리소스
+I. ANSI/ISO 표준 C++로 전환
+
+1. 전처리기 지시자의 대체
+#ifdef
+
+
+#define 대신 const로 상수 정의
+
+C++의 const는 변수들과 C의 const가 디폴트로 사용하는 외부 링크(external linkage) 대신,
+	외부 const 값들에 대해서 내부 링크(internal linkage)를 사용한다.
+	const 사용되는 파일 안에서 정의된 const를 요구한다.
+	여러 개의 파일들이 공통으로 사용하는 하나의 헤더 파일 안에 const 정의들을 모아놓을 수 있다.
+	이것은, 내부 링크에 대해서는 에러를 발생시키지 않지만, 외부 링크에 대해서는 컴파일 에러 발생
+
+#ifndef
+#define
+#endif
+은 컴파일 제어 용도로 여전히 유효
+
+
+#define 대신 inline 짧은 함수 정의
+	z++ 같은 값을 사용하는 경우 제대로 처리하지 못함
+	
+
+
+2. 함수 원형 사용하기
+3. 데이터형 변환
+4. malloc, free ==> new delete
+5. 새로운 헤더 파일 체계 사용하기
+6. 이름 공간 사용하기
+7. 스마트 포인터
+8. string 클래스 사용하기
+9. STL 사용하기
+
