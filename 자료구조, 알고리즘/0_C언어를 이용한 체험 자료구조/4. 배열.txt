@@ -4,3 +4,374 @@
 배열, 배열 리스트, 연결 리스트, 스택, 큐
 
 배열(Array)
+
+
+1. 1차원 배열
+
+    정해진 개수의 셀(cell)/항목(item)/원소(element)들이 물리적으로 연속적으로 배치되는 구조
+
+    컴퓨터의 주기억장치(main memory)는 주소값만으로 랜덤한 장소를 동일한 시간에 접근할 수 있다.
+        이러한 이유로 컴퓨터의 주 기억 장치를 RAM(random access memory)라고 한다.
+        인덱스가 주소의 역할.
+        주기억장치는 개념적으로는 1차원 배열인 셈
+
+    코드
+        [생략] 쓸 가치가 없음...
+
+    실습문제
+        [생략]
+
+
+2. 2차원 배열
+    1. 2차원 배열의 정의
+    2. 2차원 배열 사용: (기본)행렬 연산 구현
+
+        ```
+        #include <stdio.h>
+
+        void matrixPrint(const int a[3][3]);
+        void matrixAdd(const int a[3][3], const int b[3][3], int result[3][3]);
+        void matrixMultiply(const int a[3][3], const int b[3][3], int result[3][3]);
+
+        void matrixPrint(const int a[3][3])
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    printf("%5d ", a[j][i]);
+                }
+                printf("\n");
+            }
+            printf("\n");
+        }
+
+        void matrixAdd(const int a[3][3], const int b[3][3], int result[3][3])
+        {
+            for (int j = 0; j < 3; j++)
+                for (int i = 0; i < 3; i++)
+                    result[j][i] = a[j][i] + b[j][i];
+        }
+        // 행렬곱 중요
+        void matrixMultiply(const int a[3][3], const int b[3][3], int result[3][3])
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    result[j][i] = 0;
+                    for (int k = 0; k < 3; k++)
+                    {
+                        result[j][i] += a[j][k] * b[k][i];
+                    }
+                }
+            }
+        }
+
+        int main()
+        {
+            int a[3][3] = { {1,2,3},{2,3,4},{1,2,2} };
+            int b[3][3] = { {2,4,3},{4,3,4},{1,5,2} };
+            int c[3][3];
+
+            matrixPrint(a);
+            matrixPrint(b);
+            matrixAdd(a, b, c);
+            matrixPrint(c);
+            matrixMultiply(a, b, c);
+            matrixPrint(c);
+
+            return 0;
+        } 
+        ```
+    
+    실습문제
+
+        ```
+        #include <iostream>
+
+        const int n = 10;
+
+        void matrixPrint(const int a[n][n]);
+        void matrixAdd(const int a[n][n], const int b[n][n], int result[n][n]);
+        void matrixMultiply(const int a[n][n], const int b[n][n], int result[n][n]);
+
+        void matrixPrint(const int a[n][n])
+        {
+            for (int j = 0; j < n; j++)
+            {
+                for (int i = 0; i < n; i++)
+                {
+                    printf("%5d ", a[j][i]);
+                }
+                printf("\n");
+            }
+            printf("\n");
+        }
+
+        void matrixAdd(const int a[n][n], const int b[n][n], int result[n][n])
+        {
+            for (int j = 0; j < n; j++)
+                for (int i = 0; i < n; i++)
+                    result[j][i] = a[j][i] + b[j][i];
+        }
+        // 행렬곱 중요
+        void matrixMultiply(const int a[n][n], const int b[n][n], int result[n][n])
+        {
+            for (int j = 0; j < n; j++)
+            {
+                for (int i = 0; i < n; i++)
+                {
+                    result[j][i] = 0;
+                    for (int k = 0; k < n; k++)
+                    {
+                        result[j][i] += a[j][k] * b[k][i];
+                    }
+                }
+            }
+        }
+
+        int main()
+        {
+            /*
+            int a[3][3] = { {1,2,3},{2,3,4},{1,2,2} };
+            int b[3][3] = { {2,4,3},{4,3,4},{1,5,2} };
+            int c[3][3];
+
+            matrixPrint(a);
+            matrixPrint(b);
+            matrixAdd(a, b, c);
+            matrixPrint(c);
+            matrixMultiply(a, b, c);
+            matrixPrint(c);
+            */
+            
+            // 실습문제
+            // 1
+            using namespace std;
+            cout << "\n\n";
+            int d[10][10];
+            for (int i = 0; i < 10; i++)
+                for (int j = 0; j < 10; j++)
+                    d[i][j] = i + j;
+
+            for (int i = 0; i < 10; i++)
+                for (int j = 0; j < 10; j++)
+                    d[i][j] = max(i, j);
+
+            for (int i = 0; i < 10; i++)
+                for (int j = 0; j < 10; j++)
+                    d[i][j] = i > j ? 0 : max(i, j);
+            matrixPrint(d);
+
+            int coef = 9;
+            for (int i = 0; i < 10; i++)
+            {
+                for (int j = 0; j < 10; j++)
+                {
+                    d[i][j] = (i == j || i == j - coef) ? 1 : 0;
+                }
+                coef -= 2;
+            }
+            matrixPrint(d);
+
+            for (int i = 0; i < 10; i++)
+                for (int j = 0; j < 10; j++)
+                    d[i][j] = (i == 0 || j == 0 || i == 9 || j == 9) ? 0 : 1;
+            matrixPrint(d);
+
+            for (int i = 0; i < 10; i++)
+                for (int j = 0; j < 10; j++)
+                    d[i][j] = (i == 0 || j == 0 || i == 9 || j == 9 ||
+                        i == 1 || j == 1 || i == 8 || j == 8) ? 
+                    0 : 1;
+            matrixPrint(d);
+
+            // 2
+            for (int i = 0; i < 10; i++)
+                for (int j = 0; j < 10; j++)
+                    d[i][j] = i > 4 ? 1 : 0;
+            matrixPrint(d);
+
+            for (int i = 0; i < 10; i++)
+                for (int j = 0; j < 10; j++)
+                    d[i][j] = j <= 4 ? 1 : 0;
+            matrixPrint(d);
+
+            return 0;
+        }
+        ```
+
+
+    3. 벽돌 깨기 게임에 벽돌 배치하기
+
+    4. 3차원 배열의 응용: 숫자 인식 프로그램
+
+    5. openFrameworks 사용을 위한 객체 지향 프로그래밍 소개
+
+        객체 지향 프로그래밍 object-oriented programming
+
+        메쏘드
+
+    6. 2차원 배열 == 이미지(image)
+
+
+3. 구조체
+
+    논리적으로 관련있는 항목(field)들을 하나의 이름으로 묶어서 사용한 것
+    배열은 변수를 선언하는 것, 구조체는 자료형을 선언하는 것
+
+    1.
+    2.
+        call-by-~~~
+
+    3. typedef
+
+    4. 2차원 행렬 연산 구현
+
+        Matrix 클래스
+        ```
+        #include <iostream>
+        using namespace std;
+
+        typedef int item;
+        class Matrix
+        {
+        public:
+            int col, row;
+            item** var;
+
+            Matrix* New(int row, int col);
+            void Init(Matrix* m, item* src);
+            void Free(Matrix* m);
+            Matrix* Multiply(const Matrix* a, const Matrix* b);
+            Matrix* Add(const Matrix* a, const Matrix* b);
+            void Print(Matrix* m);
+        };
+
+        Matrix* Matrix::New(int row, int col)							
+        {
+            Matrix* m;
+
+            m = (Matrix*)malloc(sizeof(Matrix));
+            m->row = row;
+            m->col = col;
+            m->var = (item**)malloc(sizeof(item*) * row);
+
+            for (int i = 0; i < row; i++)
+            {
+                m->var[i] = (item*)malloc(sizeof(item) * col);
+                memset(m->var[i], 0, sizeof(item) * col);
+            }
+            return m;
+        }
+
+        void	Matrix::Free(Matrix* m)
+        {
+            for (int i = 0; i < m->row; i++)
+            {
+                free(m->var[i]);
+            }
+            free(m->var);
+            free(m);
+        }
+
+        // 1차원 배열 형태를 2차원 배열로 초기화
+        void	Matrix::Init(Matrix* m, item* src)
+        {
+            for (int i = 0; i < m->row; i++)
+            {
+                for (int j = 0; j < m->col; j++)
+                {
+                    m->var[i][j] = src[i * m->col + j];
+                }
+            }
+        }
+
+        Matrix* Matrix::Add(const Matrix* a, const Matrix* b)
+        {
+            Matrix* m;
+
+            if (a->col != b->col || a->row != b->row) return nullptr;
+            
+            m = New(a->row, a->col);
+            for (int i = 0; i < a->row; i++)
+            {
+                for (int j = 0; j < a->col; j++)
+                {
+                    m->var[i][j] = a->var[i][j] + b->var[i][j];
+                }
+            }
+            return m;
+        }
+
+        Matrix* Matrix::Multiply(const Matrix* a, const Matrix* b)
+        {
+            Matrix* m;
+            int col, row, iter;
+
+            if (a->col != b->row) return nullptr;
+
+            row = a->row;
+            col = b->col;
+            iter = a->col;
+
+            m = New(row, col);
+            for (int i = 0; i < row; i++)
+            {
+                for (int j = 0; j < col; j++)
+                {
+                    for (int k = 0; k < iter; k++)
+                    {
+                        m->var[i][j] += a->var[j][k] * b->var[k][i];
+                    }
+                }
+            }
+            return m;
+        }
+
+        void Matrix::Print(Matrix* m)
+        {
+            for (int i = 0; i < m->row; i++)
+            {
+                for (int j = 0; j < m->col; j++)
+                {
+                    printf("%5d ", m->var[i][j]);
+                }
+                printf("\n");
+            }
+            printf("\n");
+        }
+
+
+        int main()
+        {
+            item a[] = { 1,2,3,2,3,4,1,2,2 };
+            item b[] = { 2,4,3,4,3,4,1,5,2 };
+
+            // 행렬 생성
+            Matrix m;
+            Matrix* m1 = m.New(3, 3);
+            m.Init(m1, a);
+            m.Print(m1);
+
+            Matrix* m2 = m.New(3, 3);
+            m.Init(m2, b);
+            m.Print(m2);
+
+            Matrix* m3;
+            m3 = m.Add(m1, m2);
+            m.Print(m3);
+
+            m3 = m.Multiply(m1, m2);
+            m.Print(m3);
+
+            m.Free(m1);
+            m.Free(m2);
+            m.Free(m3);
+
+            return 0;
+        }
+        ```
+
+4. 희소 행렬 (sparse matrix)
