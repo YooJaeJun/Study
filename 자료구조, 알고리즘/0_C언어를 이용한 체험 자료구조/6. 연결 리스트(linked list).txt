@@ -1,0 +1,540 @@
+
+링크(link, 포인터)
+    물리적으로 연속해 배치될 필요 없음
+    데이터 추가, 삭제 용이
+
+
+1. 연결 리스트 기본
+    노드
+        element data, Node* next
+    
+    리스트의 크기를 알 수 없는 경우 적합
+
+    연결 리스트는 즉시 접근(random access) 불가능
+        첫 노드부터 하나씩 포인터를 따라가야 함
+    
+    예제
+
+    ```
+    #include <iostream>
+    using namespace std;
+
+    class student
+    {
+    public:
+        int id;
+        string name;
+        int grade;
+        student* next;
+    public:
+        void printStudent();
+    };
+
+    void student::printStudent()
+    {
+        student* cur = this;
+        while (cur != nullptr)
+        {
+            printf("%d %20s %d\n", cur->id, cur->name.c_str(), cur->grade);
+            cur = cur->next;
+        }
+    }
+
+    int main()
+    {
+        student me = { 1, "a", 1, nullptr };
+        student you = { 2, "b", 4, nullptr };
+        me.next = &you;
+
+        student* start = &me;
+        start->printStudent();
+
+        return 0;
+    }
+    ```
+
+    단일 singly, 이중 doubly, 원형 circular
+
+    
+2. C 언어에서의 포인터
+
+    1. 포인터 고찰
+
+        전역, 지역변수 주소 확연히 구분된다.
+
+        * 간접 참조 연산자(indirection operator)
+
+        [생략]
+
+    2. 포인터 변수의 연산
+        [생략]
+
+    3. 포인터 변수의 장점
+        포인터는 2, 3, n차 배열까지 자유롭게 할당
+        값을 배열로 반환해야 할 때 구조체, 공용체 따위로 포장할 필요 없음
+            메모리 소모 줄이고, 성능 향상
+        함수가 반환할 값이 없어져야 할 값이 아니라면 포인터로 반환해서 계속 사용
+        적절한 용량 동적 할당
+
+    4. 배열과 포인터의 차이점
+    
+        ```
+        char buf[] = "asdf";
+        *buf = '*';
+        cout << buf << '\n';
+
+        const char* buf2 = "asdf";
+        *buf2 = '*';                // 식이 수정할 수 있는 lvalue여야 합니다.
+        cout << buf2 << '\n';
+        ```
+
+        상수값을 바꾸려는 시도
+
+    5. 포인터와 문자열
+
+    6. 포인터를 이용한 동적 메모리 할당
+        함수에서 선언한 지역변수 배열을 반환할 때 사라지므로 유의
+
+        ```
+        #include <iostream>
+        using namespace std;
+
+        char* inputName()
+        {
+            char name[100] = "adsf";
+            return name;
+        }
+
+        int main()
+        {
+            char* name;
+            name = inputName();
+            cout << name;
+            return 0;
+        }
+        ```
+        --> 댕글링 포인터
+
+
+        ```
+        #include <iostream>
+        using namespace std;
+
+        const char* inputName()
+        {
+            const char* name = "adsf";
+            return name;
+        }
+
+        int main()
+        {
+            char* name;
+            cout << inputName();
+            return 0;
+        }
+        ```
+        --> 로 수정해봄
+
+
+        ```
+        #include <iostream>
+        using namespace std;
+
+        char* inputName()
+        {
+            char* name;
+            name = (char*)malloc(sizeof(char) * 100);
+            strcpy_s(name, sizeof(int) * 4, "asdf");
+            return name;
+        }
+
+        int main()
+        {
+            char* name;
+            name = inputName();
+            cout << name;
+            return 0;
+        }
+        ```
+        --> 동적 할당 사용해서 수정해봄
+
+    7. 포인터 배열
+        문자열
+    
+    8. 이중 포인터
+    
+
+3. 단일 연결 리스트(singly linked list) ADT
+
+
+4. 단일 연결 리스트 구현
+
+    head
+
+    ```
+    #include <iostream>
+    using namespace std;
+
+    typedef int element;
+
+    class Node
+    {
+    public:
+        element data;
+        Node* next;
+    };
+
+    class LinkedList
+    {
+    public:
+        Node* head;
+        int size;
+    public:
+        void init();
+        int getSize();
+        void addPos(int pos, element data);
+        void addFirst(element data);
+        void addLast(element data);
+        Node* create(element e, Node* next);
+        void remove(element data);
+        void dispose();	// 모두 삭제
+        bool isEmpty();
+        bool isInList(element elem);
+        void print();
+    };
+
+    void LinkedList::init()
+    {
+        head = nullptr;
+        size = 0;
+    }
+
+    int LinkedList::getSize()
+    {
+        return size;
+    }
+
+    void LinkedList::addPos(int pos, element data)
+    {
+        if (pos > size + 1 || pos < 1)
+        {
+            cout << "Error: pos is out of range\n";
+            exit(1);
+        }
+        else
+        {
+            Node* newNode = create(data, nullptr);
+
+            if (pos == 1)
+            {
+                newNode->next = head;
+                head = newNode;
+            }
+            else
+            {
+                Node* temp = head;
+                for (int i = 1; i < pos - 1; i++)
+                    temp = temp->next;
+
+                newNode->next = temp->next;
+                temp->next = newNode;
+            }
+            size++;
+        }
+    }
+
+    void LinkedList::addFirst(element data)
+    {
+        addPos(1, data);
+    }
+
+    void LinkedList::addLast(element data)
+    {
+        addPos(size + 1, data);
+    }
+
+    Node* LinkedList::create(element e, Node* next)
+    {
+        Node* newNode = (Node*)malloc(sizeof(Node));
+        if (newNode == nullptr)
+        {
+            cout << "Error: creating a new node.\n";
+            exit(1);
+        }
+        newNode->data = e;
+        newNode->next = next;
+
+        return newNode;
+    }
+
+    void LinkedList::remove(element data)
+    {
+        Node* cursor = head;
+        Node* prev = nullptr;
+
+        if (cursor->data == data)
+        {
+            head = cursor->next;
+            free(cursor);
+            size--;
+        }
+        else
+        {
+            while (cursor != nullptr)
+            {
+                if (cursor->data == data) break;
+                prev = cursor;
+                cursor = cursor->next;
+            }
+            if (cursor != nullptr)
+            {
+                prev->next = cursor->next;
+                free(cursor);
+                size--;
+            }
+        }
+    }
+
+    void LinkedList::dispose()
+    {
+        Node* temp;
+        Node* cursor = head;
+        head = nullptr;
+
+        while (cursor != nullptr)
+        {
+            temp = cursor->next;
+            free(cursor);
+            cursor = temp;
+        }
+        size = 0;
+    }
+
+    bool LinkedList::isEmpty()
+    {
+        return head == nullptr;
+    }
+
+    bool LinkedList::isInList(element elem)
+    {
+        Node* cursor = head;
+        while (cursor != nullptr)
+        {
+            if (cursor->data == elem) return true;
+            cursor = cursor->next;
+        }
+        return false;
+    }
+
+    void LinkedList::print()
+    {
+        Node* current = head;
+        while (current != nullptr)
+        {
+            cout << "--> " << current->data << ' ';
+            current = current->next;
+        }
+        cout << '\n';
+    }
+
+
+    int main()
+    {
+        LinkedList list;
+
+        list.init();
+        list.print();
+
+        list.addFirst(10);
+        list.print();
+
+        list.addFirst(20);
+        list.print();
+
+        list.addPos(1, 30);
+        list.print();
+
+        list.addPos(2, 40);
+        list.print();
+
+        list.addLast(50);
+        list.print();
+
+        list.remove(20);
+        list.print();
+
+        list.remove(10);
+        list.print();
+
+        list.remove(50);
+        list.print();
+
+        list.remove(30);
+        list.print();
+
+        list.addFirst(90);
+        list.print();
+
+        list.addPos(10, 80);
+        list.print();
+
+        list.dispose();
+        list.print();
+    }
+    ```
+
+
+5. 배열 리스트와 연결 리스트의 비교
+
+
+6. [오픈프레임웍스] 파티클 효과 구현
+
+    [생략]
+
+
+7. 원형(환형) 연결 리스트(circular linked list)
+
+    head가 끝을 가리키고 있고, head의 next는 처음
+
+    빈 경우
+        head = newNode;
+        newNode->next = newNode;
+    리스트 끝 추가
+        newNode->next = head->next;
+        head->next = newNode;
+        head = next;
+
+    ```
+    #include <iostream>
+    using namespace std;
+
+    typedef int element;
+
+    class Node
+    {
+    public:
+        element data;
+        Node* next;
+    };
+
+    class LinkedList
+    {
+    public:
+        Node* head;
+        int size;
+    public:
+        void init();
+        bool isEmpty();
+        void print();
+        bool isInList(element elem);
+        Node* create(element e, Node* next);
+        void add(element data);
+    };
+
+    void LinkedList::init()
+    {
+        head = nullptr;
+        size = 0;
+    }
+
+    bool LinkedList::isEmpty()
+    {
+        return head == nullptr;
+    }
+
+    void LinkedList::print()
+    {
+        if (head == nullptr)
+        {
+            cout << "List is empty\n";
+            return;
+        }
+
+        Node* cursor = head;
+        do {
+            cout << "--> " << cursor->next->data;
+            cursor = cursor->next;
+        } while (cursor != head);
+        cout << '\n';
+    }
+
+    bool LinkedList::isInList(element elem)
+    {
+        if (head == nullptr) return false;
+
+        Node* cursor = head;
+        do {
+            if (cursor->next->data == elem) return true;
+            cursor = cursor->next;
+        } while (cursor != head);
+        return false;
+    }
+
+    Node* LinkedList::create(element e, Node* next)
+    {
+        Node* newNode = (Node*)malloc(sizeof(Node));
+        if (newNode == nullptr)
+        {
+            cout << "Error: creating a new node.\n";
+            exit(1);
+        }
+        newNode->data = e;
+        newNode->next = next;
+        return newNode;
+    }
+
+    void LinkedList::add(element data)
+    {
+        Node* newNode = (Node*)malloc(sizeof(Node));
+        if (newNode == nullptr)
+        {
+            cout << "Error: Memory Allocation Error\n";
+            exit(0);
+        }
+        newNode->data = data;
+
+        if (head == nullptr)
+        {
+            head = newNode;
+            newNode->next = newNode;
+        }
+        else
+        {
+            newNode->next = head->next;
+            head->next = newNode;
+            head = newNode;
+        }
+        size++;
+    }
+
+
+    int main()
+    {
+        int data[] = { 1,2,3,4,5,6,7,8,9,10 };
+        LinkedList list;
+        list.init();
+        list.print();
+        for (int i = 0; i < sizeof(data) / sizeof(int); i++)
+        {
+            list.add(data[i]);
+            list.print();
+        }
+    }
+    ```
+    
+
+8. 이중 연결 리스트(doubly linked lists)
+
+    리스트의 특정 노드에서 앞/뒤 양 방향으로 노드를 움직임
+    prev, next
+    원형 이중 연결 리스트를 사용하기도 함
+    
+    빈 리스트에 추가
+        head = newNode;
+        last = newNode;
+    리스트 첫 위치에 새 노드 추가
+        head->prev = newNode;
+        newNode->next = head;
+        head = newNode;
+    
+
