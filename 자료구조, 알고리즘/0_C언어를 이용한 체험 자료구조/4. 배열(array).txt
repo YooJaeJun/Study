@@ -374,4 +374,245 @@
         }
         ```
 
+
 4. 희소 행렬 (sparse matrix)
+
+    행렬의 많은 항들이 0으로 되어 있는 행렬
+    0이 아닌 값들만 별도로 저장하는 게 더 효율적
+
+    1. (기본 #1) 희소 행렬 구현
+        가변 길이 배열(Variable-Length Array: VLA)
+            C99 표준 지원하나 Visual Studio 에서 미지원
+        ```
+        int height = 6, width = 8;
+        int array[height][width];
+        ```
+        const로 하면 되지
+
+    2. (기본 #2) 희소 행렬 구현
+        동적 할당
+        ```
+        int* array = (int*)malloc(sizeof(int) * width);
+
+        int** array = (int**)malloc(sizeof(int*) * height);
+        for(int i=0; i<height; i++)
+            array[i] = (int*)malloc(sizeof(int) * width);
+
+        for(int i=0; i<height; i++)
+            free(array[i]);
+        free(array);
+        ```
+    
+    3. [심화] 희소 행렬 구현
+        [생략]
+
+
+5. 파일 입출력
+
+    1. 표준 입, 출력 정리
+        스트림(stream)
+            연속된 바이트의 흐름
+            입, 출력 장치와 프로그램을 연결하는 통로
+        표준 입출력 스트림
+            stdio
+    
+    2. 텍스트 파일 입, 출력 함수
+
+    3. 새 파일 만들어서 문자 쓰기
+
+        ```
+        #include <iostream>
+        using namespace std;
+
+        int main()
+        {
+            FILE* fp = nullptr;
+            fp = fopen("sample.txt", "w");
+            if (fp == nullptr)
+            {
+                printf("파일 열기 실패");
+                return 1;
+            }
+            fputc('a', fp);
+            fputc('b', fp);
+            fclose(fp);
+            return 0;
+        }
+        ```
+        fp 파일 포인터
+            파일 스트림을 가리킴
+        w 모드
+
+    4. 기존 파일 읽기
+    
+        ```
+        while((c = fgetc(fp)) != EOF)   // 파일 끝까지 한 문자씩 읽음
+        {
+            putchar(c);
+        }
+        ```
+
+    5. Visual Studio에서 파일 사용하기
+
+        ```
+        #include <iostream>
+        #include <ctime>
+        using namespace std;
+
+        void selectionSort(int data[], int n)
+        {
+            int smallest;
+
+            for (int i = 0; i < n - 1; i++)
+            {
+                smallest = i;
+                for (int j = i + 1; j < n; j++)
+                {
+                    if (data[j] < data[smallest]) smallest = j;
+                }
+                swap(data[i], data[smallest]);
+            }
+        }
+
+        int fileInput(string inputFile, int data[], int no)
+        {
+            FILE* fp = nullptr;
+
+            fopen_s(&fp, inputFile.c_str(), "r");
+
+            if (fp == nullptr)
+            {
+                printf("파일 열기 실패");
+                return 1;
+            }
+
+            for (int i = 0; i < no; i++)
+            {
+                fscanf_s(fp, "%d ", &data[i]);
+            }
+            fclose(fp);
+            return 0;
+        }
+
+        int fileOutput(string inputFile, int data[], int no)
+        {
+            FILE* fp = nullptr;
+            fopen_s(&fp, inputFile.c_str(), "w");
+
+            if (fp == nullptr)
+            {
+                printf("파일 쓰기 실패");
+                return 1;
+            }
+
+            for (int i = 0; i < no; i++)
+            {
+                fprintf(fp, "%d ", data[i]);
+            }
+            fclose(fp);
+            return 0;
+        }
+
+        int main()
+        {
+            int data[100];
+            srand(time(nullptr));
+
+            for (int i = 0; i < 100; i++)
+            {
+                data[i] = rand() % 100;
+            }
+            fileOutput("input.txt", data, 100);
+
+            fileInput("input.txt", data, 100);
+            selectionSort(data, 100);
+            fileOutput("output.txt", data, 100);
+            return 0;
+        }
+        ```
+    
+
+6. [응용] 영한 단어장
+    [만들었으나 fscanf_s 안 되서 생략]
+
+    ```
+    #include <iostream>
+    #include <string>
+    using namespace std;
+
+    class Dic
+    {
+    public:
+        string eng, kor;
+    };
+
+    int dicRead(string inputFile, Dic dic[], int no)
+    {
+        FILE* fp = nullptr;
+        fopen_s(&fp, inputFile.c_str(), "r");
+        if (fp == nullptr)
+        {
+            printf("파일 열기 실패");
+            return 1;
+        }
+
+        for (int i = 0; ; i++)
+        {
+            if (fscanf_s(fp, "%s %s", dic[i].eng.c_str(), dic[i].kor.c_str()) == EOF)
+            {
+                no = i;
+                return 0;
+            }
+            while (getc(fp) != '\n');	// 남는 한글 단어 건너뜀
+
+            printf("%d: %s %s \n", i, dic[i].eng.c_str(), dic[i].kor.c_str());
+        }
+        fclose(fp);
+        return 0;
+    }
+
+    string search(Dic dic[], int no, string query)
+    {
+        int count = 0;
+        bool find = false;
+
+        while (count < no && find == false)
+        {
+            if (dic[count].eng == query) return dic[count].kor;
+            else count++;
+        }
+        return "";
+    }
+
+    int main()
+    {
+        Dic dic[6000];
+        int totalWords = 0;
+        string query;
+        string translated;
+        dicRead("input.txt", dic, totalWords);
+
+        do {
+            printf("\nEnter English word : (To quit, Just Press Enter)");
+            cin >> query;
+
+            translated = search(dic, totalWords, query);
+            if (translated.c_str() == nullptr) printf("I don't know the word %s \n", query);
+            else printf("%s --> %s", query, translated);
+        } while (query.size() != 0);
+        return 0;
+    }
+    ```
+
+
+연습문제
+    1. 110, 140, 140
+    
+    2. [5][3]으로 초기화하면 열이 0, 1, 2까지인데 어떻게 [2][3]의 주소가 있음..?
+        136
+
+    3. [생략]
+
+    4. 2, 4번
+
+    5. [생략]
