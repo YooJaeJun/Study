@@ -538,3 +538,182 @@
         head = newNode;
     
 
+    ```
+        #include <iostream>
+        using namespace std;
+
+        typedef int element;
+
+        class Node
+        {
+        public:
+            element data;
+            Node* prev;
+            Node* next;
+        };
+
+        class LinkedListDoubly
+        {
+        public:
+            Node* head;
+            Node* last;
+            int size;
+
+        public:
+            void init();
+            bool isEmpty();
+            void print(int direction);
+            Node* create(element e, Node* prev, Node* next);
+            void addFirst(element data);
+        };
+
+        void LinkedListDoubly::init()
+        {
+            size = 0;
+            head = nullptr;
+            last = nullptr;
+        }
+
+        bool LinkedListDoubly::isEmpty()
+        {
+            return head == nullptr;
+        }
+
+        Node* LinkedListDoubly::create(element e, Node* prev, Node* next)
+        {
+            Node* newNode = (Node*)malloc(sizeof(Node));
+            if (newNode == nullptr)
+            {
+                cout << "Error: creating a new node. \n";
+                exit(1);
+            }
+
+            newNode->data = e;
+            newNode->prev = nullptr;
+            newNode->next = nullptr;
+            return newNode;
+        }
+
+        void LinkedListDoubly::addFirst(element data)
+        {
+            Node* newNode = create(data, nullptr, nullptr);
+
+            if (head == nullptr)
+            {
+                head = newNode;
+                last = newNode;
+                return;
+            }
+            else
+            {
+                head->prev = newNode;
+                newNode->next = head;
+                head = newNode;
+            }
+        }
+
+        enum class dir { FORWARD, BACKWARD };
+
+        void LinkedListDoubly::print(int direction)
+        {
+            if (direction == (int)dir::FORWARD)
+            {
+                Node* temp = head;
+                while (temp != nullptr)
+                {
+                    cout << "--> " << temp->data;
+                    temp = temp->next;
+                }
+                cout << '\n';
+            }
+            else
+            {
+                Node* temp = last;
+                while (temp != nullptr)
+                {
+                    cout << "--> " << temp->data;
+                    temp = temp->prev;
+                }
+                cout << '\n';
+            }
+        }
+
+        int main()
+        {
+            int data[] = { 1,2,3,4,5,6,7,8,9,10 };
+
+            LinkedListDoubly list;
+            list.init();
+
+            list.print(1);
+            int size = sizeof(data) / sizeof(int);
+            for (int i = 0; i < size; i++)
+            {
+                list.addFirst(data[i]);
+                list.print((int)dir::FORWARD);
+            }
+            list.print((int)dir::BACKWARD);
+            return 0;
+        }
+    ```
+
+
+연습문제
+
+1. 임의 접근 시간복잡도 O(1)
+
+2. 6개
+
+3. 
+    100
+    H
+    H
+    e
+    I
+
+4. 
+    200
+    208
+    주소값의 주소값
+    208
+    10
+    10
+    208
+    12
+    202 주소값에 정수연산
+    202 주소값에 정수연산
+    208
+
+5. 
+    연결 리스트
+    배열 리스트
+    연결 리스트
+    연결 리스트
+    연결 리스트
+
+6. 
+```
+    LinkedList* temp = head;
+    while(temp = temp->next)
+    {
+        sum += temp->data;
+    }
+```
+
+7. 2, 3
+
+8. 1, 3, 6
+
+9. 
+    단일 - 순방향 탐색만 하는 자료
+    원형 - 끝 이후 시작으로 다시 돌아와야 하는 자료
+    이중 - 순, 역방향 탐색이 필요한 자료
+
+10. 2, 3
+
+11. 
+```
+    searchReverse()
+    {
+        LinkedList* temp = last;
+    }
