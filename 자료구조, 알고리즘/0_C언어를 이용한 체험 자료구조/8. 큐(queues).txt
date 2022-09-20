@@ -1,0 +1,17 @@
+
+0. 개요
+
+    FIFO(First int First out)
+
+
+1. 1차원 배열을 이용한 큐 구현
+
+    2장 날라갔네
+
+
+2. 1차원 배열을 이용한 원형 큐 구현
+
+    (rear + 1) % maxSize == front
+
+    ```
+    
