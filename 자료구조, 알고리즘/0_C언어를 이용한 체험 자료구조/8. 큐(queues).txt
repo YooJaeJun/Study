@@ -6,12 +6,137 @@
 
 1. 1차원 배열을 이용한 큐 구현
 
-    2장 날라갔네
+    두 장 날라갔네
 
 
 2. 1차원 배열을 이용한 원형 큐 구현
 
     (rear + 1) % maxSize == front
 
+    template으로 구현 수정
+
     ```
-    
+        #include <iostream>
+        using namespace std;
+
+        template <typename T>
+        class Queue
+        {
+        private:
+            T* arr;
+            int front = -1;
+            int rear = -1;
+            int capacity = 2;
+
+        public:
+            int size = 0;
+
+        public:
+            Queue()
+            {
+                arr = new T[capacity];
+            }
+
+            bool isFull()
+            {
+                return size == capacity;
+            }
+
+            bool isEmpty()
+            {
+                return size == 0;
+            }
+
+            void enqueue(T data)
+            {
+                if (isFull())
+                {
+                    capacity *= 2;
+                    T* temp = new T[capacity];
+                    copy(arr, arr + size + 1, temp);
+                    delete[] arr;
+                    arr = new T[capacity];
+                    copy(temp, temp + size + 1, arr);
+                    cout << "꽉 차서 용량 늘림. capacity " << capacity / 2 << " => " << capacity << '\n';
+                }
+                rear = (rear + 1) % capacity;
+                arr[rear] = data;
+                size++;
+            }
+
+            T dequeue()
+            {
+                if (isEmpty())
+                {
+                    cout << "비어있어서 뺄 수 없음\n";
+                    exit(1);
+                }
+                front = (front + 1) % capacity;
+                size--;
+                return arr[front];
+            }
+
+            T peep()
+            {
+                if (isEmpty())
+                {
+                    return nullptr;
+                }
+                size--;
+                return arr[(front + 1) % capacity];
+            }
+
+            void test()
+            {
+                for (int i = 0; i < size; i++) cout << arr[i] << ' ';
+                cout << '\n';
+            }
+        };
+
+        int main()
+        {
+            Queue<int> q;
+            cout << "q size: " << q.size << "\n\n";
+
+            for (int i = 0; i < 5; i++)
+            {
+                q.enqueue(i);
+                q.test();
+            }
+            cout << "q size: " << q.size << "\n\n";
+
+            while (!q.isEmpty())
+            {
+                cout << q.dequeue() << ' ';
+            }
+            cout << '\n';
+            cout << "q size: " << q.size << "\n\n";
+        }
+    ```
+
+
+3. 1차원 배열을 이용한 원형 큐 구현 (배열의 모든 원소 사용 가능)
+
+    위 코드에 반영
+
+
+4. [심화] 큐의 응용
+
+    1. 생산자 소비자 문제
+        웹 서버에서 웹 클라이언트로 통신할 때
+
+    2. 임계 영역(critical section)
+        병행 프로세스(con-current process)라고 함
+        두 개 이상의 프로세스가 서로 영향을 주면서 수행되는 상황
+
+        상호 배제(mutual exclusive)로 수행되어야 함
+        이러한 상호 배제 조건 하에 수행되어야 하는 프로그램 영역을 임계 영역(critical section)이라고 한다.
+        임계 영역은 아토믹(atomic)하게 수행되어야 한다.
+            깨어지지 않는, 분할되지 않는 수행을 보장
+        
+        임계 영역이 상호 배제로 수행되게 하는 방법
+            세마포(semaphore)
+
+    3. 멀티 쓰레드 프로그래밍
+
+        
