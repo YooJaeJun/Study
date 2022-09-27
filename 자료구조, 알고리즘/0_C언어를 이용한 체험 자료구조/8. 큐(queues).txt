@@ -139,4 +139,88 @@
 
     3. 멀티 쓰레드 프로그래밍
 
-        
+        ```
+            #include <Windows.h>
+            // #include "circularQueue.h"
+
+            namespace criticalSection
+            {
+                CRITICAL_SECTION cs;
+
+                int producerSleep = 500;
+                int consumerSleep = 600;
+
+                Queue<int> q;
+
+                void producer();
+                void consumer();
+
+                void initProducerConsumer()
+                {
+                    InitializeCriticalSection(&cs);
+                    CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)producer, 0, 0, nullptr);
+                    CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)consumer, 0, 0, nullptr);
+                }
+
+                void producer()
+                {
+                    int no = 0;
+                    while (1)
+                    {
+                        EnterCriticalSection(&cs);
+
+                        if (q.isFull()) cout << "Producer Waiting: Queue Full\n";
+                        cout << "[Produced]: " << no << "__[size]: " << q.size << '\n';
+                        q.enqueue(no++);
+
+                        LeaveCriticalSection(&cs);
+                        Sleep(producerSleep);
+                    }
+                }
+
+                void consumer()
+                {
+                    while (1)
+                    {
+                        EnterCriticalSection(&cs);
+                        if (q.isEmpty())
+                        {
+                            cout << "Consumer Waiting: Queue Empty\n";
+                        }
+                        else
+                        {
+                            cout << "[Consumed]: " << q.dequeue() << "__[size]: " << q.size << '\n';
+                        }
+                        LeaveCriticalSection(&cs);
+                        Sleep(producerSleep);
+                    }
+                }
+            }
+
+
+            int main()
+            {
+                using namespace criticalSection;
+                initProducerConsumer();
+                producer();
+                consumer();
+            }
+        ```
+
+
+연습문제
+
+    1. 2, 5
+
+    2. 6개
+
+    3. 직관적 / 맥스 사이즈가 부족할 때 대응이 쉽다.
+
+    4. 2개
+        1 메인 큐, 임시 큐 생성.
+        2 메인 큐에 마지막 전까지 pop한 원소들을 임시 큐에 push.
+        3 메인 큐 마지막 남은 것 꺼냄.
+        4 다시 임시 큐에서 메인 큐로 push
+
+    5. 2개
+        위와 유사

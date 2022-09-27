@@ -1,0 +1,606 @@
+
+0. 개요
+    
+    비 선형 자료구조
+    노드, 엣지
+
+
+1. 트리 기초
+
+    정의
+        트리는 하나 이상의 유한 개의 노드들의 집합으로써, 
+        루트 노드(root node: 가장 상위 노드)를 가지며,
+        나머지 노드들은 n >= 0 인 분할된 T1, ... , Tn 개의 서브 트리(sub tree)로 구성된다.
+
+    1. 트리에서 사용하는 용어 정리
+
+        단말 노드 == leaf node == terminal node
+        서브 트리
+            자식 노드들 루트 노드로 가지는 트리
+        레벨
+            루트 노드로부터의 거리
+        포리스트
+            트리들의 집합
+
+    2. 트리의 종류
+        일반 트리
+        이진 트리(binary tree)
+            트리의 모든 노드가 "최대" 2개의 자식 노드를 가질 수 있는 트리
+
+
+2. 이진 트리
+
+    정의
+        이진 트리는 공집합(empty set)이거나 루트 노드와 두 개의 분할된 이진 트리로 구성되는데,
+        좌측의 트리를 왼쪽 서브 트리(left subtree), 오른쪽의 트리를 오른쪽 서브 트리라고 한다.
+
+    포화 이진 트리(full binary tree)
+        높이 h인 포화 이진 트리는 2^h - 1 개의 노드를 가진다.
+    
+    완전 이진 트리(complete binary tree)
+        트리의 마지막 레벨을 제외한 레벨은 노드가 모두 차 있고,
+        마지막 레벨의 노드는 왼쪽부터 순차적으로 차있는 트리를 말한다.
+
+    증명1
+        정리
+            n개의 노드를 가진 이진 트리는 n-1개의 에지를 가진다.
+        증명
+            이진 트리의 노드들 중에서 루트 노드를 제외한 모든 노드는 정확하게 하나의 부모 노드를 가지고 이 노드들은 1개의 에지로 연결되기 때문이다.
+    
+    증명2
+        정리
+            레벨 i에서의 노드의 최대 개수는 2^(i-1) 이다.
+        증명
+            귀납 증명
+            Induction base(기저)
+                루트 노드는 레벨 1의 유일한 노드. 2^(1-1) == 1
+            Induction hypothesis(귀납 가설)
+                1<=j<=i 인 모든 j에 대해서 레벨 j의 최대 노드 개수가 2^(j-1)개라고 가정한다.
+            Induction step(귀납 유도 단계)
+                귀납 가설에 의해 레벨 i-1의 최대 노드 개수는 2(i-2)개이다.
+                이진 트리의 모든 노드는 최대 degree가 2이기 때문에 레벨 i의 최대 노드 개수는 레벨 i-1의 2배가 된다.
+                따라서 레벨 i-1에서의 최대 노드 개수는 2^(i-2) x 2 == 2^(i-1) 개가 된다.
+
+    증명3
+        정리
+            레벨이 k인 이진 트리는 최소 k개의 노드를 가지며 최대 2^k - 1 개의 노드를 가진다.
+        증명
+            최소 노드의 경우: 선형 구조
+            최대 노드의 경우: 높이가 k인 이진 트리의 최대 노드 개수는 2^k - 1
+            왜냐하면, 2^0 + 2^1 + 2^2... 2^(k-1)
+            공비가 2인 등비수열의 합 == 1 x (1 - 2^k) / (1 - 2) = 2^k - 1
+    
+    증명4
+        정리
+            공집합이 아닌 이진 트리 T에 대해 n0가 터미널 노드(degree가 0인 노드), n1이 degree가 1인 노드,
+            n2가 degree가 2인 노드의 개수라고 할 때, n0 = n2 + 1 이다.
+        증명
+            한 식은 n = n0 + n1 + n2
+            다른 한 식은 이진 트리의 모든 에지의 개수를 E라고 할 때, E = n1 + 2 x n2 이다. (각 노드는 degree만큼의 에지를 가지기 때문)
+            따라서 n = E + 1 = 1 + n1 + 2 x n2 이다.
+            두 식으로 부터 n0 = n2 + 1 도출 가능
+
+    1. 배열을 이용한 이진 트리 구현
+
+        증명5
+            정리
+                전체 노드의 개수가 n일 때, 부모 노드와 자식 노드 사이에 아래와 같은 규칙
+                    1. 노드 i의 부모 노드 인덱스 
+                        abs(i / 2) (if i!=1)
+                        i는 루트노드 (if i=1)
+                    2. 노드 i의 왼쪽 자식 노드 인덱스
+                        2i (if 2i<=n)
+                        i 자식 없음 (if 2i>n)
+                    3. 노드 i의 오른쪽 자식 노드 인덱스
+                        2i+1 (if 2i+1<=n)
+                        i 자식 없음 (if 2i+1>n)
+            증명
+                귀납 증명 (proof by induction)
+                    1. i = 1인 경우: 루트 노드만 있는 경우가 아니라면, leftChild(i) = 2
+                    2. 1<=j<=i인 경우 leftChild(j) = 2j를 만족한다면,
+                    3. 이진 트리의 그림을 보면 배열에서 leftChild(i+1)의 왼쪽에 위치한 노드는
+                        leftChild(i)와 rightChild(i)가 된다.
+                        leftChild(i) = 2i이고
+                        leftChild(i+1) = leftChild(i) + 2 = 2i + 2 = 2(i + 1) 성립
+
+        배열을 이용한 이진 트리의 구현은 경사 이진 트리에는 메모리의 낭비가 심하다.
+
+        ```
+            #include <iostream>
+            using namespace std;
+
+            template <typename T>
+            class BinaryTree
+            {
+            private:
+                T* data;
+
+            public:
+                int size = 0;
+                int capacity = 2;
+
+            public:
+                BinaryTree()
+                {
+                    data = new T[capacity];
+                    data[0] = 0;
+                }
+                ~BinaryTree()
+                {
+                    delete[] data;
+                }
+
+                int leftChild(const int pos)
+                {
+                    if (pos * 2 <= size) return pos * 2;
+                    else return 0;
+                }
+
+                int rightChild(const int pos)
+                {
+                    if (pos * 2 + 1 <= size) return pos * 2 + 1;
+                    else return 0;
+                }
+
+                int parent(const int pos)
+                {
+                    if (pos == 1) return 0;
+                    else return pos / 2;
+                }
+
+                void insert(const T e)
+                {
+                    if (size >= capacity - 1)
+                    {
+                        cout << "capacity 늘림 " << capacity << " => " << capacity * 2 << '\n';
+                        capacity *= 2;
+                        T* temp = new T[capacity];
+                        copy(data, data + size + 1, temp);
+                        delete[] data;
+                        data = new T[capacity];
+                        copy(temp, temp + size + 1, data);
+                        delete[] temp;
+                    }
+
+                    data[++size] = e;
+                }
+
+                int value(int pos)
+                {
+                    if (pos >= 0 && pos <= size)
+                    {
+                        return data[pos];
+                    }
+                }
+
+                void graphvizPrint(int node)
+                {
+                    if (node > size) return;
+                    if (node != 1) cout << data[node / 2] << " => " << data[node] << '\n';
+
+                    graphvizPrint(node * 2);
+                    graphvizPrint(node * 2 + 1);
+                }
+            };
+
+            int main()
+            {
+                BinaryTree<int> bt;
+
+                for (int i = 1; i <= 8; i++)
+                {
+                    bt.insert(i);
+                }
+
+                bt.graphvizPrint(1);
+                cout << '\n';
+
+                cout << "root is " << bt.value(1) << '\n';
+
+                cout << "left: " << bt.value(bt.leftChild(1)) << " right: " << bt.value(bt.rightChild(1)) << '\n';
+                cout << "left: " << bt.value(bt.leftChild(2)) << " right: " << bt.value(bt.rightChild(2)) << '\n';
+                cout << "left: " << bt.value(bt.leftChild(3)) << " right: " << bt.value(bt.rightChild(3)) << '\n';
+                cout << "left: " << bt.value(bt.leftChild(4)) << " right: " << bt.value(bt.rightChild(4)) << '\n';
+                cout <<  "5의 부모는 " << bt.value(bt.parent(5)) << '\n';
+
+                return 0;
+            }
+        ```
+
+    2. 배열을 이용한 결정 트리(decision tree)
+
+        배열을 이용한 구현은 노드의 추가/삭제가 아주 어렵다.
+
+        스무 고개에서 연속된 질문으로 후보들을 좁혀가면서 단말 노드에서 정답을 찾는 것
+        => 결정 트리.
+
+        ```
+            class Question
+            {
+            public:
+                bool	isQuestion;	// true: 비 단말 노드
+                string	msg;		// 내부 노드이면 질문, 단말 노드이면 결론
+
+            public:
+                friend ostream& operator<<(ostream& os, const Question& other)
+                {
+                    os << other.msg << '\n';
+                    return os;
+                }
+            };
+
+            int main()
+            {
+                BinaryTree<Question> bt;
+
+                Question trainData[] = {
+                    { true, "is animal? " },
+                    { true, "has 2 legs? " },
+                    { true, "is tall? " },
+                    { true, "can fly? " },
+                    { true, "is larger than human? " },
+                    { true, "has needle leaf? " },
+                    { true, "is flower? " },
+                    { false, "It is a bird. " },
+                    { false, "It is a chichken. " },
+                    { false, "It is an elephant. " },
+                    { false, "It is a dog. " },
+                    { false, "It is a pine tree. " },
+                    { false, "It is a bamboo. " },
+                    { false, "It is an orchid. " },
+                    { false, "It is an grass. " },
+                };
+
+                for (int i = 0; i < 15; i++)
+                {
+                    bt.insert(trainData[i]);
+                }
+
+                bt.graphvizPrint(1);
+                cout << '\n';
+
+                int question = 1;
+                string answer;
+
+                do {
+                    cout << bt.data[question].msg;
+                    cout << "if YES, Enter 'y' or 'n': ";
+
+                    getline(cin, answer);
+
+                    if (answer == "y")
+                    {
+                        question = bt.leftChild(question);
+                    }
+                    else
+                    {
+                        question = bt.rightChild(question);
+                    }
+
+                } while (bt.data[question].isQuestion);
+
+                cout << bt.data[question].msg << '\n';
+            }
+        ```
+
+    3. 포인터를 이용한 이진 트리 구현
+
+        동적 이진 트리 구성
+            노드 추가 삭제 쉬움
+        
+    
+    4. 포인터를 이용한 이진 트리 구현(추가)
+
+        ```
+            #include <iostream>
+            #include <string>
+            using namespace std;
+
+            template <typename T>
+            class Node
+            {
+            public:
+                T data;
+                Node* left;
+                Node* right;
+
+            public:
+                Node() : data(0), left(nullptr), right(nullptr)
+                {}
+
+                Node(T e) : data(e), left(nullptr), right(nullptr)
+                {}
+
+                Node(T e, Node* left, Node* right) :
+                    data(e), left(left), right(right)
+                {}
+
+                void dispose()
+                {
+                    if (this == nullptr) return;
+                    left->dispose();
+                    right->dispose();
+                    delete this;
+                }
+
+                void inOrder()
+                {
+                    if (this == nullptr) return;
+                    left->inOrder();
+                    cout << data << ' ';
+                    right->inOrder();
+                }
+
+                void printGraphViz()
+                {
+                    if (this == nullptr) return;
+                    
+                    if (left != nullptr) cout << '\t' << data << " => " << left->data << '\n';
+                    left->printGraphViz();
+
+                    if (right != nullptr) cout << '\t' << data << " => " << right->data << '\n';
+                    right->printGraphViz();
+                }
+
+                Node* insertLeft(int value)
+                {
+                    left = new Node<T>(value);
+                    return left;
+                }
+
+                Node* insertRight(int value)
+                {
+                    right = new Node<T>(value);
+                    return right;
+                }
+            };
+
+            void main()
+            {
+                Node<int> n1(2);
+                Node<int> n2(3);
+                Node<int> n3(1, &n1, &n2);
+
+                Node<int>* root = &n3;
+
+                cout << root->data << ' ';
+                cout << root->left->data << ' ';
+                cout << root->right->data << '\n';
+                root->printGraphViz();
+
+                
+                root = new Node<int>(1);
+                root->left = new Node<int>(2);
+                root->right = new Node<int>(3);
+
+                Node<int>* t = root->left;
+                t->left = new Node<int>(4);
+                t->right = new Node<int>(5);
+
+                t = root->right;
+                t->left = new Node<int>(6);
+                t->right = new Node<int>(7);
+
+                root->inOrder();
+                cout << '\n';
+                root->printGraphViz();
+                root->dispose();
+
+
+                root = nullptr;
+                root = new Node<int>(1);
+                root->insertLeft(2);
+                root->insertRight(3);
+
+                t = nullptr;
+                t = root->left;
+                t->insertLeft(4);
+                t->insertRight(5);
+
+                t = root->right;
+                t->insertLeft(6);
+                t->insertRight(7);
+
+                root->inOrder();
+                cout << '\n';
+                root->printGraphViz();
+                root->dispose();
+            }
+        ```
+
+    5. 이진 트리 순회(traversal)
+    
+        트리 방문하는 방법
+            중위 방문(in-order traversal)
+                왼쪽 서브 트리 -> 루트 노드 -> 오른쪽 서브 트리
+            전위 방문(pre-order traversal)
+                루트 노드 -> 왼쪽 서브 트리 -> 오른쪽 서브 트리
+            후위 방문(post-order traversal)
+                왼쪽 서브 트리 -> 오른쪽 서브 트리 -> 루트 노드
+
+            레벨 오더(level-order traversal)
+                레벨 순서로 방문
+        
+        ```
+            #include <iostream>
+            #include <string>
+            #include <queue>
+            using namespace std;
+
+            template <typename T>
+            class Node
+            {
+            public:
+                T data;
+                Node* left;
+                Node* right;
+
+            public:
+                Node() : data(0), left(nullptr), right(nullptr)
+                {}
+
+                Node(T e) : data(e), left(nullptr), right(nullptr)
+                {}
+
+                Node(T e, Node* left, Node* right) :
+                    data(e), left(left), right(right)
+                {}
+
+                void dispose()
+                {
+                    if (this == nullptr) return;
+                    left->dispose();
+                    right->dispose();
+                    delete this;
+                }
+
+                void inOrder()
+                {
+                    if (this == nullptr) return;
+                    left->inOrder();
+                    cout << data << ' ';
+                    right->inOrder();
+                }
+
+                void preOrder()
+                {
+                    if (this == nullptr) return;
+                    cout << data << ' ';
+                    left->preOrder();
+                    right->preOrder();
+                }
+
+                void postOrder()
+                {
+                    if (this == nullptr) return;
+                    left->postOrder();
+                    right->postOrder();
+                    cout << data << ' ';
+                }
+
+                void levelOrder()
+                {
+                    queue<T> q;
+                    Node<T> n;
+
+                    q.push(data);
+                    while (false == q.empty())
+                    {
+                        n = q.front();
+                        q.pop();
+                        cout << n.data << ' ';
+                        if (n.left) q.push(n.left->data);
+                        if (n.right) q.push(n.right->data);
+                    }
+                }
+
+                void printGraphViz()
+                {
+                    if (this == nullptr) return;
+                    
+                    if (left != nullptr) cout << '\t' << data << " => " << left->data << '\n';
+                    left->printGraphViz();
+
+                    if (right != nullptr) cout << '\t' << data << " => " << right->data << '\n';
+                    right->printGraphViz();
+                }
+
+                Node* insertLeft(int value)
+                {
+                    left = new Node<T>(value);
+                    return left;
+                }
+
+                Node* insertRight(int value)
+                {
+                    right = new Node<T>(value);
+                    return right;
+                }
+            };
+
+            void main()
+            {
+                Node<int> n1(20);
+                Node<int> n2(30);
+                Node<int> n3(10, &n1, &n2);
+
+                Node<int>* root = &n3;
+
+                Node<int> n4(40);
+                Node<int> n5(50);
+
+                n1.left = &n4;
+                n1.right = &n5;
+
+                root->inOrder(); cout << '\n';
+                root->preOrder(); cout << '\n';
+                root->postOrder(); cout << '\n';
+                root->levelOrder(); cout << '\n';
+
+                root->printGraphViz();
+            }
+        ```
+    
+    6. 이진 트리와 관련된 다양한 연산
+
+        ```
+            // [생략]
+            int noOfNodes()
+            {
+                if (this == nullptr) return 0;
+                else return left->noOfNodes() + right->noOfNodes() + 1;
+            }
+
+            int noOfLeafNode()
+            {
+                if (this == nullptr) return 0;
+                else if(left == nullptr && right == nullptr) return 1;
+                else return left->noOfLeafNode() + right->noOfLeafNode();
+            }
+
+            int noOfInternalNodes()
+            {
+                if (this == nullptr) return 0;
+                else if (left == nullptr && right == nullptr) return 0;
+                else if (left != nullptr && right != nullptr) return left->noOfInternalNodes() + right->noOfInternalNodes() + 1;
+            }
+
+            int height()
+            {
+                if (this == nullptr) return 0;
+                else return 1 + max(left->height(), right->height());
+            }
+
+            
+            int main()
+            {
+                Node<int> n1(20);
+                Node<int> n2(30);
+                Node<int> n3(10, &n1, &n2);
+
+                Node<int>* root = &n3;
+
+                Node<int> n4(40);
+                Node<int> n5(50);
+
+                n1.left = &n4;
+                n1.right = &n5;
+
+                cout << "No of Nodes: " << root->noOfNodes() << '\n';
+                cout << "No of Internal Nodes: " << root->noOfInternalNodes() << '\n';
+                cout << "No of Leaf Nodes: " << root->noOfLeafNode() << '\n';
+                cout << "Height of Trees: " << root->height() << '\n';
+            }
+        ```
+    
+
+3. 이진 탐색 트리(binary search tree)
+
+    이진 트리가 연결 리스트와 다른 점: 두 개의 자식 노드가 있을 수 있다.
+    즉, 연결 리스트는 자식 노드가 1개 이하인 트리.
+
+    자식 노드 2개 이하 
+
+    1. 검색
+        순회 과정과 유사
+        
