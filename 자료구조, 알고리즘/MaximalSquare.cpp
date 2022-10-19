@@ -22,7 +22,7 @@ public:
 
         for (int i = 1; i <= matrix.size(); i++)
         {
-            for (int j = 1; j <= matrix[i].size(); j++)
+            for (int j = 1; j <= matrix[i - 1].size(); j++)
             {
                 int temp = dp[j];
                 if (matrix[i - 1][j - 1] == '1')
@@ -48,6 +48,6 @@ int32_t main()
 	// cin >> t;
     Solution solution;
     vector<vector<char>> v = { {'1', '0'} };
-	while (t--) solution.maximalSquare(v);
+	while (t--) cout << solution.maximalSquare(v) << '\n';
 	return 0;
 }
