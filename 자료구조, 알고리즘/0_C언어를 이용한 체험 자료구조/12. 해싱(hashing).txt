@@ -1,242 +1,261 @@
 
-1. 정렬 알고리즘
+1. 해싱의 기본
 
-    1. 선택 정렬 (selection sorting)
+    키 값을 위치 값으로 변환하는 함수를 해시 함수라고 한다.
+    접근 O(1)
 
-        가장 작은 데이터를 선택해 가장 앞의 데이터와 위치를 바꾸는 것
+
+2. 해시 함수와 해시 테이블
+
+    충돌이 적어야 한다.
+
+    1. 간단한 해시 함수: 자리 수 선택
+
+    2. 간단한 해시 함수 구현
+
+        C 컴파일러는 컴파일 과정 중에 심볼 테이블을 만들어 변수들을 관리
 
         ```
-            void printArray(int a[], int size)
+        const int bucketSize = 10;
+            const string smaples[] = {
+                "i", "j", "k", "test", "test1", "sample", "min"
+            };
+
+            int hashCode(const string str)
             {
-                for (int i=0; i<size; i++)
+                int hash = 0;
+                for (int i=0; i<str.size(); i++)
                 {
-                    cout << a[i] << ' ';
+                    hash = (hash * 10) + (int)(str[i] - '0');
                 }
-                cout << '\n';
+                return hash % bucketSize;
             }
 
-            void selectionSort(int a[], int size)
+            int main()
             {
-                for (int i=0; i<size-1; i++)
-                {
-                    int smallest = i;
-                    for (int j=i+1; j<size; j++)
-                    {
-                        if (a[j] < a[smallest]) smallest = j;
-                    }
+                int hashTable[bucketSize];
 
-                    int temp = a[i];
-                    a[i] = a[smallest];
-                    a[smallest] = temp;
-                }
-            }
-        ```
-
-        O(n^2)
-
-    2. 병합 정렬 (merge sorting)
-
-        2개의 정렬된 서브 리스트를 병합하면서 정렬된 큰 리스트를 만들어가는 방식
-
-        ```
-            void merge(int a[], int first, int mid, int last)
-            {
-                int n1 = mid - first + 1;
-                int n2 = last - mid;
-                int a1[n1 + 1], a2[n2 + 1];
+                for (int i=0; i<bucketSize; i++)
+                    hashTable[i] = 0;
                 
-                int i, j, k;
-
-                for (i=0; i<n1; i++)
-                    a1[i] = a[first + i];
-                
-                for(j=0; j<n2; j++)
-                    a2[j] = a[mid + j + 1];
-
-                a1[i] = MAX_VALUE;
-                a2[j] = MAX_VALUE;
-
-                for (i = j = 0, k = first; k <= last; k++)
+                for (int i=0; i<samples.size(); i++)
                 {
-                    if (a1[i] <= a2[i])
-                        a[k] = a1[i++];
-                    else
-                        a[k] = a2[j++];
-                }
-            }
-
-            void mergeSort(int a[], int first, int last)
-            {
-                if (first < last)
-                {
-                    int mid = (first + last) / 2;
-                    mergeSort(a, first, mid);
-                    mergeSort(a, mid + 1, last);
-                    merge(a, first, mid, last);
+                    const string source = samples[i];
+                    int hashAddress = hashCode(cource);
+                    hashTable[hashAddress]++;
+                    cout << source << " --> " << hashAddress << '\n';
                 }
             }
         ```
 
+        -> 해시 주소 충돌함
 
-2. 우선 순위 큐
+    3. 충돌 해결책
 
-    1. 배열 이용
-    2. 연결리스트 이용
-    
-    3. 힙(heap)
+        1. 오픈 어드레싱 (open addressing)
 
-        큐 - FIFO(First In First Out)
-        우선 순위 큐 - 우선 순위
-        
-        힙 - 느슨한 정렬 상태를 유지하는 완전 이진 트리
-            최대힙, 최소힙
-            중복된 자료 허용
-
-        1. 연산
-            삽입
-            1. 새로운 데이터는 우선순위가 가장 낮다는 가정 하에 마지막 위치에 저장
-                이때 완전 이진 트리의 형태를 유지해야 한다.
+            하나의 버킷에 슬롯이 하나만 있는 경우
+            새로운 항목이 추가될 때 해시 어드레스에서 시작해서, 특정한 순서로 비어있는 버킷을 찾아서 추가하는 방법
+            특정한 순서?
+                선형 탐색 (linear probing)
+                    정해진 거리를 두고 조사하는 방법 (보통 1로 정해서 순차적 탐색)
+                이차 탐색 (quadratic probing)
+                    2차 다항식의 값을 더해서 조사하는 방법
             
-            2. 삽입된 노드를 부모 노드와 값을 비교하면서 부모 노드가 자식 노드보다
-                크거나 같을 때까지 루트 노드를 향해서 계속 비교/교환한다.
-
-            삭제
-            1. 마지막 노드를 루트 노드의 자리로 옮긴다.
-                즉, 우선 순위가 가장 높은 루트 노드를 삭제하고, 마지막 노드를 루트 자리로 옮기는 것
-            
-            2. 루트 노드를 자식 노드와의 비교를 통해 제자리를 찾아간다.
-                자식 노드 2개가 모두 자신보다 크면 그중에서 큰 값과 위치 교환
+            해시 값의 버킷 번호 조사
+                비어 있지 않으면 다음 버킷 조사
+                최초로 빈 버킷에 값 넣음
         
-        2. 구현
+        2. 체이닝 (chaining)
 
-            인덱스
-            left child = parent * 2
-            right child = parent * 2 + 1
-            parent = child / 2
+            각 버킷에 연결 리스트를 이용해서 슬롯들을 구성하는 방법
 
-            ```
-            #define MAX_NODE(100)
-            #define LEFT_CHILD(i)   (i*2)
-            #define RIGHT_CHILD(i)  ((i*2)+1)
-            #define PARENT(i)       (i/2)
+        3. 체이닝을 이용한 해싱 구현
 
-                class Heap
+        ```
+            class Element
+            {
+                string key;
+                int value;
+                Element* next;
+
+                ~Element()
                 {
-                private:
-                    int heap[MAX_NODE];
-                    int size;
+                    delete next;
+                    next = nullptr;
+                }
+            };
 
-                public:
-                    void init()
+            class HashTable
+            {
+                int size;
+                Element** bucket;
+
+                HashTable(int bucketSize)
+                    : size(bucketSize)
+                {
+                    bucket = new Element[size];
+
+                    for (int i=0; i<bucketSize; i++)
                     {
-                        size = 0;
+                        bucket[i] = nullptr;
+                    }
+                }
+
+                ~HashTable()
+                {
+                    for (int i=0; i<size; i++)
+                    {
+                        Elemnt* node = bucket[i];
+                        while(node)
+                        {
+                            Element* temp = node;
+                            node = node->next;
+                            delete[] temp;
+                        }
                     }
 
-                    bool isEmpty()
+                    delete(bucket);
+                }
+
+                bool insert(string key, int value)
+                {
+                    Element* node, *prev;
+
+                    int hashAddress = hashCode(key, size);
+                    node = bucket[hashAddress];
+
+                    // 처음
+                    if (!node)
                     {
-                        return size == 0;
+                        Element* e = new Element;
+                        if (!e) return false;
+
+                        e->key = key;
+                        e->value = value;
+                        e->next = nullptr;
+                        bucket[hashAddress] = e;
+
+                        return true;
                     }
 
-                    bool isFull()
+                    // 이미 있으면
+                    prev = node;
+                    while(node)
                     {
-                        return size == MAX_NODE - 1;
-                    }
-
-                    void add(int e)
-                    {
-                        if (isFull()) return;
+                        if (node->key == key)
+                        {
+                            node->value = value;
+                            return true;
+                        }
                         else
                         {
-                            size++;
-                            int i;
-                            for (i=size; i>1 && e > heap[PARENT(i)]; i/=2)
-                            {
-                                heap[i] = heap[PARENT(i)];
-                            }
-                            heap[i] = e;
+                            prev = node;
+                            node = node->next;
                         }
                     }
 
-                    int remove()
+                    // 마지막에 노드 추가
+                    node = new Element;
+                    if (!node) return false;
+
+                    node->key = key;
+                    node->value = value;
+                    node->next = nullptr;
+
+                    prev->next = node;
+
+                    return true;
+                }
+
+                Element* search(string key)
+                {
+                    int hashValue;
+                    Element* node;
+
+                    hashValue = hashCode(key, size);
+                    node = bucket[hashValue];
+
+                    while(node)
                     {
-                        int root, temp;
-                        int current, left, right, greatest;
-
-                        root = heap[1];
-                        heap[1] = heap[size];   // 마지막 항목을 root로 이동
-                        size--;
-
-                        for (current=1; current<size; )
-                        {
-                            left = LEFT_CHILD(current);
-                            right = RIGHT_CHILD(current);
-                            greatest = current;
-
-                            if (left<=size && heap[left] > heap[current])
-                            {
-                                greatest = left;
-                            }
-
-                            if (right<=size && heap[right] > heap[greatest])
-                            {
-                                greatest = right;
-                            }
-
-                            if (greatest == current)
-                                break;
-                            else
-                            {
-                                swap(heap[gretest], heap[current]);
-                                current = greatest;
-                            }
-                        }
-                        return root;
+                        if (node->key == key) return node;
+                        else node = node->next;
                     }
 
-                    void print()
+                    return nullptr;
+                }
+
+                int hashCode(string key, int bucketSize)
+                {
+                    int hash = 0;
+                    for (int i=0; i<key.size(); i++)
                     {
-                        for (int i=1; i<=size; i++)
+                        hash = (hash * 10) + (int)(key[i] - '0');
+                    }
+                    return hash % bucketSize;
+                }
+
+                void print()
+                {
+                    Element* node;
+
+                    if (ht == nullptr) return;
+
+                    for (int idx=0; idx<size; idx++)
+                    {
+                        node = bucket[idx];
+                        cout << "[" << index << "]: ";
+                        while(node)
                         {
-                            cout << heap[i];
+                            cout << "(" << node->key << " : " << node->value << ") -> ";
+                            node = node->next;
                         }
                         cout << '\n';
                     }
+                }
+            };
 
-                    void graphvizPrint(int node)
+
+            // main
+            const string samples[] = {"i","j","test"};
+            const int sampleValues[] = {0,1,2,10,20};
+
+            int main()
+            {
+                HashTable* ht(10);
+
+                for (int i=0; i<samples.size(); i++)
+                {
+                    ht.insert(samples[i], sampleValues[i]);
+                }
+                ht.print();
+
+                ht.insert("i", 111);
+                ht.insert("test", 222);
+                ht.print();
+
+                for (int i=0; i<samples.size(); i++)
+                {
+                    Element* node = ht.search(samples[i]);
+                    if (node)
                     {
-                        if (node > size) return;
-                        if (node != 1) cout << heap[node/2] << " -> " << heap[node] << '\n';
-
-                        graphvizPrint(2 * node);
-                        graphvizPrint(2 * node + 1);
+                        cout << "(" << node->key << " : " << node->value << ") -> ";
                     }
+                }
+                hy.destroy();
+                ht = nullptr;
 
-                    void graphvizDriver()
-                    {
-                        cout << "digraph G {\n";
-                        graphvizPrint(1);
-                        cout << "}\n";
-                    }
-                };
-            ```
+                return 0;
+            }
+        ```
 
 
-연습 문제
+연습문제
 
-    1. [생략]
+    1. A, C
 
-    2. 리프 노드
+    2. 해싱
 
-    3. 완전 이진 트리 유지 위함
+    3. [생략], 키값 충돌
 
-    4. 원하는 인덱스의 노드에 상수 시간만에 접근 가능
-
-    5. 트리의 레벨(높이)
-
-    6. 
-                      24
-                15          22
-            14      12  17      20
-        10      11
-
-    7. 10, 11 삭제했으면 20이 마지막
+    4. [생략]
