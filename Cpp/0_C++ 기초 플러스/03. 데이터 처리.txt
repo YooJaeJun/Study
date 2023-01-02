@@ -105,12 +105,13 @@ cout.put('!');
 escape sequence
 - 생략
 - cout << x << endl;    // cout << x << '\n'; 보다 쉬움
-- cout << "dr.x. \n:    // cout << "dr.x. " << endl;    보다 쉬움
+- cout << "dr.x. \n";    // cout << "dr.x. " << endl;    보다 쉬움
 
 백스페이스 이스케이프 시퀀스
 - \x8, \010, \b
 - 기호 이스케이프 시퀀스를 사용하기
 - 기호 이스케이프 시퀀스는 모든 코드 체계에서 잘 동작 + 알아보기도 쉬움
+
 ```cpp
 #include <iostream>
 using namespace std;
@@ -166,7 +167,32 @@ ex.
 소수점이 스케일에 따라 자리를 옮기기 때문에 이 데이터형 == 부동 소수점형
 
 
+float, double 표현 범위
+
+```
+#include <iostream>
+using namespace std;
+#include <climits>
+
+int main()
+{
+	cout.setf(ios_base::fixed, ios_base::floatfield);
+	float f = 10.0f / 3.0f;
+	double d = 10.0f / 3.0f;
+	const float cf = 1.0e6;
+	const double cd = 1.0e15;
+	cout << f << endl;
+	cout << d << endl;
+	cout << 10 * cf * f << endl;
+	cout << 10 * cd * d << endl;
+
+	return 0;
+}
+```
+
 float 정밀도 손실 문제
+
+```
 #include <iostream>
 int main()
 {
@@ -178,7 +204,7 @@ int main()
 	cout << "b - a = " << b - a << endl;	// b - a = 0
 	return 0;
 }
-
+```
 
 
 
@@ -225,7 +251,6 @@ c: 30
 int(ch): 90
 static_cast<int>(ch): 90
 
-우수리 버림.
 
 
 
@@ -244,5 +269,18 @@ static_cast<int>(ch): 90
 10. (d제외 생략)
 - d: char32_t
 
-프로그래밍 연습 
-(생략)
+
+
+
+연습문제
+1. 사용자가 사용할 메모리 크기에 맞게 사용하게 하기 위합입니다.
+2. 생략
+3. 제공 x
+4. long 타입, int 타입 상수
+5. 첫 번째는 ASCII 코드를 사용하는 시스템에서만 A라는 문자 저장
+- 두 번째는 어떤 시스템에서도 A라는 문자 저장
+6. 생략
+7. 데이터 손실 없음 / double 범위를 벗어나면 미정의된 행동과 예측 불가능한 값이 도출됩니다.
+8. 생략
+9. 생략
+10. int, float, char, char32_t, float
