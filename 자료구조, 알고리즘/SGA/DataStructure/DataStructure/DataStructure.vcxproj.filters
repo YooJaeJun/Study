@@ -3,6 +3,7 @@
   <ItemGroup>
     <ClCompile Include="소스.cpp" />
     <ClCompile Include="LinkedList.cpp" />
+    <ClCompile Include="Execute.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LinkedList.h" />

@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Execute.cpp" />
     <ClCompile Include="LinkedList.cpp" />
     <ClCompile Include="소스.cpp" />
   </ItemGroup>
