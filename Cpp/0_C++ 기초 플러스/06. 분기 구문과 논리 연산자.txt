@@ -34,7 +34,7 @@ age > 30 && age < 45 || weight > 300
 
 
 iso646.h
-- and, or, not 매그로로 대체
+- and, or, not 매크로로 대체
 
 
 
@@ -73,8 +73,19 @@ switch
 
 07. 수를 읽어들이는 루프
 
+```
+	int n;
+	cin >> n;
+```
+
+위 상황에서 단어 입력 시?
+1. n의 값은 변하지 않음
+2. 입력 큐에 잘못된 입력이 그대로 유지됨
+3. cin 객체의 에러 플래그가 설정됨
+4. cin 메서드 호출이 false(bool형으로 변환된다면)를 리턴한다.
+
 cin 불량 입력 초기화
-- cin.clea(), cin.get() 활용
+- cin.clear(), cin.get() 활용
 
 ```
 #include <iostream>
@@ -291,7 +302,7 @@ int main()
 	while (inFile.good())	// 입력이 양호하고 EOF가 아닌 동안
 	{
 		++count;	// 항목 개수 하나 추가
-		sum += value;	// 누께 계산
+		sum += value;	// 누계 계산
 		inFile >> value;	// 다음 값을 얻는다.
 	}
 	if (inFile.eof())
@@ -351,5 +362,24 @@ while(cin.get(ch) && ch != 'Q')
 
 
 
-프로그래밍 연습
-[생략]
+연습 문제
+1. if 조건에 만족하면 다음 if 조건을 검사하지 않는다.
+2. 
+3. 
+```
+	H$i$!$
+	S$e$n$d$ $ct1 = 9, ct2 = 9
+```
+4.
+	f. isalpha(ch)
+5. x가 bool 타입이었을 경우에만 맞다. 정수 타입이라면 다르다. 1이 되어버린다.
+6. x = x > 0 ? x : -x;
+7. 
+8. 
+9. 
+```
+	while (cin.get(ch) && ch != 'Q')
+	{
+		if (ch == '\n')
+			line++;
+	}

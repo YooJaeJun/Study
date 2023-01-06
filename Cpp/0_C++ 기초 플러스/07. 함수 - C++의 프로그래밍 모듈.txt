@@ -45,36 +45,36 @@ C++와 ANSI C의 함수 원형 비교
 lotto 예제
 
 ```
-#include <iostream>
-using namespace std;
+	#include <iostream>
+	using namespace std;
 
-long double probability(unsigned numbers, unsigned picks);
+	long double probability(unsigned numbers, unsigned picks);
 
-int main()
-{
-	double total, choices;
-	cout << "전체 수의 개수, 뽑을 수의 개수 입력: ";
-	while ((cin >> total >> choices) && choices <= total)
+	int main()
 	{
-		cout << "당신이 이길 확률은 ";
-		cout << probability(total, choices);	// 승률을 계산한다.
-		cout << " 번 중에서 한 번입니다. \n";
-		cout << "다시 두 수를 입력하십시오. (끝내려면 q를 입력): ";
+		double total, choices;
+		cout << "전체 수의 개수, 뽑을 수의 개수 입력: ";
+		while ((cin >> total >> choices) && choices <= total)
+		{
+			cout << "당신이 이길 확률은 ";
+			cout << probability(total, choices);	// 승률을 계산한다.
+			cout << " 번 중에서 한 번입니다. \n";
+			cout << "다시 두 수를 입력하십시오. (끝내려면 q를 입력): ";
+		}
+		cout << "프로그램 종료.\n";
+		return 0;
 	}
-	cout << "프로그램 종료.\n";
-	return 0;
-}
 
-long double probability(unsigned numbers, unsigned picks)
-{
-	long double result = 1.0;
-	long double n;
-	unsigned p;
+	long double probability(unsigned numbers, unsigned picks)
+	{
+		long double result = 1.0;
+		long double n;
+		unsigned p;
 
-	for (n = numbers, p = picks; p > 0; n--, p--)
-		result = result * n / p;
-	return result;
-}
+		for (n = numbers, p = picks; p > 0; n--, p--)
+			result = result * n / p;
+		return result;
+	}
 ```
 
 
@@ -82,7 +82,7 @@ long double probability(unsigned numbers, unsigned picks)
 03. 함수와 배열
 
 ```
-int sum_arr(int arr[], int n)
+int sum_arr(int arr[], int n);
 ```
 
 // 되새기기
@@ -97,37 +97,37 @@ int sum_arr(int arr[], int n)
 함수 매개변수로 쓰인 배열(사실 포인터) 예제
 
 ```
-#include <iostream>
-using namespace std;
+	#include <iostream>
+	using namespace std;
 
-int sumArr(int arr[], int n);
+	int sumArr(int arr[], int n);
 
-int main()
-{
-	const int arSize = 8;
-	int cookies[arSize] = { 1,2,4,8,16,32,64,128 };
-	cout << cookies << " = 배열주소, ";
-	cout << "sizeof cookies = " << sizeof cookies << endl;
+	int main()
+	{
+		const int arSize = 8;
+		int cookies[arSize] = { 1,2,4,8,16,32,64,128 };
+		cout << cookies << " = 배열주소, ";
+		cout << "sizeof cookies = " << sizeof cookies << endl;
 
-	int sum = sumArr(cookies, arSize);
-	cout << "먹은 과자 수 합계: " << sum << endl;
-	sum = sumArr(cookies, 3);
-	cout << "처음 세 사람은 과자 " << sum << "개를 먹었습니다.\n";
-	sum = sumArr(cookies + 4, 4);
-	cout << "마지막 네 사람은 과자 " << sum << "개를 먹었습니다.\n";
-	
-	return 0;
-}
+		int sum = sumArr(cookies, arSize);
+		cout << "먹은 과자 수 합계: " << sum << endl;
+		sum = sumArr(cookies, 3);
+		cout << "처음 세 사람은 과자 " << sum << "개를 먹었습니다.\n";
+		sum = sumArr(cookies + 4, 4);
+		cout << "마지막 네 사람은 과자 " << sum << "개를 먹었습니다.\n";
+		
+		return 0;
+	}
 
-int sumArr(int arr[], int n)
-{
-	int total = 0;
-	cout << arr << " = arr, ";
-	cout << "sizeof arr = " << sizeof arr << endl;
-	for (int i = 0; i < n; i++)
-		total += arr[i];
-	return total;
-}
+	int sumArr(int arr[], int n)
+	{
+		int total = 0;
+		cout << arr << " = arr, ";
+		cout << "sizeof arr = " << sizeof arr << endl;
+		for (int i = 0; i < n; i++)
+			total += arr[i];
+		return total;
+	}
 ```
 ```
 0000009028EFFC18 = 배열주소, sizeof cookies = 32
@@ -151,37 +151,37 @@ const
 const + 배열 범위 사용 예제
 
 ```
-#include <iostream>
-using namespace std;
+	#include <iostream>
+	using namespace std;
 
-int sumArr(const int* begin, const int* end);
+	int sumArr(const int* begin, const int* end);
 
-int main()
-{
-	const int arSize = 8;
-	int cookies[arSize] = { 1,2,4,8,16,32,64,128 };
-	cout << cookies << " = 배열주소, ";
-	cout << "sizeof cookies = " << sizeof cookies << endl;
+	int main()
+	{
+		const int arSize = 8;
+		int cookies[arSize] = { 1,2,4,8,16,32,64,128 };
+		cout << cookies << " = 배열주소, ";
+		cout << "sizeof cookies = " << sizeof cookies << endl;
 
-	int sum = sumArr(cookies, cookies + arSize);
-	cout << "먹은 과자 수 합계: " << sum << endl;
-	sum = sumArr(cookies, cookies + 3);
-	cout << "처음 세 사람은 과자 " << sum << "개를 먹었습니다.\n";
-	sum = sumArr(cookies + 4, cookies + 8);
-	cout << "마지막 네 사람은 과자 " << sum << "개를 먹었습니다.\n";
-	
-	return 0;
-}
+		int sum = sumArr(cookies, cookies + arSize);
+		cout << "먹은 과자 수 합계: " << sum << endl;
+		sum = sumArr(cookies, cookies + 3);
+		cout << "처음 세 사람은 과자 " << sum << "개를 먹었습니다.\n";
+		sum = sumArr(cookies + 4, cookies + 8);
+		cout << "마지막 네 사람은 과자 " << sum << "개를 먹었습니다.\n";
+		
+		return 0;
+	}
 
-int sumArr(const int * begin, const int * end)
-{
-	const int* pt;
-	int total = 0;
+	int sumArr(const int * begin, const int * end)
+	{
+		const int* pt;
+		int total = 0;
 
-	for (pt = begin; pt != end; pt++)
-		total += *pt;
-	return total;
-}
+		for (pt = begin; pt != end; pt++)
+			total += *pt;
+		return total;
+	}
 ```
 ```
 000000EAA377F5B8 = 배열주소, sizeof cookies = 32
@@ -206,13 +206,13 @@ const 변수의 주소를 const가 아닌 일반 포인터에 대입을 금지
 4. 함수와 2차원 배열
 
 ```
-int data[2][3] = {{1,2,3},{4,5,6}};
-int total = sum(data, 2);
+	int data[2][3] = {{1,2,3},{4,5,6}};
+	int total = sum(data, 2);
 ```
 원형
 ```
-int sum(int (*ar2)[4], int size);
-int sum(int ar2[][4], int size);
+	int sum(int (*ar2)[4], int size);
+	int sum(int ar2[][4], int size);
 ```
 
 int *ar2[4]
@@ -225,32 +225,32 @@ ar2[r][c] == *(*(ar2 + r) + c);
 문자열 끝이 null 문자임을 이용해 검사하는 예제
 
 ```
-#include <iostream>
-using namespace std;
+	#include <iostream>
+	using namespace std;
 
-unsigned c_in_str(const char * str, char ch);
+	unsigned c_in_str(const char * str, char ch);
 
-int main()
-{
-	char m[15] = "minimum";
-	const char* u = "ululate";
-
-	cout << c_in_str(m, 'm') << '\n';
-	cout << c_in_str(u, 'u') << '\n';
-	
-	return 0;
-}
-
-unsigned c_in_str(const char* str, char ch)
-{
-	int count = 0;
-	while (*str)    // 이거다!
+	int main()
 	{
-		if (*str == ch) count++;
-		str++;
+		char m[15] = "minimum";
+		const char* u = "ululate";
+
+		cout << c_in_str(m, 'm') << '\n';
+		cout << c_in_str(u, 'u') << '\n';
+		
+		return 0;
 	}
-	return count;
-}
+
+	unsigned c_in_str(const char* str, char ch)
+	{
+		int count = 0;
+		while (*str)    // 이거다!
+		{
+			if (*str == ch) count++;
+			str++;
+		}
+		return count;
+	}
 ```
 ```
 3
@@ -262,56 +262,56 @@ unsigned c_in_str(const char* str, char ch)
 원점에서 거리와 각도를 구하는 프로그램 예제
 
 ```
-#include <iostream>
-#include <cmath>
-using namespace std;
+	#include <iostream>
+	#include <cmath>
+	using namespace std;
 
-struct polar
-{
-	double distance, angle;
-};
-struct rectD
-{
-	double x, y;
-};
-
-polar rectToPolar(const rectD* pxy, polar* pda);
-void showPolar(const polar* pda);
-
-int main()
-{
-	rectD rplace;
-	polar pplace;
-
-	cout << "x값과 y값을 입력: ";
-	while (cin >> rplace.x >> rplace.y)
+	struct polar
 	{
-		pplace = rectToPolar(&rplace, &pplace);
-		showPolar(&pplace);
-		cout << "x값과 y값을 입력하십시오 (끝내려면 q 입력): ";
+		double distance, angle;
+	};
+	struct rectD
+	{
+		double x, y;
+	};
+
+	polar rectToPolar(const rectD* pxy, polar* pda);
+	void showPolar(const polar* pda);
+
+	int main()
+	{
+		rectD rplace;
+		polar pplace;
+
+		cout << "x값과 y값을 입력: ";
+		while (cin >> rplace.x >> rplace.y)
+		{
+			pplace = rectToPolar(&rplace, &pplace);
+			showPolar(&pplace);
+			cout << "x값과 y값을 입력하십시오 (끝내려면 q 입력): ";
+		}
+		cout << "프로그램 종료.\n";
+		return 0;
 	}
-	cout << "프로그램 종료.\n";
-	return 0;
-}
 
-// 직각 좌표를 극 좌표로 변환
-polar rectToPolar(const rectD* pxy, polar* pda)
-{
-	polar answer;
-	answer.distance = sqrt(pxy->x * pxy->x + pxy->y * pxy->y);
-	answer.angle = atan2(pxy->y, pxy->x);
-	return answer;
-}
+	// 직각 좌표를 극 좌표로 변환
+	polar rectToPolar(const rectD* pxy, polar* pda)
+	{
+		polar answer;
+		answer.distance = sqrt(pxy->x * pxy->x + pxy->y * pxy->y);
+		answer.angle = atan2(pxy->y, pxy->x);
+		return answer;
+	}
 
-// 라디안 단위를 도 단위로 변환하여 극 좌표를 출력한다.
-void showPolar(const polar* pda)
-{
-	const double radToDeg = 57.2977951;
-	
-	cout << "거리 = " << pda->distance;
-	cout << ", 각도 = " << pda->angle * radToDeg;
-	cout << "도\n";
-}
+	// 라디안 단위를 도 단위로 변환하여 극 좌표를 출력한다.
+	void showPolar(const polar* pda)
+	{
+		const double radToDeg = 57.2977951;
+		
+		cout << "거리 = " << pda->distance;
+		cout << ", 각도 = " << pda->angle * radToDeg;
+		cout << "도\n";
+	}
 ```
 
 
@@ -325,43 +325,43 @@ std::string, std::array 예제들 생략
 9. 재귀
 
 ```
-#include <iostream>
-using namespace std;
+	#include <iostream>
+	using namespace std;
 
-const int len = 66;
-const int divs = 6;
+	const int len = 66;
+	const int divs = 6;
 
-void subdivide(char ar[], int low, int high, int level);
+	void subdivide(char ar[], int low, int high, int level);
 
-int main()
-{
-	char ruler[len];
-	for (int i = 1; i < len - 2; i++)
-		ruler[i] = ' ';
-	ruler[len - 1] = '\0';
-	int max = len - 2;
-	int min = 0;
-	ruler[min] = ruler[max] = '|';
-	cout << ruler << endl;
-
-	for (int i = 1; i <= divs; i++)
+	int main()
 	{
-		subdivide(ruler, min, max, i);
+		char ruler[len];
+		for (int i = 1; i < len - 2; i++)
+			ruler[i] = ' ';
+		ruler[len - 1] = '\0';
+		int max = len - 2;
+		int min = 0;
+		ruler[min] = ruler[max] = '|';
 		cout << ruler << endl;
-		for (int j = 1; j < len - 2; j++)
-			ruler[j] = ' ';
-	}
-	return 0;
-}
 
-void subdivide(char ar[], int low, int high, int level)
-{
-	if (level == 0) return;
-	int mid = (high + low) / 2;
-	ar[mid] = '|';
-	subdivide(ar, low, mid, level - 1);
-	subdivide(ar, mid, high, level - 1);
-}
+		for (int i = 1; i <= divs; i++)
+		{
+			subdivide(ruler, min, max, i);
+			cout << ruler << endl;
+			for (int j = 1; j < len - 2; j++)
+				ruler[j] = ' ';
+		}
+		return 0;
+	}
+
+	void subdivide(char ar[], int low, int high, int level)
+	{
+		if (level == 0) return;
+		int mid = (high + low) / 2;
+		ar[mid] = '|';
+		subdivide(ar, low, mid, level - 1);
+		subdivide(ar, mid, high, level - 1);
+	}
 ```
 
 재귀 호출의 단계가 적을 경우 우아하고 간단한 재귀!
@@ -378,14 +378,14 @@ process(think); 	// process()에 think()의 주소를 전달한다.
 포인터 선언이 함수의 리턴형과 함수의 시그내처(매개변수 리스트)를 알려주어야 한다.
 - 즉, 함수 원형이 그 함수에 대해 제공하는 것과 동일한 정보를 선언이 제공해야 한다.
 ```
-double pam(int);	// 함수 원형
-double(*pf)(int);	// pf 는 하나의 int를 매개변수로 취하고
-					// double형을 리턴하는 함수를 지시한다.
-pf = pam;			// pf는 이제 pam() 함수를 지시한다.
+	double pam(int);	// 함수 원형
+	double(*pf)(int);	// pf 는 하나의 int를 매개변수로 취하고
+						// double형을 리턴하는 함수를 지시한다.
+	pf = pam;			// pf는 이제 pam() 함수를 지시한다.
 ```
 ```
-double (*pf)(int);	// pf는 double을 리턴하는 함수를 지시하는 포인터
-double *pf(int);	// pf()는 double형을 지시하는 포인터를 리턴하는 함수
+	double (*pf)(int);	// pf는 double을 리턴하는 함수를 지시하는 포인터
+	double *pf(int);	// pf()는 double형을 지시하는 포인터를 리턴하는 함수
 ```
 
 리턴형, 시그내처가 일치해야 함.
@@ -395,91 +395,109 @@ double *pf(int);	// pf()는 double형을 지시하는 포인터를 리턴하는 
 예제
 
 ```
-#include <iostream>
-using namespace std;
+	#include <iostream>
+	using namespace std;
 
-double gildong(int);
-double moonsoo(int);
-void estimate(int lines, double (*pf)(int));
+	double gildong(int);
+	double moonsoo(int);
+	void estimate(int lines, double (*pf)(int));
 
-int main()
-{
-	int code;
-	cout << "필요한 코드의 행 수: ";
-	cin >> code;
-	cout << "홍길동의 시간 예상: \n";
-	estimate(code, gildong);
-	cout << "박문수의 시간 에상: \n";
-	estimate(code, moonsoo);
+	int main()
+	{
+		int code;
+		cout << "필요한 코드의 행 수: ";
+		cin >> code;
+		cout << "홍길동의 시간 예상: \n";
+		estimate(code, gildong);
+		cout << "박문수의 시간 예상: \n";
+		estimate(code, moonsoo);
 
-	return 0;
-}
+		return 0;
+	}
 
-double gildong(int lns) { return 0.05 * lns; }
-double moonsoo(int lns) { return 0.03 * lns + 0.0004 * lns * lns; }
+	double gildong(int lns) { return 0.05 * lns; }
+	double moonsoo(int lns) { return 0.03 * lns + 0.0004 * lns * lns; }
 
-void estimate(int lines, double (*pf)(int))
-{
-	cout << lines << "행을 작성하는 데 ";
-	cout << (*pf)(lines) << "시간이 걸립니다. \n";
-}
+	void estimate(int lines, double (*pf)(int))
+	{
+		cout << lines << "행을 작성하는 데 ";
+		cout << (*pf)(lines) << "시간이 걸립니다. \n";
+	}
+```
+
+```
+	#include <iostream>
+	using namespace std;
+
+	double A(double a)
+	{
+		return a;
+	}
+	double B(double b, double (*pf)(double))
+	{
+		return b + 1.5;
+	}
+	int main()
+	{
+		cout << B(2.7, A);
+	}
 ```
 
 난해함
 ```
-const double* (*p1)(const double*, int);
-const double* (*p1)(const double*, int) = f1;
-cout << *(*p1)(av, 4);
-const double* (*(*pd)[3])(const double*, int) = &pa;
+	const double* (*p1)(const double*, int);
+	const double* (*p1)(const double*, int) = f1;
+	cout << *(*p1)(av, 4);
+	const double* (*(*pd)[3])(const double*, int) = &pa;
 ```
 
 예제
 ```
-#include <iostream>
-using namespace std;
-// 동일한 세 함수
-const double* f1(const double ar[], int n);
-const double* f2(const double [], int);
-const double* f3(const double*, int);
+	#include <iostream>
+	using namespace std;
+	// 동일한 세 함수
+	const double* f1(const double ar[], int n);
+	const double* f2(const double [], int);
+	const double* f3(const double*, int);
 
-int main()
-{
-	double av[3] = { 1.0, 2.0, 3.0 };
+	int main()
+	{
+		double av[3] = { 1.0, 2.0, 3.0 };
 
-	const double* (*p1)(const double*, int) = f1;
-	auto p2 = f2;
-	cout << "함수 포인터:\n";
-	cout << "주소 값\n";
-	cout << (*p1)(av, 3) << ": " << *(*p1)(av, 3) << endl;
-	cout << p2(av, 3) << ": " << *p2(av, 3) << endl;
+		const double* (*p1)(const double*, int) = f1;
+		auto p2 = f2;
+		cout << "함수 포인터:\n";
+		cout << "주소 값\n";
+		cout << (*p1)(av, 3) << ": " << *(*p1)(av, 3) << endl;
+		cout << p2(av, 3) << ": " << *p2(av, 3) << endl;
 
-	const double* (*pa[3])(const double*, int) = { f1,f2,f3 };
-	auto pb = pa;
-	cout << "\n함수 포인터를 원소로 가지는 배열: \n";
-	cout << "주소 값 \n";
-	for (int i = 0; i < 3; i++)
-		cout << pa[i](av, 3) << ": " << *pa[i](av, 3) << endl;
+		const double* (*pa[3])(const double*, int) = { f1,f2,f3 };
+		auto pb = pa;
+		cout << "\n함수 포인터를 원소로 가지는 배열: \n";
+		cout << "주소 값 \n";
+		for (int i = 0; i < 3; i++)
+			cout << pa[i](av, 3) << ": " << *pa[i](av, 3) << endl;
 
-	cout << "\n함수 포인터를 가리키는 포인터: \n";
-	cout << "주소 값 \n";
-	for (int i = 0; i < 3; i++)
-		cout << pb[i](av, 3) << ": " << *pb[i](av, 3) << endl;
+		cout << "\n함수 포인터를 가리키는 포인터: \n";
+		cout << "주소 값 \n";
+		for (int i = 0; i < 3; i++)
+			cout << pb[i](av, 3) << ": " << *pb[i](av, 3) << endl;
 
-	cout << "\n포인터를 원소로 가지는 배열을 가리키는 포인터: \n";
-	cout << "주소 값 \n";
-	auto pc = &pa;
-	cout << (*pc)[0](av, 3) << ": " << *(*pc)[0](av, 3) << endl;
-	const double* (*(*pd)[3])(const double*, int) = &pa;
-	const double* pdb = (*pd)[1](av, 3);
-	cout << pdb << ": " << *pdb << endl;
-	cout << (*(*pd)[2])(av, 3) << ": " << *(*(*pd)[2])(av, 3) << endl;
+		cout << "\n포인터를 원소로 가지는 배열을 가리키는 포인터: \n";
+		cout << "주소 값 \n";
+		auto pc = &pa;
+		cout << (*pc)[0](av, 3) << ": " << *(*pc)[0](av, 3) << endl;
+		const double* (*(*pd)[3])(const double*, int) = &pa;
+		const double* pdb = (*pd)[1](av, 3);
+		cout << pdb << ": " << *pdb << endl;
+		cout << (*(*pd)[2])(av, 3) << ": " << *(*(*pd)[2])(av, 3) << endl;
 
-	return 0;
-}
+		return 0;
+	}
 
-const double* f1(const double* ar, int n) { return ar; }
-const double* f2(const double ar[], int) { return ar + 1; }
-const double* f3(const double ar[], int) { return ar + 2; }
+	const double* f1(const double* ar, int n) { return ar; }
+	const double* f2(const double ar[], int) { return ar + 1; }
+	const double* f3(const double ar[], int) { return ar + 2; }
 ```
 
 typedef 키워드 사용
@@ -520,5 +538,22 @@ p_f2(*pa)[10];
 
 
 
-프로그래밍 연습
-[생략]
+문제
+1. 선언, 정의, 호출
+2. string plot(map* mp);
+3. 
+4. 
+5. 
+6. 복사되어 전달되므로 원본값이 변하지 않기 떄문에.
+7. ?? char 배열, 문자열 상수, 첫 번쨰 문자를 지시하는 포인터
+8. 
+9. p, c
+10. 
+	구조체를 값으로 전달하기 위해 구조체 변수를 매개변수로 하고, 멤버 접근 연산자를 통해 접근한다.
+	구조체를 값으로 전달하면 캐시 히트율이 높다.
+	구조체의 주소를 전달하면 적은 양의 메모리를 전달하여 더 효율적이다.
+11. 
+12. 
+13. 
+	const char* p1(const applicant* a1, const applicant* a2) = ap;
+
