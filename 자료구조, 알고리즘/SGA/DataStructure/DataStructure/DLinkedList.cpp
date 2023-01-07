@@ -1,11 +1,12 @@
 #include <iostream>
-#include "LinkedList.h"
+#include "DLinkedList.h"
 using namespace std;
 
 Node* Create(DataType data)
 {
 	Node* node = new Node();
 
+	node->PrevNode = NULL;
 	node->Data = data;
 	node->NextNode = NULL;
 
@@ -28,6 +29,7 @@ void Push(Node** head, Node* node)
 			tail = tail->NextNode;
 
 		tail->NextNode = node;
+		node->PrevNode = tail;
 	}
 	else
 	{
@@ -38,6 +40,11 @@ void Push(Node** head, Node* node)
 void Insert(Node* current, Node* node)
 {
 	node->NextNode = current->NextNode;
+	node->PrevNode = current;
+
+	if (current->NextNode)
+		node->NextNode = current->NextNode;
+
 	current->NextNode = node;
 }
 
@@ -86,7 +93,7 @@ int GetNodeCount(Node* head)
 {
 	int count = 0;
 	Node* current = head;
-	
+
 	while (current)
 	{
 		current = current->NextNode;
@@ -95,34 +102,3 @@ int GetNodeCount(Node* head)
 
 	return count;
 }
-
-
-
-
-////////////////////////
-// Template LinkedList
-//////////////////////// 
-/*
-typedef LinkedList<int> List;
-
-int main()
-{
-	List::Node* node = List::Create(1);
-
-	List* list = new List(node);
-	list->Push(List::Create(2));
-	list->Push(List::Create(3));
-	list->Push(List::Create(4));
-	list->Push(List::Create(5));
-
-	list->Print(list->Head());
-
-	cout << '\n';
-
-	list->Insert(4, List::Create(10));
-
-	list->Print(list->Head());
-
-	return 0;
-}
-*/

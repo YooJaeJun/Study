@@ -1,5 +1,5 @@
 #include <iostream>
-#include "LinkedList.h"
+#include "DLinkedList.h"
 using namespace std;
 
 int main()
@@ -10,18 +10,6 @@ int main()
 		Node* temp = Create(i);
 		Push(&node, temp);
 	}
+	
 
-	Node* newNode = NULL;
-	{
-		newNode = Create(-1);
-		InsertHead(&node, newNode);
-
-		newNode = Create(-2);
-		InsertHead(&node, newNode);
-
-		int a = 0;
-	}
-
-
-	return 0;
 }
