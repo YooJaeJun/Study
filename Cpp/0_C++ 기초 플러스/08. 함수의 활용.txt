@@ -3,16 +3,17 @@
 일반 함수와 인라인 함수의 가장 큰 차이
 - C++ 컴파일러가 코드를 프로그램에 어떻게 결합하느냐
 
-순서
-- 함수 호출 명령 -> 명령의 주소를 메모리에 저장 -> 스택에 매개변수 복사  -> 
+순서 (중요)
+- 함수 호출 명령 -> 함수 호출 명령 바로 다음에 있는 명령의 주소를 메모리에 저장 -> 스택에 매개변수 복사  -> 
   함수가 시작되는 메모리 위치로 점프 -> 함수 코드 수행 -> 리턴값 레지스터에 복사 -> 
   저장해 두었던 주소의 명령으로 돌아온다.
 
 인라인 함수
 - 함수 코드가 그 코드 안에 직접 삽입
 - 함수를 수행하기 위해 프로그램이 다른 주소로 점프했다가 돌아올 필요 없다.
-- 메모리 사용 측면에서는 여러 번 호출 시 불리함
-	- 함수의 사본을 프로그램의 코드 안에 n번 삽입하는 과정 때문
+- 일반 함수보다 약간 빠르다.
+- 대신 메모리 사용 측면에서는 불리함
+	- 인라인 함수 여러 번 호출 시, 프로그램이 그 함수의 사본을 코드 안에 여러 번 삽입해야 하기 때문.
 - 코드 수행 시간이 짧을 경우에만 사용.
 - 재귀 호출이 허용되지 않는다. 하여, 컴파일러가 inline 키워드를 반드시 따르지 않는다.
 - 매크로 정의보다 더 많은 능력
@@ -42,6 +43,9 @@ int main()
 }
 ```
 
+참조는 대입문이 아니라 초기화 선언에 의해서만 설정할 수 있다!
+
+
 값, 포인터, 레퍼런스 이용 swap
 
 
@@ -51,6 +55,11 @@ lvalue 매개변수
 
 원본 데이터를 변경해야 할 경우
 - 임시변수의 생성을 허용하지 말아야 한다.
+
+실제 매개변수, 호출된 함수에서 형식 매개변수의 데이터 타입이 다를 때
+- 컴파일러가 형식 매개변수 타입의 임시 변수를 만들고, 초기화 후, 임시 변수의 내용을 서로 교환한다.
+- 현재는 에러 처리
+
 
 const 참조 매개변수 이점
 - 데이터 변경 에러 방지
@@ -70,7 +79,7 @@ const 참조 매개변수 이점
 
 참조 리턴 시 const 사용 이유
 ```
-accumalate(dup, five) = four;
+	accumalate(dup, five) = four;
 ```
 위 구문이 컴파일되는 이유
 - 리턴값이 참조형이기 때문에 수정 가능한 lvalue다.
@@ -109,7 +118,7 @@ const string& version3(string& s1, const string& s2)
 
 함수가 호출 함수의 데이터를 변경하는 경우
 - 데이터 객체가 기본 데이터형이면 포인터를 사용한다.
-- 데이터 객체가 ㅂ ㅐ열이면 유일한 선택은 포인터를 사용하는 것이다.
+- 데이터 객체가 배열이면 유일한 선택은 포인터를 사용하는 것이다.
 - 데이터 객체가 구조체이면 참조 or 포인터를 사용한다.
 - 데이터 객체가 클래스 객체이면 참조를 사용한다.
 
@@ -246,7 +255,7 @@ int main()
 명시적 구체화
 ```
 template void A<job>(job&, job&);
-template void A(job&, job&);      // 둘 다 명시적 특수화
+template void A(job&, job&);      // 둘 다 명시적
 ```
 - 컴파일러는 이 선언을 발견했을 때 템플릿을 사용하여 job형에 맞는 구체화를 생성한다.
 - "A() 템플릿을 사용하여 job형에 맞는 함수 정의를 생성하라."
@@ -299,7 +308,8 @@ template void A(job&, job&);      // 둘 다 명시적 특수화
 
 - 승급 > 표준. 1이 2보다 우선
 - 매개변수 정확. 3, 5, 6이 1보다 우선
-- 정확한 대응이 3, 5, 6.   2개 이상이므로 에러.
+- 정확한 대응이 3, 5, 6
+- (추가) 템플릿보다 일반 함수 우선 3, 5.    2개 이상이므로 에러.
 
 
 부분순서화 규칙(partial ordering rule)
@@ -309,9 +319,9 @@ template void A(job&, job&);      // 둘 다 명시적 특수화
 - 템플릿 아닌 함수 > 특수화 템플릿 함수 > 그 외 템플릿 함수
 
 ```
-lesser(m, n);
-lesser<>(m, n);		// 템플릿 함수만 호출
-lesser<int>(m, n);	// 템플릿 함수만 호출
+	lesser(m, n);
+	lesser<>(m, n);		// 템플릿 함수만 호출
+	lesser<int>(m, n);	// 템플릿 함수만 호출
 ```
 
 
@@ -326,12 +336,33 @@ decltype 키워드 (C++ 11)
 	decltype(x + y) z;
 ```
 
+```
+	#include <iostream>
+	using namespace std;
+
+	template<typename T>
+	void A(T& a, T& b) 
+	{ 
+		decltype(a + b) ab;
+		ab = a + b;
+		cout << ab; 
+	}
+
+	int main()
+	{
+		double a = 1.5, b = 2.4;
+		A(a, b);
+		
+		return 0;
+	}
+```
+
 - const, *, & 모두 동일 타입화
 - 함수 호출일 경우 함수 리턴형 타입
 
 ```
-long A(int);
-decltype(A(3)) B;	// long B;
+	long A(int);
+	decltype(A(3)) B;	// long B;
 ```
 
 - expression이 lvalue일 경우, var는 expression 타입을 참조!
@@ -425,5 +456,33 @@ double average(double a, double b);
 
 
 
-프로그래밍 연습
-[생략]
+
+연습문제
+1. 몸체 코드 길이가 작은 함수 / 재귀되지 않는 함수들
+2. void song(char* name, int times = 1);
+	디폴트 매개변수는 원형이 정의와 분리되어 있다면, 원형에만 넣을 수 있다.
+	ㄴㄴ const char* 타입으로 해야 가능
+3. 
+4. Print(const box& b) { cout << b.maker << ' ' << b.height ; }
+5. 
+6. 둘 다 가능
+	double mass(density, volume);
+	double mass(density); 혹은 위 함수에서 double mass(density, volume = 1.0);
+
+	오버로딩
+	void repeat(int, const string&) const;
+	void repeat(const string&) const;
+
+	오버로딩
+	int average(int, int);
+	double average(double, double);
+
+	둘 다 불가능
+
+7. 
+8. 
+9. v1은 float
+	v2는 float&
+	v3는 float&
+	v4는 int
+	v5는 double
