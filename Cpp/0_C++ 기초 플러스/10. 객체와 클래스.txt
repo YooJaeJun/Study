@@ -10,13 +10,15 @@ OOP
 인터페이스
 - 두 시스템 간의 상호 작용을 위한 공통된 프레임워크
 
-데이터 은닉
+public 
+- 객체와 프로그램 사이의 인터페이스를 제공한다.
+- 설계의 추상화를 나타낸다.	
+private
+- 데이터 은닉
 
 캡슐화
 - 세부적인 구현들을 따로 결합하여 추상화와 분리하는 것
 - 데이터 은닉은 캡슐화의 한 예
-
-public, private
 
 
 함수 머리(function heading)와 함수 몸체(function body)
@@ -32,6 +34,7 @@ Stock::update()
 
 update()
 - 검증되지 않은 이름 unqualified name
+- 그 클래스 사용 범위 안에서만 사용 가능
 
 
 인라인 메서드
@@ -77,7 +80,6 @@ Stock* prelief = new Stock;	// 디폴트 생성자 암시적 호출
 
 
 파괴자
-
 - main의 시작과 끝에 중괄호를 하나 더 두어 파괴자 확인
 
 
@@ -116,19 +118,20 @@ const Stock& topval(const Stock& s) const;
 
 - 한 객체에는 암시적으로 접근하고, 다른 한 객체에는 명시적으로 접근한다.
 - 그러고 나서 두 객체 중의 하나에 대한 참조를 리턴한다.
-- 함수가 명시적으로 접근된 객체를 변경하지 않는다.
-- 함수가 암시적으로 접근된 객체를 변경하지 않는다.
+- 괄호 안 const - 함수가 명시적으로 접근된 객체를 변경하지 않는다.
+- 괄호 뒤 const - 함수가 암시적으로 접근된 객체를 변경하지 않는다.
 
 
 this 포인터
 - 모든 클래스 메서드들은 그 메서드를 호출하는 객체의 주소로 설정되는 하나의 this 포인터를 갖는다.
 - 생성자와 파괴자를 포함한 각 멤버 함수 해당
-
+- 멤버 함수 괄호 뒤 const - this 포인터를 const로 제한한다는 뜻
 
 
 5. 객체 배열
 
 ```
+#define _CRTDBG_MAP_ALLOC
 #include <iostream>
 using namespace std;
 
@@ -150,6 +153,13 @@ int main()
 		new A("zxcv")
 	};
 	cout << a[1]->name;
+
+	for (auto& elem : a)
+	{
+		delete elem;
+	}
+	_CrtDumpMemoryLeaks();
+
 	return 0;
 }
 ```
@@ -232,6 +242,8 @@ int main()
 
 	enum class : short pizza{ small, medium, large, xlarge };
 	// 사용자에 따라 다른 정수형 데이터형으로 선택 가능?? 오류 뜨는디
+	enum class pizza : short { small, medium, large, xlarge };
+	// 일케 순서 바꿔야 됨
 
 	return 0;
 }
