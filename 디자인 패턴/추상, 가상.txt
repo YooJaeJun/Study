@@ -1,0 +1,121 @@
+가상화: 재정의 가능하도록 열어주는 것, 공통적인 부분 묶어주기
+추상화: 현재 기점에선 특징만 지어주는 것, 지금은 어떻게 쓰일지 가늠하기 어려울 때 사용
+
+
+언리얼 c에서 인터페이스 = 추상(순수가상) + 가상
+
+
+
+질문
+v table 
+
+
+class A
+{
+	virtual void Test()
+	{
+		// 1
+	}
+}
+
+class B : public A
+{
+	void Test() override
+	{
+		// 2	
+	}
+}
+
+
+int main()
+{
+	B b;
+	A a = b;
+	a.Test();		// 정적할당. 1번
+}
+
+
+
+void Test(int* c)
+{
+	c = new int();
+	*c = 20;
+}
+
+int main()
+{
+	int* a = NULL;
+	Test(&a);
+	print(a);	// NULL
+}
+
+
+
+void Test(int** c)
+{
+	*c = new int();
+	**c = 20;
+}
+
+int main()
+{
+	int* a = NULL;
+	Test(&a);
+	print(a);
+}
+
+
+
+
+
+
+
+인터페이스
+	다른 클래스 사이에서 공통의 개념의 중간다리
+	주로 순수 가상 함수를 가진다.
+
+
+
+
+
+
+Engine
+Camera
+	Moving
+	Rotate
+	Capture
+CameraManager
+
+
+ICamera
+
+
+Client
+Camera
+인터페이스로부터 상속
+	Follow Cam
+	Orbit Cam
+	Trace Cam
+
+
+
+
+
+
+
+Character
+
+Player
+Enemy
+	Damage() 구체화
+
+
+
+IDamage
+	Damage()
+
+
+
+Weapon
+Sword
+
