@@ -194,6 +194,75 @@ Time operator*(double m, const Time& t)
 - 클래스 멤버가 아닌 항을 첫 번째 피연산자로 사용하려면, 피연산자 순서를 바꾸어 주는 프렌드 함수를 사용할 수 있다.
 
 
+- 자작 예제
+```
+#include <iostream>
+using namespace std;
+
+// Vector2.h
+class Vector2
+{
+public:
+	Vector2() = default;
+
+	Vector2(const float x, const float y);
+
+	void operator=(const Vector2& other);
+
+	Vector2 operator*(const float other) const;
+	
+	friend Vector2 operator*(const float other, const Vector2& vec);
+
+	void Print();
+
+public:
+	float x, y;
+};
+
+
+// Vector2.cpp
+Vector2::Vector2(const float x, const float y)
+	: x(x), y(y)
+{}
+
+void Vector2::operator=(const Vector2 & other)
+{
+	x = other.x;
+	y = other.y;
+}
+
+Vector2 Vector2::operator*(const float other) const
+{
+	return Vector2(x * other, y * other);
+}
+
+Vector2 operator*(const float other, const Vector2& vec)
+{
+	return vec * other;
+}
+
+void Vector2::Print()
+{
+	cout << x << ", " << y << endl;
+}
+
+
+int main()
+{
+	Vector2 a;
+	a.x = 2.0f; a.y = 3.0f;
+
+	// a = a * 2.3f;
+	a = 2.3f * a;
+
+
+	a.Print();
+
+	return 0;
+}
+```
+
+
 프렌드: << 연산자의 오버로딩
 
 << 오버로딩 첫 번째
@@ -256,8 +325,18 @@ cout << "여행 일시: " << trip << " (화요일)\n";
 	cout << " (화요일)\n";
 	문자열을 위한 ostream 정의 사용하여 문자열 출력.
 
+자작 예시
+```
+	friend ostream& operator<<(ostream& os, const Vector2& vec);
+	,,,
+	ostream& operator<<(ostream& os, const Vector2& vec)
+	{
+		vec.Print();
+		return os;
+	}
+```
 
-opstrea<<() 파일 출력
+ofstream<<() 파일 출력
 ```
 #include <fstream>
 // ...
@@ -594,7 +673,36 @@ double host = wolfe;	// 가능?
 	double b = double(a);
 	double c = (double)a;
 
+자작 예시
+```
+#include <iostream>
+using namespace std;
+
+class A
+{
+public:
+	double a;
+	double b;
+	
+	A() = default;
+	A(double d) : a(d), b(d) {}
+	explicit A(double d1, double d2) : a(d1), b(d2) {}
+};
+
+
+int main()
+{
+	A a;
+	a = 10;
+	a = { 1.1, 2.2 };	// implicit
+	cout << a.a << ' ' << a.b << endl;
+
+	return 0;
+}
+```
+
 - operator typeName();
+	- operator double(); 등등
 - 클래스의 메서드여야 한다.
 - 리턴형을 가지면 안된다.
 - 매개변수를 가지면 안된다.
@@ -725,5 +833,22 @@ total = operator+(jennySt, kennyD);
 
 
 
-프로그래밍 연습
-[생략]
+
+연습문제
+1. Stonewt operator*(const Stonewt& other);
+	Stonewt operator*(const double d);
+2. 프렌드 함수와 멤버 함수의 차이 : 
+	멤버 함수는 클래스 정의의 일부이며, 특별한 객체에 의해 호출된다.
+	멤버 함수는 멤버 연산자를 사용하지 않고도 호출한 객체의 멤버에 암시적으로 접근할 수 있다.
+	프렌드 함수는 클래스의 일부가 아니므로, 일반적인 함수 호출 방식으로 호출할 수 있다.
+	프렌드 함수는 클래스 멤버에 암시적으로 접근할 수 없다.
+	따라서 매개변수로 전달되는 개체에 접근하려면 멤버 연산자를 사용해야 한다.
+
+3. private한 멤버에 접근하기 위해서는, 그렇다.
+4. friend Stonewt operator*(double d, const Stonewt& other);
+5. 기존 정의된 연산자들 중 일부(_cast, ., .*, sizeof, ::, ? :)를 제외함
+6. 멤버 함수로 정의되어야 한다!!!
+7. explicit operator double() const;
+
+
+
