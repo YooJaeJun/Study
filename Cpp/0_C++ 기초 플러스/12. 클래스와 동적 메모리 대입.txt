@@ -79,6 +79,7 @@ static 멤버
 
 
 - Debug Assertion Failed! 에러 or General Protection Fault(GRT; 일반 보호 오류) 보고
+	- 금지된 메모리 위치에 접근 시도
 
 - 객체 카운트(num_strings)가 그것이 증가된 횟수보다 2만큼 더 감소함.
 ```
@@ -98,7 +99,7 @@ StringBad sailor = StringBad(sports);
 - 생성자 -> 디폴트 생성자
 - 디폴트 파괴자 -> 디폴트 파괴자
 - 복사 생성자
-- 대입 연사낮
+- 대입 연산자
 - 주소 연산자
 
 C++11 2가지 추가적인 멤버 함수 제공   => 18장에서 설명
@@ -175,7 +176,7 @@ StringBad::StringBad(const StringBad& st)
 - 클래스가 new에 의해 초기화되는 포인터들을 멤버로 가질 경우
 - 포인터 자체를 복사하는 것이 아니라, 그 포인터가 지시하는 데이터를 복사하는 복사 생성자를 정의
 - 이것을 깊은 복사라고 한다.
-- 얕은 복사는 포인터가 지시하는 데이터들을 복사하기 위해 포인터 정보만 복사는
+
 
 
 복사 대입 연산자
@@ -208,8 +209,6 @@ StringBad& StringBad::operator=(const StringBad& st)
 - 메모리가 낭비될 것!
 
 - 대입은 새로운 객체를 만들지 않으므로 num_strings 값을 조정할 필요 없음
-
-
 
 
 2. 새롭게 개선된 String 클래스
@@ -289,8 +288,8 @@ static 클래스 멤버 함수
 		- 그 함수는 클래스 이름과 사용 범위 결정 연산자를 사용하여 호출된다.
 
 ```
-static int HowMany() { return num_strings; }
-int count = String::HowMany();		// static 멤버 함수를 호출한다.
+	static int HowMany() { return num_strings; }
+	int count = String::HowMany();		// static 멤버 함수를 호출한다.
 ```
 
 2. 둘째, static 멤버 함수는 어떤 특정 객체와도 결합하지 않기 때문에, 
@@ -403,6 +402,11 @@ cout << (force1 + force2 = net).magval() << endl;
 const 객체로 선언하면 막을 수 있다!
 
 
+자작 복사 생성자, 복사 대입 연산자
+```
+	A(const A& other) { d = other.d; }
+	A& operator=(const A& other) { d = other.d; return *this; }
+```
 
 
 5. 객체를 지시하는 포인터
@@ -464,15 +468,15 @@ delete [] buffer;
 
 << 연산자의 오버로딩
 ```
-ostream& operator<<(ostream& os, const c_name& obj) 
-{ os << asdf; return os; }
+	ostream& operator<<(ostream& os, const c_name& obj) 
+	{ os << asdf; return os; }
 ```
 
 
 변환 함수들
 ```
-c_name(type_name value);
-operator type_name();
+	c_name(type_name value);
+	operator type_name();
 ```
 explicit
 
@@ -553,7 +557,6 @@ struct Node
 #pragma once
 class Queue
 {
-	enum { Q_SIZE = 10 };
 private:
 	struct Node { Item item; struct Node* next; };
 	enum { Q_SIZE = 10 };
@@ -722,7 +725,6 @@ ostream& operator<<(ostream& os, const nifty& n)
 }
 ```
 
-
 5. 
 a.
 	1 디폴트 생성자
@@ -736,3 +738,43 @@ a.
 b. 복사 대입 연산자
 
 
+
+
+연습문제
+1. a. 어떤 변수의 값도 초기화 해주지 않음
+	b. 문자열의 시작 주소만 복사함. s가 파괴될 경우 str 댕글링 포인터.
+	c. // 얕은 복사. s가 파괴될 경우 str 댕글링 포인터.
+		문자열 저장할 공간 대입 필요 new char[len + 1]
+
+2. - 파괴자에서 메모리 해제하지 않으면 메모리 누수
+	- new delete, new[] delete[] 쌍
+	- 얕은 복사 시 원본 메모리가 해제될 때 댕글링 포인터
+	- 대입할 때도 얕은 복사 문제
+
+3. 디폴트 생성자, 파괴자, 복사 생성자, 복사 대입 연산자, 이동 생성자, 이동 대입 연산자
+	- 생성자를 아무 것도 정의하지 않으면 컴파일러가 디폴트 생성자 호출.
+	- 나머지도 각자 사용자가 정의하지 않으면 컴파일러가 각 메서드 정의를 만듦
+
+4. char 배열은 정적 할당인데 크기가 할당되어 있지 않음
+	private, public 구분
+	nifty(const char* s);
+	friend ostream& ~~~ const nifty& n);
+	personality[0] = '\0';
+	strcpy(~~);
+	os << 
+
+
+
+5. 
+	a 
+		1 Golfer();
+		2 Golfer(const char* name, int g = 0);
+		3 2와 동일
+		4 1과 동일
+		5 Golfer(const Golfer& g);
+		6 2와 동일
+		7 컴파일러가 자동 생성한 디폴트 복사 대입 연산자
+		8 디폴트 복사 대입 연산자
+
+	b
+		복사 대입 연산자
