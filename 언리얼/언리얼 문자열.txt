@@ -1,0 +1,4 @@
+언리얼 스트링
+	FString
+	FName
+	FText - Unicode (LOC_TEXT)
