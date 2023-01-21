@@ -2,8 +2,9 @@
 다른 클래스에 속하는 객체를 클래스 멤버로 사용
 - Containment, Composition, layering 이라 부름
 
-private 상속, protected 상속
-- has-a 관계
+다른 한 가지 방법
+- private 상속, protected 상속
+	- has-a 관계
 
 
 
@@ -46,8 +47,10 @@ private:
 	typedef std::valarray<double> ArrayDb;
 	std::string name;
 	ArrayDb scores;
+
 	// scores 출력을 위한 private 함수
 	std::ostream& arr_out(std::ostream& os) const;
+
 public:
 	Student() : name("Null Student"), scores() {}
 	explicit Student(const std::string& s)
@@ -116,7 +119,7 @@ Student(const char* str, const double* pd, int n)
 #include <string>
 #include <valarray>
 
-class Student : private std::string, private std::valarray<double>
+class Student : private std::string, private std::valarray<double>			// 두 기초 클래스 상속
 {
 private:
 	typedef std::valarray<double> ArrayDb;
@@ -175,7 +178,9 @@ ostream& operator<<(ostream& os, const Student& stu)
 }
 ```
 
-- 타입 캐스팅 없으면 재귀 호출이니 주의
+명시적 타입 캐스팅 없으면
+- 재귀 호출이니 주의
+- 다른 이유는, 두 기초 클래스가 같은 연산자를 오버로딩 할 경우, 컴파일러는 어떤 기초 클래스로 변환해야 할지 컴파일러가 결정할 수 없음
 
 
 
@@ -300,6 +305,8 @@ Singer                  Waiter
 ```
 SingingWaiter ed;
 Worker* pw = &ed;       // 모호하다.
+						// 기초 클래스 포인터를 파생 객체 안에 있는 기초 클래스 객체의 주소로 설정하는데,
+						// ed는 두 개의 Worker 객체를 내포하고 있어, 선택할 수 있는 주소가 두 개다.
 Worker* pw1 = (Waiter*)&ed;
 Worker* pw2 = (Singer*)&ed;
 ```
@@ -330,7 +337,7 @@ class SingingWaiter : public Singer, public Waiter {};
 - virtual 키워드 오버로딩
 
 
-왜 기초 클래스들을 가상으로 선언하고, 가상 행동을 다중 상속의 표준으로 삼지 않나?   // 뒤에 건 먼 솔????
+왜 기초 클래스들을 가상으로 선언하고, 가상 행동을 다중 상속의 표준으로 삼지 않나?   // virtual 상속이 왜 디폴트가 아닌가 이 말인듯
 - 하나의 기초에 대해 여러 벌의 복사본을 원하는 경우가 있다.
 - 기초 클래스를 가상으로 만드려면 프로그램이 추가 작업을 해야 한다.
 
@@ -353,18 +360,20 @@ SingingWaiter(const Worker& wk, int p = 0, int v = Singer::other)
 - wk 정보는 Waiter 객체에 전달되지 않음
 - 이 경우 디폴트 Worker 생성자가 사용될 것.
 
+가상 기초 클래스는 생성자에서 멤버 초기자 리스트 규칙을 변경해야 한다.
+
 ```
 SingingWaiter(const Worker& wk, int p = 0, int v = Singer::other)
     : Wokrer(wk), Waiter(wk, p), Singer(wk, v) {}
 ```
 
-- 위처럼 기초 클래스 생성자를 명시적으로 호출.
+- 위처럼 "가상 기초 클래스"는 기초 클래스 생성자를 명시적으로 호출.
 
 
 어느 메서드 사용?
 - 파생 클래스에서 메서드 새 버전 생략하고, 상속 받은 메서드를 호출할 때
 - 단일 상속에서는 가장 가까운 조상의 정의가 사용되지만,
-- 다중 상속에서는 직계의 인접한 조상이 메서드를 함수를 각각 하나씩 가지고 있으므로 호출을 모호하게 만든다.
+- 다중 상속에서는 직계의 인접한 조상이 메서드를 각각 하나씩 가지고 있으므로 호출을 모호하게 만든다.
 
 - 이때 사용 범위 결정 연산자를 사용하면 확실히 할 순 있다.
 - 더 나은 방법은 파생 클래스에 대해 메서드 다시 정의하고, 사용할 버전 지정
@@ -376,6 +385,7 @@ void SingingWaiter::Show()
 }
 ```
 
+결론: 상속받은 이름들을 클래스 이름으로 제한
 
 
 
@@ -383,8 +393,10 @@ void SingingWaiter::Show()
 
 매개변수화(parameterized)되는 데이터형
 
-
 - 어떤 템플릿의 특별한 현실화를 구체화(instantiation) 또는 특수화(specialization)라 한다.
+
+템플릿은 함수가 아니기 때문에 개별적으로 컴파일할 수 없다.
+- 간단한 방법은, 모든 템플릿 관련 정보를 헤더 파일에 집어넣기
 
 
 ```
@@ -420,7 +432,7 @@ template <class T>
 bool Stack<T>::isfull()
 {
 	return top == MAX;
-}
+} 
 
 template <class T>
 bool Stack<T>::push(const T& item)
@@ -585,7 +597,7 @@ T ArrayTP<T, n>::operator[](int i) const
 
 데이터형이 아닌 매개변수(non-type argument) 또는 수식 매개변수(expression argument)라고 한다.
 ```
-ArrayTP<double, 12> eggweights;
+	ArrayTP<double, 12> eggweights;
 ```
 
 수식 매개변수 접근 방식은 자동 변수들을 관리하는 스택 메모리 사용
@@ -594,11 +606,11 @@ ArrayTP<double, 12> eggweights;
 - 각 배열 크기가 자신만의 템플릿을 각자 생성
 
 ```
-ArrayTP<double, 12> a;
-ArrayTP<double, 13> b;  // 서로 다른 클래스 선언 생성!
+	ArrayTP<double, 12> a;
+	ArrayTP<double, 13> b;  // 서로 다른 클래스 선언 생성!!!!! -> 낭비다
 
-Stack<int> c(12);
-Stack<int> d(13);   // 클래스 선언을 하나만 생성!
+	Stack<int> c(12);
+	Stack<int> d(13);   // 클래스 선언을 하나만 생성!
 ```
 
 
@@ -673,7 +685,7 @@ Trio<char, char*, char*> t3;
 ```
 // TempMember.cpp
 #include <iostream>
-using std::cout;
+using std::cout; 
 using std::endl;
 
 template <typename T>
@@ -690,8 +702,9 @@ private:
 		void show() const { cout << val << endl; }
 		V Value() const { return val; }
 	};
-	hold<T> q;	// 템플릿 객체
-	hold<int> n;
+	hold<T> q;		// 템플릿 객체
+	hold<int> n;	// 템플릿 객체
+	
 public:
 	beta(T t, int i) : q(t), n(i) {}
 	template <typename U>	// 템플릿 메서드
@@ -704,6 +717,7 @@ int main()
 	beta<double> guy(3.5, 3);
 	guy.Show();
 	cout << guy.blab(10, 2.3) << endl;
+	cout << guy.blab(10.0, 2.3) << endl;
 }
 ```
 
@@ -755,12 +769,22 @@ Crab<Stack, int, double> nebula;        // T = Stack, U = int, V = double
 template <class T>
 class HasFriend
 {
-    friend void counts();
+    friend void counts();		// 모든 HasFriend 구체화들에 대해 프렌드
 };
 ```
 
+프렌드라 객체에 의해 호출되지 않으니, 어떻게 객체에 접근?
 - 전역 포인터를 사용하여 전역이 아닌 객체에 접근
 
+
+어떤 프렌드 함수에 템플릿 매개변수를 제공하기를 원할 때는?
+
+```
+template <class T>
+class HasFriend
+{
+	friend void report(HasFriend<T>&);		// 바운드 템플릿 프렌드
+};
 
 ```
 template <typename T>
@@ -833,6 +857,7 @@ void report(T& hf)
 template <typename T>
 class ManyFriend
 {
+	// ...
     template <typename C, typename D> friend void show2(C&, D&);
 }
 ```
@@ -914,5 +939,33 @@ ArrayTP<Stack<Worker*>>;
 
 
 
-프로그래밍 연습
-[생략]
+
+
+1. public
+	private
+	public
+	private
+	public, private
+
+2.
+	Gloam::Gloam(int g, const char* s) : glip(g), fb(s) {}
+	Gloam::Gloam(int g, const Frabjous& fr) : glip(g), fb(fr) {}
+	void Gloam::tell()
+	{
+		fb.tell();
+		cout << glip << endl;
+	}
+3. Gloam::Gloam(int g, const char* s) : glip(g), Frabjous(s) {}
+	Gloam::Gloam(int g, const Frabjous& fr) : glip(g), Frabjous(fr) {}
+	void Gloam::tell()
+	{
+		Frabjous::tell();
+		cout << glip << endl;
+	}
+
+4. -
+5. Array<string, 10> arr;
+	Stack<Array<double>> st;
+	Array<Stack<Worker*>> arr;
+6. 두 갈래 상속 경로가 하나의 공통 조상을 공유한다면, 그 클래스는 그 공통 조상의 멤버들의 복사본을 두 벌 가지게 된다.
+	그러나 그 공통 조상 클래스를 직계 인접한 후손들의 가상 기초 클래스로 만들면, 문제가 해결된다.
