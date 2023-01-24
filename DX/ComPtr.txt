@@ -1,0 +1,24 @@
+using Microsoft::WRL::ComPtr;
+
+
+
+Microsoft::WRL::ComPtr
+
+
+
+
+
+std::shared_ptr
+
+
+make_shared
+
+
+make_shared<Effect>()
+
+idle = make_shared<ObImage>(L"EnterTheGungeon/enemy_3/Idle.png");
+
+
+
+
+std::unique_ptr
