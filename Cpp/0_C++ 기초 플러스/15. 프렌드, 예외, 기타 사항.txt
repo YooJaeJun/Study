@@ -170,6 +170,9 @@ inline void Remote::set_chan(Tv& t, int c) { t.channel = c; }
 - 함수 정의가 그 함수를 사용하는 파일 안에 들어 있어야 한다.
 
 
+상호 프렌드 선언 가능
+- 대화형 리모콘 등 서로에 영향을 끼치는 클래스 간.
+
 
 
 2. 내포 클래스
@@ -188,7 +191,7 @@ class Queue
 };
 ```
 
-- 적절한 생성자 및 유일하게 Node 객체가 생성되는 enqueue 메서드 수정
+- 적절한 생성자 추가 및 유일하게 Node 객체가 생성되는 enqueue 메서드 수정
 
 ```
 class Queue
@@ -230,7 +233,9 @@ Queue::Node::Node(const Item& i) : item(i), next(0) {}
 
 
 사용 범위
+- 내포 클래스도 private, public 범위에 따름
 
+- public일 때 외부 생성 예시
 ```
 class Team
 {
@@ -238,11 +243,12 @@ public:
 	class Coach {};
 };
 
-Team:: Coach forhire;
+Team::Coach forhire;
 ```
 
 
 접근 제어
+- 즉, 클래스가 선언된 장소가 클래스의 사용 범위 또는 가시 범위를 결정
 
 
 
@@ -416,7 +422,8 @@ int main()
 
 try -> throw -> catch
 
-operand가 exception 발생할 수 있는지 보고하는 noexcept() 오퍼레이터도 있다.
+noexcept()
+- operand가 exception 발생할 수 있는지 보고하는 noexcept() 오퍼레이터도 있다.
 
 
 스택 풀기
@@ -438,7 +445,7 @@ operand가 exception 발생할 수 있는지 보고하는 noexcept() 오퍼레�
 - 똑같이 프로그램은 스택에서 메모리를 해제한다.
 - 그러나 스택에서 만나는 첫 번째 리턴 주소에서 멈추지 않고,
 - try 블록에 들어 있는 리턴 주소에 도달할 때까지 계속해서 스택을 해제한다.
-- 이때 제어는 try 블록 끝에 이어지는 에외 핸들러로 넘어간다.
+- 이때 제어는 try 블록 끝에 이어지는 예외 핸들러로 넘어간다.
 - 이 과정을 스택 풀기라 부른다.
 - 함수 리턴과 마찬가지로, 스택에 올라와 있는 모든 자동 클래스 객체들에 대해 클래스 파괴자 호출됨
 
@@ -526,7 +533,7 @@ catch(exception& oe) {}		// runtime_error, exception 객체들을 포착
 
 bad_alloc 예외와 new
 
-C++ new 메모리 대입 문제 2가지 방벙 제공
+C++ new 메모리 대입 문제 2가지 방법 제공
 1. new가 널 포린터를 리턴
 2. new가 bad_alloc 예외를 발생
 
@@ -696,10 +703,10 @@ double Sales::operator[](int i) const
 ```
 
 ```
-// main.cpp
-try {}
-catch (LabeledSales::nbad_index& bad) {}
-catch (Sales::bad_index& bad) {}
+	// main.cpp
+	try {}
+	catch (LabeledSales::nbad_index& bad) {}
+	catch (Sales::bad_index& bad) {}
 ```
 
 
@@ -707,24 +714,24 @@ catch (Sales::bad_index& bad) {}
 잘못된 예외
 
 ```
-terminate_handler set_terminate(terminate_handler f) noexcept;
+	terminate_handler set_terminate(terminate_handler f) noexcept;
 ```
 
 - terminate_handler는 exception 헤더 파일에 선언되어 있음
 
 ```
-double argh(double, double) throw(out_of_bounds);
+	double argh(double, double) throw(out_of_bounds);
 
-try {
-	x = argh(a, b);
-}
-catch (out_of_bounds& ex)
-{}
+	try {
+		x = argh(a, b);
+	}
+	catch (out_of_bounds& ex)
+	{}
 ```
 
 
 ```
-unexpected_handler set_unexpected(unexpected_handler f) noexcept;
+	unexpected_handler set_unexpected(unexpected_handler f) noexcept;
 ```
 
 - set_terminate 함수보다 더 세밀하게 제공하는 set_unexpected
@@ -732,12 +739,12 @@ unexpected_handler set_unexpected(unexpected_handler f) noexcept;
 - 예외를 발생시킬 수 있음
 
 ```
-double argh(double, double) throw(out_of_bounds, bad_exception);
-try {
-	x = argh(a, b);
-}
-catch(out_of_bounds& ex) {}
-catch(bad_exception& ex) {}
+	double argh(double, double) throw(out_of_bounds, bad_exception);
+	try {
+		x = argh(a, b);
+	}
+	catch(out_of_bounds& ex) {}
+	catch(bad_exception& ex) {}
 ```
 
 
@@ -761,13 +768,14 @@ RTTI의 목적
 - 가상 함수의 경우 굳이 그 객체형을 알 필요 없으나, 
 - 파생 객체가 상속되지 않은 메서드를 가지고 있을 때,
 - 일부 객체들만이 그 메서드를 사용하기 위해, 혹은
-- 디버깅 목적으로 어떤 종류의 객체들이 생성되는지 추적하 싶다.
+- 디버깅 목적으로 어떤 종류의 객체들이 생성되는지 추적하고 싶다.
 
 
 
 RTTI의 동작 방식
 
 dynamic_cast 연산자
+- 어떤 객체를 기초 클래스 포인터가 지시하도록 설정할 수 있음
 - 기초 클래스형을 지시하는 포인터로부터 파생 클래스형을 지시하는 포인터를 생성한다.
 - 가능하지 않다면, 널 포인터인 0을 리턴한다.
 
@@ -798,28 +806,33 @@ dynamic_cast 연산자
 
 	Grand* pg = new Grand;
 	Grand* ps = new Superb;
-	// Grand* pm = new Magnificent;
+	Grand* pm = new Magnificent;
 
-	Superb* pm = dynamic_cast<Superb*>(pg);		// 다형형식이어야 함
+	Magnificent* p1 = (Magnificent*)pm;		// 안전
+	Magnificent* p2 = (Magnificent*)pg;		// 기초 객체의 주소를 파생 포인터에 대입하므로 안전하지 않음
+	Superb* p3 = (Magnificent*)pm;			// 파생 객체의 주소를 기초 포인터에 대입하므로 안전
 ```
 
+```
+	Superb* pm = dynamic_cast<Superb*>(pg);		// (안전하게 변환될 수 있음?) 객체의 주소 리턴 : 널 포인터인 0 리턴;
+```
 
 ```
-if (ps = dynamic_cast<Superb*>(pg))		// 'ps = ' 으로 널포인터 체크
-	ps->say();
+	if (ps = dynamic_cast<Superb*>(pg))		// 'ps = ' 으로 널포인터 체크
+		ps->say();
 ```
 
 
 부적절한 요청이 제시될 때, dynamic_cast는 bad_cast형의 예외 발생
 
 ```
-#include <typeinfo>
+	#include <typeinfo>
 
-try {
-	Superb& rs = dynamic_cast<Superb&>(rg);
-}
-catch (bad_cast&)
-{ }
+	try {
+		Superb& rs = dynamic_cast<Superb&>(rg);
+	}
+	catch (bad_cast&)
+	{ }
 ```
 
 
@@ -828,8 +841,9 @@ typeid 연산자와 type_info 클래스
 - 클래스 이름, 객체로 평가되는 식
 - type_info 객체에 대한 참조를 리턴
 - type_info는 typeinfo 헤더 파일에 정의된 클래스
+
 ```
-typeid(Magnificent) == typeid(*pg);
+	typeid(Magnificent) == typeid(*pg);
 ```
 - pg가 널포인터면 bad_typeid 예외 발생
 
@@ -838,11 +852,98 @@ typeid(*pg).name;
 ```
 - 포인터가 지시하는 객체의 클래스 이름 출력
 
+```
+// RTTI - dynamic_cast, typeid, type_info 사용
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <typeinfo>
+using namespace std;
+
+class Grand
+{
+private:
+	int hold;
+public:
+	Grand(int h = 0) : hold(h) {}
+	virtual void Speak() const { cout << "나는 Grand 클래스다!\n"; }
+	virtual int Value() const { return hold; }
+};
+
+class Superb : public Grand
+{
+public:
+	Superb(int h = 0) : Grand(h) {}
+	void Speak() const override { cout << "나는 Superb 클래스다!!\n"; }
+	virtual void Say() const
+	{
+		cout << "내가 가지고 있는 Superb 값은 " << Value() << "이다.\n";
+	}
+};
+
+class Magnificent : public Superb
+{
+private:
+	char ch;
+public:
+	Magnificent(int h = 0, char cv = 'A') : Superb(h), ch(cv) {}
+	void Speak() const override { cout << "나는 Magnificent 클래스다!!!\n"; }
+	void Say() const override
+	{
+		cout << "내가 가지고 있는 문자는 " << ch << "이고, 정수는 " << Value() << "이다.\n";
+	}
+};
+
+Grand* GetOne()
+{
+	Grand* p;
+	switch (rand() % 3)
+	{
+	case 0:
+		p = new Grand(rand() % 100);
+		break;
+	case 1:
+		p = new Superb(rand() % 100);
+		break;
+	case 2:
+		p = new Magnificent(rand() % 100, 'A' + rand() % 26);
+		break;
+	default:
+		p = nullptr;
+		break;
+	}
+	return p;
+}
+
+int main()
+{
+	srand(time(0));
+	Grand* pg;
+	Superb* ps;
+	for (int i = 0; i < 5; i++)
+	{
+		pg = GetOne();
+		cout << "지금 " << typeid(*pg).name() << "형을 처리하고 있습니다.\n";
+		pg->Speak();
+		if (ps = dynamic_cast<Superb*>(pg))
+			ps->Say();
+		if (typeid(Magnificent) == typeid(*pg))
+			cout << "그래, 너야말로 진짜 Magnificent 클래스다.\n";
+	}
+	return 0;
+}
+```
 
 
 RTTI의 오용
 - if else 구문들의 확장된 연쇄에서 typeid를 사용할 경우,
 - dynamic_cast와 가상 함수들을 대신 사용할 수 있는지 확인
+
+```
+	if (ps = dynamic_cast<Superb*>(pg))
+		ps->Say();
+```
+- 위와 같이 typeid 대신 dynamic_cast 사용하는 것이 가독성 좋음
 
 
 
@@ -859,10 +960,10 @@ reinterpret_cast
 dynamic_cast
 
 ```
-High* ph = new High;
-Low* pl = new Low;
+	High* ph = new High;
+	Low* pl = new Low;
 
-pl = dynamic_cast<Low*> ph;
+	pl = dynamic_cast<Low*> ph;
 ```
 
 - 업캐스트 허용, 다른 타입캐스팅 노허용
@@ -873,11 +974,11 @@ const_cast
 - 어떤 값을 const나 volatile로, 혹은 그 반대로 변경
 
 ```
-High bar;
-const High* pbar = &bar;
+	High bar;
+	const High* pbar = &bar;
 
-High* pb = const_cast<High*>(pbar);				// 맞다
-const Low* pl = const_cast<const Low*>(pbar);	// 틀리다
+	High* pb = const_cast<High*>(pbar);				// 맞다
+	const Low* pl = const_cast<const Low*>(pbar);	// 틀리다
 ```
 
 - C 스타일 일반적인 데이터형 변환은 const성도 변경하고, 데이터형도 바꿀 수 있으므로 위험
@@ -908,8 +1009,8 @@ int main()
 }
 ```
 ```
-pop1, pop2: 1, 2
-pop1, pop2: -99, 2
+	pop1, pop2: 1, 2
+	pop1, pop2: -99, 2
 ```
 
 
@@ -924,7 +1025,7 @@ Low blow;
 
 High* pb = static_cast<High*>(&blow);	// 유효한 업캐스트
 Low* pl = static_cast<Low*>(&bar);		// 유효한 다운캐스트
-Pont* pmer = static_cast<Pond*>(&blow);	// 유효하지 않다.
+Pond* pmer = static_cast<Pond*>(&blow);	// 유효하지 않다.
 ```
 
 - 다운캐스트 명시적인 데이터형 변환 없이 암시적인 데이터형 변환으로 이루어질 수 있으므로 유효
@@ -957,7 +1058,7 @@ int main()
 
 C++에서는 다음 타입 캐스팅 안됨
 ```
-char ch = char (&d);		// char형의 크기가 너무 작아 포인터 구현을 담을 수 없다.
+	char ch = char (&d);		// char형의 크기가 너무 작아 포인터 구현을 담을 수 없다.
 ```
 
 
@@ -989,7 +1090,8 @@ char ch = char (&d);		// char형의 크기가 너무 작아 포인터 구현을 
 - 이 두 요구는 배타적이어서 양립될 수 없다.
 
 
-3. 클래스에 대한 접근은 public 인터페이스를 통해서만 이루어져야 한다.
+3. 클래스에 대한 접근은 public 인터페이스를 통해서만 이루어진다.
+	유일한 일이 생성자를 호출하여 그 객체를 생성하는 일
 
 
 4. 
@@ -1008,5 +1110,25 @@ dynamic_cast는 업캐스팅만을 허용한다. 다운캐스팅 혹은 다른 �
 
 
 
-프로그래밍 연습
-[생략]
+연습문제
+1. a. snap 안 friend clasp; 시점에선 clasp가 알려져있지 않음 + friend class 로 지정해야 함
+	b. cuff 안 void snip(muff&) {}; 시점에선 muff 클래스가 알려져있지 않음
+	c. muff 안 cuff 알려져있지 않음
+2. 만들 수 없다!!
+	A가 B의 멤버 함수를 프렌드로 가지려면, B 선언이 A 선언보다 앞에 와야 한다.
+	B가 A의 ~~
+	두 요구는 배타적이라 양립될 수 없다.
+3. 객체를 생성하는 것 밖에 없어서?
+	유일한 일이 생성자를 호출하여 그 객체를 생성하는 일
+4. throw는 try 블록이 있는 함수까지 스택을 언와인딩한다.
+	return은 현재 함수는 스택에서 반환하고 직전 호출한 함수로 되돌아간다.
+5. 가장 늦은 파생 클래스로부터 가장 이른 파생 클래스 순서로 catch 블록들을 배치한다.
+6. 1번은 객체가 Superb 혹은 Superb에서 파생된 객체를 지시하는 경우에만 true,
+	2번은 Superb 객체에 대해서만 true
+7. static_cast : 업캐스트, 다운캐스트 모두 허용
+	dynamic_cast : 업캐스트만 허용
+
+	dynamic_cast 추가설명
+	문제는 부모 타입의 포인터를 자식 타입의 포인터로 다운 캐스팅할 때인데 이때는 무조건 변환을 허용하지 않고 안전하다고 판단될 때만 허용한다. 
+	안전한 경우란 변환 대상 포인터가 부모 클래스형 포인터 타입이되 실제로 자식 객체를 가리키고 있을 때 자식 클래스형 포인터로 다운 캐스팅할 때이다. 
+	말이 좀 복잡한데 실제로 가리키고 있는 객체의 타입대로 캐스팅했으므로 이 포인터로 임의의 멤버를 참조해도 항상 안전하다.
