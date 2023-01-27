@@ -352,7 +352,9 @@ basic_string {...};
 ```
 
 char, wchar_t, char16_t, char32_t 형 문자열 사용할 수 있음
-특수화
+
+Allocator 클래스는 메모리 관리에 사용
+	다양한 형태의 캐릭터 타입들을 위해 미리 만들어진 allocator 템플릿의 특수화들이 기본값이 사용
 
 
 
@@ -364,15 +366,15 @@ char, wchar_t, char16_t, char32_t 형 문자열 사용할 수 있음
 기존 포인터 문제
 - 예외 종료 시 지역 변수가 스택 메모리로부터 자동 삭제되는 문제
 
-auto_ptr은 이제 표준에서 삭제됨
+(auto_ptr은 이제 표준에서 삭제됨)
 
 ```
-shared_ptr<double> pd;
-double* p_reg = new double;
-pd = p_reg;							// 허용되지 않는다 (암시적 변환)
-pd = shared_ptr<double>(p_reg);		// 허용된다 (명시적 변환)
-shared_ptr<double> pshared = p_reg;	// 허용되지 않는다 (암시적 변환)
-shared_ptr<double> pshared(p_reg);	// 허용된다 (명시적 변환)
+	shared_ptr<double> pd;
+	double* p_reg = new double;
+	pd = p_reg;							// 허용되지 않는다 (암시적 변환)
+	pd = shared_ptr<double>(p_reg);		// 허용된다 (명시적 변환)
+	shared_ptr<double> pshared = p_reg;	// 허용되지 않는다 (암시적 변환)
+	shared_ptr<double> pshared(p_reg);	// 허용된다 (명시적 변환)
 ```
 
 같은 객체 두 번 해제 방지
@@ -391,18 +393,19 @@ shared_ptr<double> pshared(p_reg);	// 허용된다 (명시적 변환)
 
 
 unique_ptr vs auto_ptr
-- 소유권 인수(대입) 시 컴파일 에러 시킴 vs 크래시
+- 소유권 인수(대입) 후 유효하지 않은 포인터에 접근 시, 
+- 컴파일 에러 시킴 vs 런타임 크래시
 
 unique_ptr 소유권 이전 방법
 
 ```
-unique_ptr<string> demo(const char* s)
-{
-	unique_ptr<string> temp(new string(s));
-	return temp;
-}
-unique_ptr<string> ps;
-ps = demo("asdf zxcv");
+	unique_ptr<string> demo(const char* s)
+	{
+		unique_ptr<string> temp(new string(s));
+		return temp;
+	}
+	unique_ptr<string> ps;
+	ps = demo("asdf zxcv");
 ```
 
 - demo()가 임시 unique_ptr 리턴.
@@ -427,12 +430,43 @@ ps1 = demo(" and qwer");
 
 unique_ptr은 new[], delete[] 가지고 있음
 ```
-std::unique_ptr<double[]> pda(new double[5]);	// delete[] 사용해야 함
+	std::unique_ptr<double[]> pda(new double[5]);	// delete[] 사용해야 함
+											// 책에서 대괄호로 안 되어 있고 소괄호인데, 오타인 것으로 보인다.
+```
+
+
+
+```
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+unique_ptr<int> make_int(int n)
+{
+	return unique_ptr<int>(new int(n));
+}
+
+void show(unique_ptr<int>& pi)	// 참조를 통해 전달
+{
+	cout << *pi << ' ';
+}
+
+int main()
+{
+	const int size = 5;
+	vector<unique_ptr<int>> vp(size);
+	for (int i = 0; i < vp.size(); i++)
+		vp[i] = make_int(rand() % 1000);
+
+	vp.push_back(make_int(rand() % 1000));
+	for_each(vp.begin(), vp.end(), show);	// algorithm.h
+}
 ```
 
 
 ```
-#include <bits/stdc++.h>
+#include <iostream>
 using namespace std;
 
 unique_ptr<int> make_int(int n)
@@ -450,6 +484,7 @@ int main()
 
 - shared_ptr 템플릿은 rvalue인 unique_ptr을 shared_ptr로 변환하기 위해 명시적 생성자를 포함하고 있다.
 - shared_ptr이 unique_ptr이 소유했던 객체의 소유권을 이전받는다.
+
 
 
 
@@ -493,6 +528,14 @@ STL은 동일한 작업을 하는 비멤버 함수가 있더라도 멤버 함수
 - 클래스 특화된 알고리즘이 더 효율적이기 때문
 - 벡터 swap()이 비멤버 swap()보다 더 효율적이다!
 - 반면 비멤버 버전은 두 개의 다른 종류의 컨테이너 사이에 내용물 교환을 허용한다.
+
+```
+	vector<int> v{ 1,2,3 };
+	stack<int> st;
+	st.push(5);
+	swap(v[0], st.top());
+	cout << v[0];
+```
 
 
 for_each
@@ -543,6 +586,17 @@ for_each도 Range loop로 대체 가능
 - 데이터형과 무관한 코드 작성
 
 
+자체제작
+```
+	vector<int> v{ 1,2,3 };
+	vector<int>::iterator i = v.begin();
+	cout << *(++i) << endl;
+	vector<int>::iterator i2 = v.begin() + 1;
+	cout << *i2 << endl;
+	cout << (i == i2) << endl;
+```
+
+
 이터레이터 특성
 - 내용 참조(dereference) 가능해야 함
 - 다른 이터레이터에 대입할 수 있어야 함
@@ -582,6 +636,9 @@ public:
 ```
 
 
+이터레이터의 종류
+- 알고리즘이 다르면 이터레이터들에 대한 요구 사항이 달라진다.
+
 5가지 종류 이터레이터
 - 입력
 	- find
@@ -613,16 +670,16 @@ public:
 - ++연산자
 - 연속된 값들을 반드시 같은 순서로 훑고 지나감
 - 증가된 후에도 저장했다면 그 이전 이터레이터 값 내용 참조 가능
-- 다중 패스 알고리즘
+- 다중 패스 알고리즘 가능
 - 읽기/쓰기 이터레이터
 	int* pi;
-- 일기 전용 이터레이터
+- 읽기 전용 이터레이터
 	const int* pi;
 
 
 전후방 이터레이터
 - 전방 후방 탐색
-- reverse
+- reverse 함수
 - --p, p--
 
 
@@ -671,10 +728,10 @@ int 포인터
 copy()
 - 배열을 벡터에 복사할 수 있음
 ```
-int arr[4] = {1,2,3,4};
-vector<int> v(4);
-copy(arr, arr + 4, v.begin());
-// 입력, 입력, 출력 이터레이터
+	int arr[4] = {1,2,3,4};
+	vector<int> v(4);
+	copy(arr, arr + 4, v.begin());
+	// 입력, 입력, 출력 이터레이터
 ```
 
 
@@ -682,17 +739,17 @@ copy(arr, arr + 4, v.begin());
 - 다른 어떤 인터페이스를 STL이 사용하는 인터페이스로 변환하는 클래스나 함수
 
 ```
-#include <iterator>
-ostream_iterator<int, char> out_iter(cout, " ");
+	#include <iterator>
+	ostream_iterator<int, char> out_iter(cout, " ");
 
-out_iter++ = 15;
-copy(v.begin(), v.end(), out_iter);
+	out_iter++ = 15;
+	copy(v.begin(), v.end(), out_iter);
 ```
 
 ```
-copy(istream_iterator<int, char>(cin),
-	istream_iterator<int, char(), v.begin());
-	```
+	copy(istream_iterator<int, char>(cin),
+		istream_iterator<int, char(), v.begin());
+```
 
 
 rbegin(), rend()
@@ -782,11 +839,63 @@ deque 첫 원소 삽입 시간
 
 list 배열 표기, 임의 접근 안됨
 	더블 링크드 리스트
-	merge 		두 정렬된 리스트 합병,
+	merge 		두 정렬된 리스트 합병, 원본 비게 됨
 	remove, 	해당 var 있는 노드 모두 제거
 	sort(N log N), 
-	splice(pos, list x) 	pos 앞에 리스트 x 내용 삽입
-	unique 		같은 원소들의 연속된 그룹을 하나의 원소로
+	splice(pos, list x) 	pos 앞에 리스트 x 내용 삽입, 원본은 비게 됨 (고정시간)
+	unique 		같은 원소들의 연속된 그룹을 하나의 원소로 (비례시간)
+
+```
+#include <iostream>
+#include <list>
+#include <iterator>
+#include <algorithm>
+
+int main()
+{
+	using namespace std;
+	list<int> one(5, 2);
+	int stuff[5] = { 1,2,4,8,6 };
+	list<int> two;
+	two.insert(two.begin(), stuff, stuff + 5);
+	int more[6] = { 6,4,2,4,6,5 };
+	list<int> three(two);
+	three.insert(three.end(), more, more + 6);
+
+	auto outint = [=](const int n) { std::cout << n << ' '; };
+
+	cout << "리스트 one: ";
+	for_each(one.begin(), one.end(), outint);
+	cout << endl << "리스트 two: ";
+	for_each(two.begin(), two.end(), outint);
+	cout << endl << "리스트 three: ";
+	for_each(three.begin(), three.end(), outint);
+
+	three.splice(three.begin(), one);
+	cout << endl << "접목 후의 리스트 three: ";
+	for_each(three.begin(), three.end(), outint);
+	cout << endl << "리스트 one: ";
+	for_each(one.begin(), one.end(), outint);
+
+	three.unique();
+	cout << endl << "단일화 후의 리스트 three: ";
+	for_each(three.begin(), three.end(), outint);
+
+	three.sort();
+	three.unique();
+	cout << endl << "정렬과 단일화 후의 리스트 three:	";
+	for_each(three.begin(), three.end(), outint);
+
+	two.sort();
+	three.merge(two);
+	cout << endl << "정렬된 리스트 two를 리스트 three에 합병: ";
+	for_each(three.begin(), three.end(), outint);
+	cout << endl;
+
+	return 0;
+}
+```
+
 
 forward_list
 	단순 링크드 리스트
@@ -811,6 +920,25 @@ set, map, multiset, multimap
 
 set
 	set<string, less<string>> A;
+
+```
+	#include <iostream>
+	#include <set>
+	#include <iterator>
+	#include <algorithm>
+	using namespace std;
+
+	int main()
+	{
+		const int n = 3;
+		string s1[n] = { "asdf", "zxcv", "qwer" };
+		set<string> a(s1, s1 + n);
+		ostream_iterator<string, char> out(cout, " ");
+		copy(a.begin(), a.end(), out);
+
+		return 0;
+	}
+```
 
 set_union
 ```
@@ -975,6 +1103,7 @@ string 클래스는 STL의 일부는 아니지만, STL을 염두에 두고 설�
 nextPermutaion 알고리즘
 	사전순
 	범위가 이미 최종 시퀀스 안에 있으면 false 리턴
+	고유한 치환들만 제공
 
 
 
@@ -1102,3 +1231,44 @@ sort(), random_shuffle() 함수는 임의 접근 이터레이터를 요구한다
 
 11. 10 < 15 ? true 리턴
 
+
+
+
+연습문제
+1.
+	class RQ1
+	{
+	private:
+		string s;
+	public:
+		RQ1() {}
+		RQ1(const string& other) : s(other) {}
+		~RQ1(){}
+	}
+
+	복사 생성자, 파괴자, 복사 대입 연산자
+
+2. 메모리를 수동으로 할당, 해제하지 않아도 됨
+	끝 null 문자 수동 처리 필요 없음
+	다른 string 간 대입 편함
+3. 
+	void ToLowerString(string& s) 
+	{ 
+		for_each(s.begin(), s.end(), [](char& ch) 
+		{ 
+			if (ch >= 'a' && ch <= 'z') ch += 'A' - 'a'; 
+		}); 
+	}
+
+	혹은
+
+	for_each(s.begin(), s.end(), [](char& ch) { ch = toupper(ch); });
+
+4. -
+5. 먼저 삽입된 골프 클럽들을 꺼내려면 위에 있는 골프 클럽들을 다 꺼낸 후 다시 넣어야 한다.
+6. 중복 키가 정의되지 않는다.
+7. 배열과 다른 형식의 데이터 구조를 훑고 지나갈 수 있다.
+8. 일반성을 높인다: STL 컨테이너 클래스, 보통의 배열 모두 STL 함수들을 사용 가능하게.
+9. 동적으로 배열 크기 할당 + 메모리 할당 및 해제가 자동 + 편한 메서드들 사용
+10. -
+11. -
