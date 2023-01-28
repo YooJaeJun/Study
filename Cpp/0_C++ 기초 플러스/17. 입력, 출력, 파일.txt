@@ -65,7 +65,11 @@ C++ 프로그램은 입력과 출력을 바이트들의 흐름(스트림)이라�
 리디렉션
 	표준 입력과 표준 출력을 위한 연결을 다른 쪽으로 변경할 수 있는 기능
 	운영체제가 지원함
-
+		C>counter
+		Hello
+		and Goodbye!
+		Control-Z
+		C>
 
 
 
@@ -135,6 +139,7 @@ flag를 켠다.
 		showpoint		소수점
 		uppercase		16진 출력. E표기에 대문자 사용
 		showpos			양수 앞에 + 부호 사용
+
 
 비트마스크 형
 	개별적인 비트 값들을 저장하는 데 사용되는 데이터형
@@ -208,6 +213,9 @@ int main()
 
 형식이 설정된 입력 함수
 
+호출한 객체의 참조를 리턴!
+	즉, 입력도 연이어 할 수 있다.
+	cin >> name >> fee >> ,,,
 
 
 cin >>은 입력을 어떻게 보는가?
@@ -217,8 +225,11 @@ cin >>은 입력을 어떻게 보는가?
 eofbit
 	파일 끝에 도달하면 1로 설정됨
 badbit
-	스트림이 손상되면 1로 설정됨
+	스트림이 손상되면 1로 설정됨. ex. 파일 읽기 에러 발생 시
 failbit
+	입력 연산이 기대하는 문자를 읽지 못하거나, 출력 연산이 기대하는 문자를 써 넣지 못하면 1로 설정
+goodbit
+	0을 다르게 표현
 
 등등
 
@@ -334,51 +345,93 @@ fout 같은 ofstream 객체는, 프로그램으로부터 한 바이트씩 흘러
 	2 이 객체를 하나의 특별한 파일에 연결시킨다.
 	3 cin을 사용하는 것과 동일한 방법으로 그 객체를 사용한다.
 
-```
-// 2개 구문
-ifstream fin;
-fin.open("Text.dat");
-// 1개 구문
-ifstream fis("Text2.dat");
-```
+
+- open은 파일에 연결, close는 파일 연결을 해제하는 것이라 보면 될 듯
+- close는 단지 파일과 연결이 끊어질 뿐, 스트림 관리 도구는 계속 역할을 유지한다. 관리하는 입력 버퍼와 함께 여전히 존재.
 
 ```
-char ch;
-fin >> ch;
+	// 2개 구문
+	ifstream fin;
+	fin.open("Text.dat");
 
-char buf[80];
-fin >> buf;
-
-fin.getline(buf, 80);
-
-string line;
-getline(fin, line);
-
-fin.close;
+	// 혹은 1개 구문
+	ifstream fis("Text2.dat");
 ```
 
+```
+	char ch;
+	fin >> ch;
+
+	char buf[80];
+	fin >> buf;
+
+	fin.getline(buf, 80);
+
+	string line;
+	getline(fin, line);
+
+	fin.close;
+```
+
+
+```
+	#include <iostream>
+	#include <fstream>
+	#include <string>
+
+	int main()
+	{
+		using namespace std;
+
+		string filename = "input.txt";
+
+		ofstream fout(filename.c_str());
+		fout << "ㅎㅇ\n";
+		fout.close();
+
+		ifstream fin(filename.c_str());
+		cout << filename << "파일의 내용: \n";
+		char ch;
+		while (fin.get(ch))
+			cout << ch;
+		cout << "프로그램 종료.\n";
+		fin.close();
+
+		return 0;
+	}
+```
 
 
 스트림 검사와 is_open()
-
+	스트림 상태 정보 0이면 정상
+ex.
+```
+	fin.open(argv[file]);
+	if (!fin)	// 열기 시도 실패
+	{}
+	// 혹은
+	if (!fin.is_open())		// 열기 시도 실패. 더 미묘한 문제들도 검사.
+	{}
+```
 
 
 여러 개의 파일 열기
 
 ```
-ifstream fin;
-fin.open("fat.txt");
-// ...
-fin.close();
-fin.clear();
-fin.open("rat.txt");
-// ...
-fin.close();
+	ifstream fin;
+	fin.open("fat.txt");
+	// ...
+	fin.close();
+	fin.clear();	// fin 다시 설정(컴파일러마다 필요 없을 수도 있음)
+	fin.open("rat.txt");
+	// ...
+	fin.close();
 ```
 
 
-
 명령행 처리
+
+[생략]
 
 
 
@@ -391,8 +444,98 @@ fin.close();
 
 파일에 덧붙이기
 
-2진 파일과 텍스트 파일
-	메모리에서 파일로 또는  파일에서 메모리로 데이터를 아무런 숨겨진 변환 업이 그대로 전송
+2진 파일 모드
+	2진 파일과 텍스트 파일
+		메모리에서 파일로 또는  파일에서 메모리로 데이터를 아무런 숨겨진 변환 없이 그대로 전송
+
+```
+	#include <iostream>
+	#include <fstream>
+	#include <iomanip>
+	#include <cstdlib>
+
+	inline void eatline() { while (std::cin.get() != '\n') continue; }
+
+	struct planet
+	{
+		char name[20];
+		double population;
+		double g;
+	};
+
+	const char* file = "input.txt";
+
+	int main()
+	{
+		using namespace std;
+		planet pl;
+		cout << fixed << right;
+
+		// 초기의 내용을 화면에 표시
+		ifstream fin;
+		fin.open(file, ios_base::in | ios_base::binary);	// 2진 파일
+		// 어떤 컴파일러는 ios_base::binary 모드를 받아들이지 않음
+
+		if (fin.is_open())
+		{
+			cout << file << " 파일의 현재 내용은 다음과 같습니다: \n";
+			while (fin.read((char*)&pl, sizeof pl))
+			{
+				cout << setw(20) << pl.name << ": "
+					<< setprecision(0) << setw(12) << pl.population
+					<< setprecision(2) << setw(6) << pl.g << endl;
+			}
+			fin.close();
+		}
+
+		// 새로운 데이터를 추가한다
+		ofstream fout(file, ios_base::out | ios_base::app || ios_base::binary);
+
+		if (!fout.is_open())
+		{
+			cerr << "출력을 위해 " << file << " 파일을 열 수 없습니다.\n";
+			exit(EXIT_FAILURE);
+		}
+
+		cout << "행성의 이름을 입력하십시오(끝내려면 빈 줄 입력):\n";
+		cin.get(pl.name, 20);
+		while (pl.name[0] != '\0')
+		{
+			eatline();
+			cout << "행성의 인구를 입력하십시오: ";
+			cin >> pl.population;
+			cout << "행성의 중력가속도를 입력하십시오: ";
+			cin >> pl.g;
+			eatline();
+			fout.write((char*)&pl, sizeof pl);
+			cout << "행성의 이름을 입력하십시오 (끝내려면 빈 줄 입력):\n";
+			cin.get(pl.name, 20);
+		}
+		
+		// 개정된 파일을 화면에 표시한다.
+		fin.clear();
+		fin.open(file, ios_base::in | ios_base::binary);
+		if (fin.is_open())
+		{
+			cout << file << " 파일의 개정된 내용은 다음과 같습니다:\n";
+			while (fin.read((char*)&pl, sizeof pl))
+			{
+				cout << setw(20) << pl.name << ": "
+					<< setprecision(0) << setw(12) << pl.population
+					<< setprecision(2) << setw(6) << pl.g << endl;
+			}
+			fin.close();
+		}
+		cout << "프로그램을 종료합니다.\n";
+
+		return 0;
+	}
+```
+
+	// 위 코드 이진 문자 포함되었다고 이상한 문자들만 입력됨
+
+
+임의 접근
 
 [생략]
 
@@ -402,26 +545,28 @@ fin.close();
 5. 인코어 형식의 지정
 
 sstream 계열
+	string stream.
+	string 객체에 형식이 지정된 정보를 기록하는 과정을 인코어 형식의 지정이라 한다.
 
 ostringstream
 
 ```
-#include <iostream>
-#include <sstream>
-using namespace std;
+	#include <iostream>
+	#include <sstream>
+	using namespace std;
 
-int main()
-{
-	ostringstream outstr;
-	double price = 380.0f;
-	const char* ps = " copy";
-	outstr.precision(2);
-	outstr << fixed;
-	outstr << "Pay only " << price << ps << endl;
-	string result = outstr.str();
-	cout << result;
-	return 0;
-}
+	int main()
+	{
+		ostringstream outstr;
+		double price = 380.0f;
+		const char* ps = " copy";
+		outstr.precision(2);
+		outstr << fixed;
+		outstr << "Pay only " << price << ps << endl;
+		string result = outstr.str();
+		cout << result;
+		return 0;
+	}
 ```
 ```
 Pay only 380.00 copy
@@ -430,19 +575,19 @@ Pay only 380.00 copy
 istringstream
 
 ```
-#include <iostream>
-#include <sstream>
-using namespace std;
+	#include <iostream>
+	#include <sstream>
+	using namespace std;
 
-int main()
-{
-	string s = "asdf zxcv";
-	istringstream instr(s);
-	string word;
-	while (instr >> word)
-		cout << word << endl;
-	return 0;
-}
+	int main()
+	{
+		string s = "asdf zxcv";
+		istringstream instr(s);
+		string word;
+		while (instr >> word)
+			cout << word << endl;
+		return 0;
+	}
 ```
 ```
 asdf
@@ -491,3 +636,24 @@ cin >> ch 		화이트스페이스와 개행 문자들을 건너뜀
 cin.get(ch) 	건너뛰지 않음
 
 9. ignore은 80 문자 초과하면 바르게 동작하지 않고 처음 80개의 문자를 건너뛰기만 한다.
+
+
+
+
+연습 문제
+1. 입출력 위해 사용되는 스트림과 버퍼를 관리
+2. 키보드 입력은 연속된 문자들을 발생
+	121은 각각 한 바이트씩 2진 코드로 표현된 3개의 문자가 발생
+3. 표준 출력은 파일에 연결 / 표준 에러는 화면으로 연결
+4. cout이 정의된 ostream 클래스에서 operator<<() 함수를 각 기본 타입마다 한 버전씩 정의함
+5. ostream& 타입 객체 리턴
+6. 
+	cout << hex << 100 << endl;
+	cout << oct << 100 << endl;
+7. -
+8. ct1 = 5; ct2 = 9
+	cin >> ~~ 화이트스페이스 제외하고 읽음
+	cin.get(~~) Enter포함 화이트스페이스 포함해서 읽음
+9. ignore() 입력 행이 80개의 문자를 초과하면 바르게 동작하지 않음
+	처음 80개의 문자를 건너뛰기만 함
+	
