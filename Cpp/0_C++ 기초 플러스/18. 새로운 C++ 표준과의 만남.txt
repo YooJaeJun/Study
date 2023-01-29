@@ -5,13 +5,39 @@
 균일화된 초기화
 
 중괄호 초기화 리스트
-	컴파일러는 값을 작은 데이터 형에 저장하는 타입의 형 변환을 허용하지 않는다.
-	char ch = {1.57e26};
+	초기화 리스트를 사용하면, 컴파일러는 값을 작은 데이터 형에 저장하는 타입의 형 변환을 허용하지 않는다!!!
+	char ch{1.57e26};
+
+	반면 '=' 대입은 컴파일 에러를 일으키지 않는다!
+	char ch = 1.57e26;
+
+	해당 타입의 범위 내에 속해 있으면 작은 타입으로 변환하는 것도 가능
+		ex. int -> char 등
 
 std::initializer_list
 ```
-vector<int> a2{10};
-vector<int> a3{10,11,12};
+	vector<int> a2{10};
+	vector<int> a3{10,11,12};
+```
+
+```
+	#include <iostream>
+	#include <initializer_list>
+	#include <algorithm>
+	using namespace std;
+
+	double sum(std::initializer_list<double> il)
+	{
+		double tot{ 0 };
+		for_each(il.begin(), il.end(), [&](double d) { tot += d; });
+		return tot;
+	}
+
+	int main()
+	{
+		cout << sum({ 2.5, 3.1, 4 }) << endl;
+		return 0;
+	}
 ```
 
 
@@ -24,15 +50,15 @@ decltype
 	template 타입 결정하기 전 사용
 
 ```
-template<typename T, typename U>
-void ef(T t, U u)
-{
-	decltype(T*U) tu;
-}
+	template<typename T, typename U>
+	void ef(T t, U u)
+	{
+		decltype(T*U) tu;
+	}
 ```
 ```
-decltype(j) i2;			int
-decltype((j)) i3;		int&
+	decltype(j) i2;			int
+	decltype((j)) i3;		int&
 ```
 
 
@@ -43,9 +69,9 @@ auto f2(double, int) -> double
 템플릿 함수 반환 타입 특정지음
 
 ```
-template<typename T, typename U)
-auto eff(T t, U u) -> decltype(T*U)
-{}
+	template<typename T, typename U)
+	auto eff(T t, U u) -> declytype(T*U)		// T*U 형식 이름 사용할 수 없다는 에러
+	{}
 ```
 
 
@@ -78,12 +104,12 @@ explicit 변환 연산자
 	암시적 변환 (클래스 객체) = 0.5; 등이 허용되지 않음
 
 ```
-operator int() const;
-explicit operator double() const;
-// ...
-int n = a;		// 허용됨
-double x = b;	// 허용되지 않음
-x = double(b);	// 명시적 변환, 허용됨
+	operator int() const;
+	explicit operator double() const;
+	// ...
+	int n = a;		// 허용됨
+	double x = b;	// 허용되지 않음
+	x = double(b);	// 명시적 변환, 허용됨
 ```
 
 
@@ -119,11 +145,11 @@ export 제거
 rvalue 참조
 
 ```
-int x = 10;
-int y = 23;
-int&& r1 = 13;
-int&& r2 = x + y;
-double&& r3 = std::sqrt(2.0);
+	int x = 10;
+	int y = 23;
+	int&& r1 = 13;
+	int&& r2 = x + y;
+	double&& r3 = std::sqrt(2.0);
 ```
 
 
@@ -135,23 +161,43 @@ double&& r3 = std::sqrt(2.0);
 주 데이터 이동시키는 것을 피하고 관리 정보만 조정
 
 ```
-// 일반적인 깊은 복사 방식
-Useless::Useless(const Useless& f) : n(f.n)
-{
-	++ct;
-	pc = new char[n];
-	for(int i=0; i<n; i++)
-		pc[i] = f.pc[i];
-}
+	class Useless
+	{
+	private:
+		int n;
+		char* pc;
+		static int ct;
+		void ~~
+	public:
+		Useless();
+		exlicit Useless(int k);
+		Useless(int k, char ch);
+		Useless(const Useless& f);
+		Useless(Useless&& f);
+		~Useless();
+		Useless operator+(const Useless& f) const;
+		void ~~
+	}
+```
 
-// 이동 생성자
-Useless::Useless(Useless&& f) : n(f.n)
-{
-	++ct;
-	pc = f.pc;		// 주소 가로챔
-	f.pc = nullptr;	// 이전 객체가 아무것도 반환하지 않도록 함
-	f.n = 0;
-}
+```
+	// 일반적인 깊은 복사 방식
+	Useless::Useless(const Useless& f) : n(f.n)
+	{
+		++ct;
+		pc = new char[n];
+		for(int i=0; i<n; i++)
+			pc[i] = f.pc[i];
+	}
+
+	// 이동 생성자
+	Useless::Useless(Useless&& f) : n(f.n)
+	{
+		++ct;
+		pc = f.pc;		// 주소 가로챔
+		f.pc = nullptr;	// 이전 객체가 아무것도 반환하지 않도록 함!!
+		f.n = 0;
+	}
 ```
 
 delete[] 가 널 포인터에 적용될 때 에러가 발생하지 않으므로,
@@ -178,30 +224,30 @@ lvalue 참조를 갖는 1개의 생성자와 rvalue 참조를 가진 두 번째 
 이동 대입 연산자
 
 ```
-// 복사 대입 연산자
-Useless& Useless::operator=(const Useless& f)
-{
-	if (this == &f) return *this;
-	delete[] pc;
-	n = f.n;
-	pc = new char[n];
-	for(int i=-; i<n; i++)
-		pc[i] = f.pc[i];
-	return *this;
-}
+	// 복사 대입 연산자
+	Useless& Useless::operator=(const Useless& f)
+	{
+		if (this == &f) return *this;
+		delete[] pc;
+		n = f.n;
+		pc = new char[n];
+		for(int i=-; i<n; i++)
+			pc[i] = f.pc[i];
+		return *this;
+	}
 
-// 이동 대입 연산자
-Useless& Useless::operator=(Useless&& f)
-{
-	if (this == &f) return *this;
-	delete[] pc;
-	n = f.n;
-	
-	pc = f.pc;
-	f.n = 0;
-	f.pc = nullptr;
-	return *this;
-}
+	// 이동 대입 연산자
+	Useless& Useless::operator=(Useless&& f)
+	{
+		if (this == &f) return *this;
+		delete[] pc;
+		n = f.n;
+		
+		pc = f.pc;
+		f.n = 0;
+		f.pc = nullptr;
+		return *this;
+	}
 ```
 원래 데이터를 지우고 소스 객체를 가로챈다.
 	한 포인터만 데이터 가리키는 것이 중요하므로 소스 객체에서 포인터를 널 포인터로 설정한다.
@@ -229,10 +275,10 @@ STL 클래스는 복사 생성자, 이동 생성자, 복사 대입 연산자, �
 
 기본과 삭제 함수
 
-default 키워드
-delete 키워드
+	default 키워드
+	delete 키워드
 
-복사 생성 및 대입이 불가능하게 하고, 이동 생성 및 대입을 사용할 때.
+	복사 생성 및 대입이 불가능하게 하고, 이동 생성 및 대입을 사용할 때.
 
 
 
@@ -241,25 +287,32 @@ delete 키워드
 위임(delegation)
 	다른 생성자의 정의의 일부를 생성자로 사용할 수 있게 함
 
+```
+	Notes::Notes(int kk, double xx, string stt) : k(kk), x(xx), st(stt) {}
+	Notes::Notes() : Notes(0, 0.01, "Oh") {}
+```
+
 
 
 상속 생성자
 
-상속된 클래스에서 생성자로 사용
+	상속된 클래스에서 생성자로 사용
+	T 부모::부모의함수() {}
 
 
 
 가상 함수 관리: override와 final
-
 	의미를 갖는 식별자
-
-
+	override
+		선언이 기본 함수와 일치하지 않으면 컴파일러는 이를 거절
+	final
+		특정 가상 함수로부터 상속받은 클래스를 금하고자 함
 
 
 4. 람다 함수들
 
 ```
-[&count](int x){count += (x % 13 == 0);}
+	[&count](int x){count += (x % 13 == 0);}
 ```
 
 
@@ -277,7 +330,7 @@ count3 = std::count_if(numbers.begin(), numbers.end(), f_mod(3));	// 함수 객�
 
 
 int count3 = std::count_if(numbers.begin(), numbers.end(), 
-	[](int x){ return x % 3 == 0; });		// 람다
+	[](const int x){ return x % 3 == 0; });		// 람다
 
 ```
 
@@ -303,9 +356,9 @@ int count3 = std::count_if(numbers.begin(), numbers.end(),
 [=, &ed] 등 혼합 사용법
 
 ```
-int count13 = 0;
-std::for_each(ns.begin(), ns.end(), [&count13]
-	(int x) { count13 += x % 13 == 0; });
+	int count13 = 0;
+	std::for_each(ns.begin(), ns.end(), [&count13]
+		(int x) { count13 += x % 13 == 0; });
 ```
 
 
@@ -316,18 +369,50 @@ std::for_each(ns.begin(), ns.end(), [&count13]
 C++은 각 래퍼와 어댑터 제공
 
 
+```
+	function<double(double)> ef1 = dub;
+	function<double(double)> ef2 = square;
+	function<double(double)> ef3 = Fq(10.0);
+	function<double(double)> ef4 = Fp(10.0);
+	function<double(double)> ef5 = [](double u) { return u * u; };
+	function<double(double)> ef6 = [](double u) { return u + u / 2.0; };
+```
 
 함수 래퍼와 템플릿 비효율성
+	인스턴스를 여러 개 호출하는 비효율성을 극복
+	인스턴스를 1개 가지고 호출하는 형태로 수정하자.
 
-인스턴스를 1개 가지고 호출하는 형태로 수정하자.
 
 ```
-function<double(double)> ef1 = dub;
-function<double(double)> ef2 = square;
-function<double(double)> ef3 = Fq(10.0);
-function<double(double)> ef4 = Fp(10.0);
-function<double(double)> ef5 = [](double u) { return u * u; };
-function<double(double)> ef6 = [](double u) { return u + u / 2.0; };
+	#include <iostream>
+	#include <functional>
+	using namespace std;
+
+	template <typename T>
+	T use_f(T v, std::function<T(T)> f)
+	{
+		static int count = 0;
+		count++;
+		cout << "use_f count = " << count
+			<< ", &count = " << &count << endl;
+		return f(v);
+	}
+
+	int main()
+	{
+		auto dub = [](const double x) ->double { return 2.0 * x; };
+		double y = 1.21;
+		function<double(double)> ef1 = dub;
+		function<double(double)> ef2 = [](const double u) { return u * u; };
+		cout << use_f(y, ef1) << endl;
+		cout << use_f(y, ef2) << endl;
+	}
+```
+```
+	use_f count = 1, &count = 00007FF68CAC0490
+	2.42
+	use_f count = 2, &count = 00007FF68CAC0490
+	1.4641
 ```
 
 
@@ -335,17 +420,17 @@ function<double(double)> ef6 = [](double u) { return u + u / 2.0; };
 더 많은 옵션
 
 ```
-typedef function<double(double)> fdd;		// 타입 선언 간소화
-cout << use_f(y, fdd(dub)) << endl;			// 생성하고 dub에 객체 초기화
+	typedef function<double(double)> fdd;		// 타입 선언 간소화
+	cout << use_f(y, fdd(dub)) << endl;			// 생성하고 dub에 객체 초기화
 ```
 
 ```
-#include <functional>
-template <typename T>
-T use_f(T v, std::function<T(T)> f)
-{ ... }
-// ...
-cout << use_f<double(y, dub) << endl;
+	#include <functional>
+	template <typename T>
+	T use_f(T v, std::function<T(T)> f)
+	{ ... }
+	// ...
+	cout << use_f<double>(y, dub) << endl;
 ```
 
 
@@ -374,24 +459,26 @@ cout << use_f<double(y, dub) << endl;
 
 
 가변인자 템플릿 함수에서 재귀 사용
+	함수 매개변수 팩을 언팩하여 리스트에 있는 첫 번째 아이템을 거쳐 리스트가 비워질 때까지 재귀 호출
 
 ```
-template<typename T, typename... Args>
-void show_list3(T value, Args... args)
-{
-	cout << value << ", ";
-	show_list3(args...);
-}
-int main()
-{
-	int n = 14;
-	double x = 2.71828;
-	string mr = "Mr. String objects!";
-	show_list3(n, x);
-	show_list3(x*x, '!', 7, mr);
-	return 0;
-}
+	template<typename T, typename... Args>
+	void show_list3(T value, Args... args)
+	{
+		cout << value << ", ";
+		show_list3(args...);
+	}
+	int main()
+	{
+		int n = 14;
+		double x = 2.71828;
+		string mr = "Mr. String objects!";
+		show_list3(n, x);
+		show_list3(x*x, '!', 7, mr);
+		return 0;
+	}
 ```
+// 일치하는 오버로드 된 함수 없다는 에러 출력
 
 
 개선 사항
@@ -435,7 +522,9 @@ regex 정규 표현 라이브러리
 저수준 프로그래밍
 	추상화 레벨의 low level
 
-공용체는 메모리양이 최소로 사용되는 것이 중요한 곳에서 사용된다.
+공용체
+	멤버가 생성자와 소멸자를 가질 수 있게 했다.
+	공용체는 메모리양이 최소로 사용되는 것이 중요한 곳에서 사용된다.
 
 
 C++11 메모리 정렬 문제
@@ -456,15 +545,21 @@ assert
 8. 언어 변화
 
 Boost 프로젝트
+	표준 한계 벗어나 새로운 라이브러리 만듦
 
 TR1
-
+	기술 보고서 1
+	표준으로는 적합하지 않은 라이브러리 확장을 편집한 것
 
 Boost 사용
 
 lexical_cast
 	숫자와 문자를 간단히 변환
-
+	
+```
+	float weight = 2.2f;
+	string wt = boost::lexical_cast<string>(weight);
+```
 
 
 
@@ -549,4 +644,46 @@ sum(temp_c, [&total](double w){total += w; });
 
 
 
-프로그래밍 연습 [생략]
+
+연습문제
+1. 
+	double x{8.8};
+	string s{"asdf"};
+	int k{99};
+	Z200 zip{200, 'Z', 0.675};
+	vector<int> ai{3,9,4,7,1};
+
+2. 복사 생성자와 const가 아닌 생성자 간 모호함이 발생
+	복사 생성자
+	이동 생성자
+	이동 생성자
+	...
+
+3. 
+	a.
+		모호함 에러
+		double & rx
+		const double & rx
+		const double & rx
+	b. 
+		double & rx
+		double && rx
+		double && rx
+	c.
+		const double & rx
+		double && rx
+		double && rx
+
+	상수가 아닌 l값 매개변수는 l값 명령인자와 매치되며,
+	상수가 아닌 r값 매개변수는 r값 명령인자와 매치된다.
+	상수 l값 매개변수는 l값 또는 r값 명령인자와 매치된다. 컴파일러는 앞의 두 가지 경우를 더 선호한다!!
+
+4. 컴파일러가 기본적으로 만들어 호출
+	디폴트 생성자, 소멸자, 복사 생성자, 복사 대입 연산자, 이동생성자, 이동 대입 연산자
+
+5. 이동 생성자는 배열 소유권을 이전시키는 메커니즘 없음
+	동적 할당
+
+6. show2(18.0, [](const double x){ return 1.8*x + 32;});
+
+7. sum(temp_c, [&total](double w){total += w;});
