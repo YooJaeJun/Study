@@ -1,0 +1,19 @@
+UHT		- .h
+Compiler		- .cpp
+.obj
+Module
+.dll
+
+
+
+BP
+User
+C++
+Core
+
+
+
+
+직렬화 (Serialization)
+	데이터의 상태를 다른 환경으로 전달하기 위해 바이트형의 배열로 변환
+	UObject를 상속받는 클래스만 BP에 보임
