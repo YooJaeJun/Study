@@ -1,0 +1,17 @@
+Inter-Process_Comunication
+	필연적으로 Interrupt 발생
+		입출력, Sleep() 등
+
+Context Switching
+
+멀티 스레드
+	두 개 이상의 스레드가 동시에 동작하는 상황
+
+스레드
+	함수 단위
+
+동기
+	스레드 순서에 맞게 동작
+비동기
+	스레드 순서에 상관없이 동작
+
