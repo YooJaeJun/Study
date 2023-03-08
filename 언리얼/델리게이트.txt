@@ -1,0 +1,33 @@
+
+타입, 개수 일치시켜야 하는 것들
+
+DECLARE_DELEGATE
+	함수 포인터, 1:1 매핑, BP x, Ret
+
+MULTICAST
+	1:n, BP x, Ret x
+
+EVENT
+	따로 설명
+
+
+
+
+
+
+타입, 개수, 변수명까지 일치시켜야 하는 것들
+
+
+DYNAMIC
+	1:1, BP o, Ret o
+
+DYNAMIC_MULTICAST
+	1:n, BP o, Ret x
+
+DYNAMIC_SPARSE_MULTICAST
+	1:n, BP o, Ret x	
+	엄격
+	델리게이션 타입, 클래스, 명
+
+
+
