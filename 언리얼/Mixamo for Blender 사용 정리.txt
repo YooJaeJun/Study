@@ -1,0 +1,6 @@
+
+mixamo add on for blender
+	검색 후 설치
+
+Mixamo RootBaker
+	깃허브에서 enziop의 mixamo_converter 다운로드
