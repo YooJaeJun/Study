@@ -1,0 +1,8 @@
+영상 링크
+https://www.youtube.com/watch?v=sC0gnfYzFzU
+
+위 경로 선입력
+B:\EpicGames\UE_4.26\Engine\Build\BatchFiles
+
+플러그인 변경 주소 (아래는 예시고, 유동적)
+C:\Users\zoflq\Downloads\UE4-Google-Speech-to-Text-Plugin-main\UE4-Google-Speech-to-Text-Plugin-main\Plugins\GoogleSTT
