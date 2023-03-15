@@ -1,0 +1,13 @@
+Line
+
+Sweep
+	Box
+	Sphere
+	Capsule
+
+
+Single 일 때 가장 가까운 것 하나
+
+Channel - Objects 차이는 멀티일 때 생김
+	Channel - 최초 Block 전까지 Overlap 모두 체크
+	Objects - Block만 체크 
