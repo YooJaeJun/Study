@@ -1,0 +1,14 @@
+객체 본체, 부모 
+	- 상태 변경되면 Behavior Type도 변경 / Attacker를 Set Target
+
+AI Controller 
+	- BT 실행 / Perception된 애들 중 그룹이 다르면 Set Target
+
+BT 
+	- AI 로직 그래프
+
+BTService 
+	- Behavior Type을 Set 해줌 / 주로 Wait, Patrol, Action
+
+BTTask 
+	- BT와 BP의 매개체 / Execute, Tick, Abort / Action이면 BP의 Action 실행.
