@@ -1,0 +1,8 @@
+파일 깨진 후 오류 발생
+CreateExport: 'Arrow' 리소스에 대한 BP_Zebra_AI_C /Game/Assets/Medieval_Environment/Real_Landscape/Default/Maps/Default_Demo.Default_Demo:PersistentLevel.BP_Zebra_AI_3 Outer 로드에 실패했습니다.
+
+레벨 파일 옆 Built Data 삭제
+
+
+부가)
+C:\Users\zoflq\AppData\Local\UnrealEngine\4.26 에서 임시 파일들 제거
