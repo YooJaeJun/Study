@@ -1,0 +1,6 @@
+Root - 가상(Identity; 항등행렬)	| Skeleton
+- Pelvis - Local * Animation		| Skeleton
+ - 그 다음부터 Local * Animation * Parent	| Animation
+
+Local * Animation * Parent
+
