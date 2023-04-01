@@ -1,0 +1,31 @@
+템플릿 에픽게임즈
+B:\EpicGames\UE_4.26\Engine\Content\Editor\Templates
+
+템플릿 깃허브
+B:\EpicGames\UnrealEngine-4.26\Engine\Content\Editor\Templates
+
+
+
+
+ActorClass 예시
+
+%MY_HEADER_INCLUDE_DIRECTIVE%
+#include "Global.h"
+
+%PREFIXED_CLASS_NAME%::%PREFIXED_CLASS_NAME%()
+{
+	PrimaryActorTick.bCanEverTick = true;
+}
+
+void %PREFIXED_CLASS_NAME%::BeginPlay()
+{
+	Super::BeginPlay();
+	%CURSORFOCUSLOCATION%
+}
+
+void %PREFIXED_CLASS_NAME%::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
+%ADDITIONAL_MEMBER_DEFINITIONS%
