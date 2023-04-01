@@ -1,0 +1,9 @@
+C++ MS
+visual c++ smart pointer 검색
+3종
+volatile 포인터
+CComPtr
+
+
+Unreal
+공식문서 - 언리얼 스마트 포인터 라이브러리 내용 정리
