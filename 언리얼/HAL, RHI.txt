@@ -1,0 +1,11 @@
+HAL 
+- Hardware Abstract Layer
+- 하드웨어 추상 계층
+- 어떤 하드웨어든 언리얼 측에서 처리할 수 있도록 가상화한 객체
+
+RHI 
+- Render Hadware Interface
+- Draw 등 명령을 받으면, 하드웨어를 선택해서 HAL에 들어간다.
+- DirectX의 DXGI 개념
+
+
