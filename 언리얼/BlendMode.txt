@@ -1,0 +1,16 @@
+Src * A(Src.alpha)                        그릴색
+Dest * B(inverseSrc.alpha == 1 - Src.alpha)      바닥색
+
+a * t + b * (1 - t)
+
+(1, 0, 0, 0.25)
+(0, 0, 1, 1)
+(0.25, 0, 0.75)  <- 결과
+
+가상 혼합: 색 섞으면 더 밝아짐
+
+Additive == Src + Dest   밝아짐
+Modulate == Src * Dest   어두워짐
+Src * Dest + Dest * One   그 색만 밝아짐
+
+등등 BlendMode 알아두기
