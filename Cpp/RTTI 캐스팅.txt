@@ -1,0 +1,11 @@
+
+캐스팅 차이
+
+int32 a = 0;
+float b = (float)a;
+float c = static_cast<float>(a);
+
+
+컴파일 타임 캐스팅
+RTTI - 런타임 캐스팅
+

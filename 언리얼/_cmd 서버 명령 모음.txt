@@ -1,0 +1,11 @@
+기본
+"B:\EpicGames\UE_4.26\Engine\Binaries\Win64\UE4Editor.exe" "B:\source\repos\YJJMultiPlayer\YJJPuzzlePlatforms\YJJPuzzlePlatforms.uproject"
+
+특정 맵
+"B:\EpicGames\UE_4.26\Engine\Binaries\Win64\UE4Editor.exe" "B:\source\repos\YJJMultiPlayer\YJJPuzzlePlatforms\YJJPuzzlePlatforms.uproject" /Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap -game -log
+
+특정 맵 서버
+"B:\EpicGames\UE_4.26\Engine\Binaries\Win64\UE4Editor.exe" "B:\source\repos\YJJMultiPlayer\YJJPuzzlePlatforms\YJJPuzzlePlatforms.uproject" /Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap -server -log
+
+IP
+"B:\EpicGames\UE_4.26\Engine\Binaries\Win64\UE4Editor.exe" "B:\source\repos\YJJMultiPlayer\YJJPuzzlePlatforms\YJJPuzzlePlatforms.uproject" 121.132.103.238 -game -log

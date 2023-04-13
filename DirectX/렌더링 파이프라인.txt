@@ -1,0 +1,33 @@
+다시 쓸 것
+
+
+1. 입력조립기 Input Assembler
+	정점 버퍼들을 조립한다.
+	정점에는 UV, 위치, 색상 등의 정보가 있다.
+
+2. 정점셰이더 Vertex Shader
+	W V P
+	World - 로컬 공간에서 월드 공간으로 변환해 오브젝트들을 월드 상에 위치시킨다.
+	View - 월드 공간에서 카메라 공간으로 변환
+	Projection - 카메라 공간에서 클립 공간으로 변환
+
+3. Hul Shader
+	입력패치를 생성
+
+4. Tesselation Shader
+	LOD에 따라 오브젝트에 그려질 삼각형의 개수를 조절
+
+5. Domain Shader
+	입력패치에 해당하는 도형 생성
+
+6. Geometry Shader
+	
+
+7. Rasterizer
+	
+
+8. Pixel Shader
+	텍스쳐, 색상, 그림자, 라이팅 등을 계산
+
+9. Output Merger
+	최종적으로 렌더링
