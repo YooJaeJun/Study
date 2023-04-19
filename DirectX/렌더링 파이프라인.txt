@@ -1,33 +1,41 @@
-다시 쓸 것
+렌더링 파이프라인
 
-
-1. 입력조립기 Input Assembler
+Input Assembler 입력 조립기
 	정점 버퍼들을 조립한다.
-	정점에는 UV, 위치, 색상 등의 정보가 있다.
+		정점에는 uv, 노말, 위치, 색상 등이 들어있습니다.
 
-2. 정점셰이더 Vertex Shader
-	W V P
-	World - 로컬 공간에서 월드 공간으로 변환해 오브젝트들을 월드 상에 위치시킨다.
-	View - 월드 공간에서 카메라 공간으로 변환
-	Projection - 카메라 공간에서 클립 공간으로 변환
+Vertex Shader 정점 셰이더
+	M V P 단계를 거침
+	Model (World)
+		로컬 공간에서 월드 공간으로 변환
+	View
+		월드 공간에서 보이기 쉽도록 카메라 공간으로 변환
+	Projection
+		카메라 공간에서 클립 공간으로 변환
+		렌더링 될 영역을 절두체로 정의하고, 절두체 안의 부분만 렌더링
+		절두체에 걸쳐진 오브젝트는 남겨둡니다.
 
-3. Hul Shader
-	입력패치를 생성
+Hull Shader 덮개 셰이더
+	오브젝트에 삼각형들을 더 그리고,
+	입력패치에 해당하는 도형들을 생성합니다.
 
-4. Tesselation Shader
-	LOD에 따라 오브젝트에 그려질 삼각형의 개수를 조절
+Tesselation Shader
+	삼각형들을 더 세분화하고,
+	LOD에 따라 오브젝트 렌더링 여부를 결정합니다.
 
-5. Domain Shader
-	입력패치에 해당하는 도형 생성
+Domain Shader
+	입력패치를 
 
-6. Geometry Shader
-	
+Geometry Shader
+	생성된 도형들을 확장, 축소합니다.
 
-7. Rasterizer
-	
+Rasterizer
+	원근분할
+	클리핑
+		걸쳐진 오브젝트들 중 안 보이는 영역을 자릅니다.
 
-8. Pixel Shader
-	텍스쳐, 색상, 그림자, 라이팅 등을 계산
+Pixel Shader
+	라이팅, 그림자, 텍스쳐 등을 계산합니다.
 
-9. Output Merger
-	최종적으로 렌더링
+Output Merge 출력 병합기
+	최종 색상을 결정해 렌더링합니다.
