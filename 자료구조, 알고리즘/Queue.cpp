@@ -14,9 +14,12 @@ struct Node
 #pragma once
 class Queue
 {
-	enum { Q_SIZE = 10 };
 private:
-	struct Node { Item item; struct Node* next; };
+	struct Node 
+	{ 
+		Item item; 
+		struct Node* next; 
+	};
 	enum { Q_SIZE = 10 };
 
 	Node* front;
