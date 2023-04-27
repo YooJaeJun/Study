@@ -1,0 +1,11 @@
+CI CD CD
+DevOps
+
+
+원격 빌드
+	PC에서 로컬 빌드가 오래 걸려 분산 빌드 후 배포
+
+Jenkins가 Repo 내용 취합, 관계자들에게 빌드 배포
+
+소스(Client) ------Push-------> Repo
+
