@@ -1,0 +1,5 @@
+CPC - 949 (MBCS) - 가변 - 언리얼 기본
+euc-kr (Unicode) - 무조건 2바이트
+
+OpenFileDialogA - 1바이트 - 한글 못 씀
+OpenFileDialogW - 2바이트
