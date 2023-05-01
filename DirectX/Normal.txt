@@ -1,0 +1,16 @@
+
+텍스처 -> rgb -> 0~1 -> -1~+1 -> xyz
+
+탄젠트 공간
+	z -> Normal
+	x -> Tangent
+	z와 x 외적 후
+	y -> BiTangent (BiNormal)
+
+3D공간 -> 방향
+	Light -> Directional Light
+	N dot L
+
+픽셀마다 음영 표시 -> 굴곡 표시
+
+결과물: Normal map 파일 확인
