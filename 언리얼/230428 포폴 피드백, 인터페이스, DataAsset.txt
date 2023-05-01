@@ -1,0 +1,38 @@
+스킬 가리는 이펙트 없애기 - 듀얼 스킬 2
+AI 개발 강조
+
+
+인터페이스
+(가상, 추상, 일반 다 포함 가능)
+UInterface 지정자
+
+추상 클래스
+(가상, 추상, 일반 다 포함 가능)
+UClass 지정자
+
+UClass(Abstract)
+
+
+객체화되면 안 되는 놈은 추상. cf) 블로그의 카테고리
+별도 기능을 일부 하위 클래스만 가져야 할 때 인터페이스. cf) 블로그의 태그
+
+
+자격들 
+	MCP
+	MCSE
+	SE
+	AD
+	SD
+
+
+무기
+DataAsset
+|
+CWeaponAsset
+	ACAttachment
+
+	UCEquipment
+
+	UCDoAction
+Weapon Component
+
