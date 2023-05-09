@@ -1,0 +1,7 @@
+Component - Asset - CAttachment, CEquipment
+
+같은 계층에서는 서로 소유하지 않게 함
+	델리게이션을 통해 한 클래스는 다른 클래스의 이벤트 호출
+
+Core - Abstract - Service(ex. 언리얼 소스) - Client
+

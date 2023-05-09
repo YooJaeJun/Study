@@ -1,0 +1,14 @@
+추상클래스 - 직렬화 안됨
+인터페이스 - 직렬화됨
+
+
+델리게이트
+	Attachment에서 델리게이트 선언
+	WeaponAsset에서 Attachment에 접근해 DoAction의 함수를 바인딩 AddDynamic
+
+
+Sword에서
+	Enemy->TakeDamage
+
+Enemy에서
+	TakeDamage
