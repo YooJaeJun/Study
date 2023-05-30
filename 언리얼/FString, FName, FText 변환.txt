@@ -1,0 +1,11 @@
+str = name.ToString();
+
+text = FText::FromName(name);
+
+name = FName(*str);	// FName 대소문자 구분 없어 손실 위험
+
+text = FText::FromString(str);
+
+str = text.ToString();	// 언어 변환 시 손실 위험
+
+text->name		// 직접변환 없음, 손실 위험 있음
