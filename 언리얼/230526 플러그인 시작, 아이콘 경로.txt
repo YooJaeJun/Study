@@ -1,0 +1,6 @@
+Core - Model(공용계층) - Game, ModelEditor
+
+컨텍스트 메뉴 - 마우스 오른쪽 클릭 시 나오는 창
+
+아이콘 위치
+B:\EpicGames\UE_4.26\Engine\Content\Editor\Slate\Niagara\Icons

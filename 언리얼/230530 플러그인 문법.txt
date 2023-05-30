@@ -1,0 +1,15 @@
+SNew(SButton)
+.Content()
+[
+	SNew(STextBlock)
+	.Text(---)
+]
+
+
+SLATE_ARGUMENT
+	_EVENT
+	_ATTRIBUTE
+
+TAttribute<FText>();
+	외부에서 변수가 변경되면 화면 갱신
+
