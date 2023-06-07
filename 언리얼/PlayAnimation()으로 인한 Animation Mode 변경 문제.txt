@@ -1,0 +1,8 @@
+객체->GetMesh()->PlayAnimation();
+	몽타주가 아닌 시퀀스 애니메이션 재생
+	몽타주 실행 시 안 터지고 구동은 되지만,
+	Animation Mode가 Use Animation Blueprint에서 Use Animation Asset으로 변경된다는 점
+	그럼 Anim BP와 더 이상 연결되지 않음
+
+객체->PlayAnimMontage();
+	이 함수로 몽타주 실행

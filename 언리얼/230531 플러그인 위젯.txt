@@ -1,0 +1,14 @@
+SCompoundWidget
+	공간 분할하는 위젯
+
+SSearchBox
+SListView
+STextBlock
+
+
+SNew()
+	SNew(동적할당 될 애)
+	Construct 함수 호출
+
+ATTRIBUTE
+	값이 변경되면 자동 호출

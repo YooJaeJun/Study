@@ -28,6 +28,7 @@ DYNAMIC_SPARSE_MULTICAST
 	1:n, BP o, Ret x	
 	엄격
 	델리게이션 타입, 클래스, 명
+	추가) 바인드 되지 않았으면 1바이트로 메모리 최적화 / 대신 더 느리다.
 
 
 
