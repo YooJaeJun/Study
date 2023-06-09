@@ -1,0 +1,20 @@
+언리얼 스마트 포인터 라이브러리 문서 참고
+침범형 접근자
+
+.AsUnique
+	Unique 포인터인지
+
+TSharedFromThis
+	.AsShared()
+		Shared 포인터인지
+	.SharedThis()
+		This 포인터 공유해서 사용하기 위함
+
+SharedThis(This)와 This의 주소는 다르다.
+	Shared로 한 번 래핑한 주소이기 때문
+
+
+class WEAPON_API SWeaponCheckBoxes
+	: public TSharedFromThis<SWeaponCheckBoxes>
+
+상속으로 this 주소를 일치시켜준다.
