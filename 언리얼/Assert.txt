@@ -1,0 +1,8 @@
+
+언리얼 Assert
+	Check
+		false 면 실행 중지. 빌드 컴파일 시에만 실행 (DO_CHECK = 1)
+	Varify
+		DO_CHECK 꺼져있어도 실행
+	Ensure
+		실패하면 그 지점까지 이르는 콜스택 생성

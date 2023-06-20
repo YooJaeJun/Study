@@ -1,0 +1,1 @@
+Ctrl+Shift+T	Cpp 파일 검색
