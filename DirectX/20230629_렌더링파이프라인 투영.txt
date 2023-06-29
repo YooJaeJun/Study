@@ -1,0 +1,31 @@
+IA VS RS PS OM
+
+RTV
+DSV
+
+VS
+WVP
+W 월드 공간 
+	직육면체 회전
+V 뷰 공간 
+Projection
+	Perspective
+		뷰 + 퍼스펙티브 -> 뷰 프러스텀
+		안에 있는 애들을 그려라.
+
+RS
+뷰포트 공간
+	3D -> 2D
+
+공간은 모두 4X4 행렬로 표현
+
+
+-1 ~ +1
+z는 0~1만. 뒤는 필요없음
+
+Perspective 
+	원근감을 위해 사용
+
+Orthographic 
+	2D 공간은 직교 투영
+	
