@@ -1,0 +1,16 @@
+
+Skeletal Mesh	Animation을 가지고 있음
+Poseable Mesh	본을 수정. 애니메이션을 수정할 수 있음
+
+
+Minimal API 지정자
+외부의 노출 최소화
+클래스 형 변환은 되지만, 그 함수는 호출할 수 없음
+inline 키워드 붙은 함수를 제외.
+private과 차이점은 직렬화만 못하게 막는다.
+
+Intrinsic 지정자
+전처리기가 컴파일하지 마라
+
+Transient
+디스크 저장 xxx

@@ -1,0 +1,4 @@
+LogSkeletalMesh: Error: Material with missing usage flag was applied to skeletal mesh /Game/Assets/Character/MercenaryWarrior/Meshes/SK_MercenaryWarrior_WithoutHelmet.SK_MercenaryWarrior_WithoutHelmet
+
+옷 머터리얼 속성 + 적용할 모션트레일 머터리얼 속성 디테일에
+Usage - Used with Skeletal Mesh / Used with Morph Targets / Use with Clothing 체크
