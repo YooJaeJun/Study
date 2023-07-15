@@ -1,0 +1,259 @@
+
+하드웨어
+	전송 통로(버스) 제공
+	물리적인 실체들
+
+소프트웨어
+	명령어 순서대로 배치
+
+중앙처리장치 Central Processing Unit
+주기억장치 RAM
+
+CPU				GPU
+Register / Decoder / ALU / Shifter
+|
+Cache				|
+|
+RAM --------------------------------------VRAM - Monitor
+	|
+	I/O
+	|
+	SSD
+
+RAM의 크기는 CPU에 종속된다.
+	CPU가 32 비트면 2의 32제곱
+	포인터가 램 주소를 가리키니, 포인터의 크기 역시 변경된다.
+
+언어
+	C++ 고급
+	C 저급
+	디코더의 명령과 1대1 대응
+
+	컴파일러 언어
+	인터프리터 언어
+
+시스템 버스
+	주소 버스, 제어 버스, 데이터 버스
+	
+	ex.
+	exe 파일 실행하면, SSD에서 RAM으로 올라간다
+	CPU <-> 기억장치
+		주소 버스는 단방향 - CPU에서 기억장치에 요청만 함.
+		데이터 버스는 양방향
+	register 키워드
+		register int a = 10;
+		RAM이 아니라 register 영역으로
+	
+	제어 버스
+		인터럽트
+
+병목 현상 (Bottle Neck)
+	데이터 정체
+	주기억 <-> 보조기억
+		보조기억 장치에 비해 크기가 작은 주기억
+	캐시, 레지스터로 갈 때 시스템 버스에서 병목 현상 발생
+
+성능
+	Hz
+		초당 깜빡임
+
+코어란, Controller, ALU, Cache를 포함한 하나.
+
+CPU
+	ALU가 크다. 수가 많다. 코어가 크다. 수가 적다.
+GPU
+	ALU가 작다. 수가 많다.
+	자료형 하나만 존재. float 하나만.
+GPGPU
+	Compute Shader 기술 등 GPU 연산을 사용할 수 있음
+APU
+	Ps, Xbox, Switch
+	CPU + GPU
+
+CPU 역할
+	명령어 해독, 산술논리연산, 데이터 처리
+
+CPU 산술논리연산
+	+만 가능. -는 보수를 취함
+
+CPU 내부 용어들 알기
+	IR, PC, AC, MAR, MBR 등
+	IR - 명령어 저장	
+	CU - 전달
+	AC - 연산 시, 일시 저장
+	PC - 명령 번지, 자동 증가
+	MAR, MBR
+	버스
+
+보수
+	-n +1
+
+어셈블리어
+	PUSH A
+	MOVE R1, A	-> AC로 옮김
+	ADD R1, A, B	-> MBR
+
+명령어 사이클
+	명령 하나의 순환 단계
+		Fetch-> Decode -> Execute -> Write Back
+	Fetch
+		메인 메모리에서 받아서..
+		명령 인출 -> 해석
+	Execute
+		데이터 획득 -> 명령 실행
+		메인 메모리로..
+
+병행성 vs 병렬성
+Concurrency vs Parallelism
+
+병행성	
+	한 프로세스를 하나의 코어가 처리
+	멀티 프로세싱. 프로세스 간의 통신 IPC ?
+병렬성
+	한 프로세스를 여러 코어가 처리
+	셰이더 - 복수 프로세서가 프로세스에 붙음
+	스레드 - 함수 단위
+	멀티 스레드
+	코어 역할
+
+Flynn의 분류
+	SISD, SIMD, MISD, MIMD
+	Instruction  Data
+	Single I Single D
+		하나의 명령어로 하나의 데이터로 처리
+	SIMD - GPU 방식
+		Vector(float,float,float) 을 하나의 명령어로.
+
+	병렬처리기술 nvidia의 쿠다 - GPGPU 기술
+	OpenCL WebCL AMP
+	스레드는 람다로 많이 이뤄짐
+
+위는 다
+	GPU 통합
+C++ AMP
+	병렬처리 가능하도록 한 프로세서
+	CPU GPU 통합 라이브러리
+APU
+	CPU + GPU
+	콘솔 
+GPGPU
+	기술의 일종
+
+Device
+	CPU 주로 관여 (사실상 총괄)
+Device Context
+	GPU 주로 관여 (사실상 렌더링 관련)
+
+Direct Compute == Compute Shader
+	Shader 기술 사용
+
+멀티스레딩
+	일반적으로 이해하는 거
+하이퍼스레딩
+	두 개의 CPU 쓰는 것 같이
+
+------지금까지 CPU 이야기--------
+
+기억장치
+
+전송 단위
+	주기억장치
+		단어 단위. Word == 2바이트
+	보조저장장치
+		블록 단위. 크기 가변적
+계층구조
+	휘발성 - CPU 레지스터, SRAM
+	비휘발성 - 주기억장치, 디스크 캐시, 디스크, CD ROM / 자기 데이트
+	L0 캐시 - CPU 내
+	L1, L2 캐시 - 흔히 말하는 캐시 메모리
+	L3 캐시 - DRAM
+	L4  - SSD 내
+
+	반도체 관점으로 메모리(저장) / 비메모리(처리) 구분
+	Flip Flop
+
+계층 간 미스(Miss)
+	CPU - Cache - RAM - SSD(가상메모리; 용량 문제로 RAM인 것처럼 사용. virtualalloc으로 할당한 공간)
+	자기 아래 계층에 메모리가 없는 상황
+	다음 기억장치로 이동해 찾는다.
+	메모리 인터리빙 - 운영체제에서 이야기
+지역성
+	시간적 - 최근 액세스된 데이터 가까운 미래에 다시 액세스될 가능성 높음. Loop
+	공간적 - 인접한 데이터들이 연속적으로 액세스 될 가능성이 높음. Array, Table
+	순차적 - 구조적 프로그래밍 - 
+
+프로그래밍 역사
+	1960 기능
+	1970 데이터
+	1980 구조적 -> S/W 위기
+	1990 객체지향
+	2000 CBD
+	2010 AOP(관점지향)	애자일 / DevOps
+
+	지역성 - 캐시 메모리
+프리패칭
+	캐시에서 곧 hit될 것으로 예상되는 리소스를 미리 불러온다.
+
+레지스터 종류 정리
+	PC - 다음에 인출할 명령어의 주소
+	MAR - 메모리 주소를 일시적으로 저장
+	MBR - 데이터를 일시적으로 저장
+	IR - 가장 최근에 인출된 명령어 코드
+	AC - 데이터를 일시적으로 저장
+
+캐시
+	레지스터 (L0)
+	CPU <-> 캐시 기억장치 (L1)
+	캐시 기억장치 <-> 주기억장치 (L2)
+	주기억장치 (L3)
+Block
+	캐시와 메모리 간의 데이터 교환 단위
+	블록이 클수록 로컬리티가 증가
+Mapping Function
+Replace Alogorithm
+	LRU 등
+
+캐시라인
+	데이터 블록이 수직이라면, 캐시 라인은 가로로 생각
+Mapping Function 사상기법
+	직접사상 / 완전 - 연관사상 / 세트 - 연관사상
+
+프로세스 코어 - 캐시 - 주기억 장치 교체
+더티 데이터(플래그)
+	월드 좌표와 상대 좌표 이야기 
+	재계산 필요 없이 더티 플래그로 제어
+
+신 그래프
+오버 셰이더
+	셰이더 통합 개념
+로직 루프 / 렌더 루프
+Eviction(축출)
+
+Replace Alogorithm
+	캐시 메모리 용량이 한계에 다다랐을 때, 그 내용을 교체하는 알고리즘
+	랜덤 / FIFO / 최적 / LFU / LRU
+	랜덤 
+	FIFO
+	최적
+	LFU	Least Frequently Used
+	LRU	Least Recently Used
+	LFU, LRU만 보통 묻는다.
+
+Write Back
+메모리 인터리빙
+	최적화 기법
+	모듈로 나누고, 모듈에 연속적인 접근
+
+메모리 저장 방식
+	Endian (엔디안)
+	빅 엔디안 - 큰 단위가 앞에
+	리틀 - 작은 단위가 앞에
+	네트워크는 빅 엔디안 - 보낸 순서대로 받아야 하기 때문
+저장 공간 - 슬랙 공간
+	섹터 단위로 처리되기 때문에 남는 공간이 생김
+	램 슬랙 - 프로그래머들의 흔히 말하는 공간
+	크기와 디스크 할당 크기가 다르다.
+
+RAID (Redundant Array of Independent Disks)
+	처리속도, 데이터 보호 목적으로 여러 하드 디스크를 하나로 묶어줌
+	NAS / DAS
