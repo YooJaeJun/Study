@@ -1,0 +1,96 @@
+[1]
+5.1. 버전 기준 엔진 버그
+Setup Bat 실행하면
+
+Failed to download 'http://cdn.unrealengine.com/dependencies/UnrealEngine-14459053-db7f6ad484004c2783a21055ce44aaa5/00d84d0071516dbe62d38541d941bda3fc8243d9': InvalidDataException: The archive entry was compressed using an unsupported compression method.
+
+~ 하는 버그 뜸
+검색해보니 엔진 소스 중 xml 파일 오류 
+
+Commit.gitdeps.xml 파일 덮어써서 해결
+
+
+[2]
+게임 런처 에셋 받을 때 소스 파일 버전 뜨게 하는 방법??
+
+C:\Users\zoflq\AppData\Local\EpicGamesLauncher\Saved\Config\Windows
+경로 가서
+GameUserSettings 열고
+CreatedProjectPaths=G:/Parent folder of your project와 같이 [Launcher] 아래에 줄을 추가
+
+나는 다음 경로 추가
+CreatedProjectPaths=B:/source/repos/YJJUnrealAction
+
+
+[3]
+프로젝트 소스에서 빌드가 안 되는 문제
+일단 오류목록 탭에서 빌드+인텔리센스를 -> 빌드 전용으로 변경해서 확인
+
+ShaderCompileWorker Win64 Development -Quiet" -WaitMutex -FromMsBuild
+
+뜨며 자꾸 실패
+
+ctrl alt f11 라이브 코딩해봄 -> 해결 안됨
+
+다시 엔진 빌드하니 ShaderCompileWorker 하나 빌드됨
+다시 프로젝트 빌드하니 똑같은 오류
+
+아래 적용한 모듈 제거해봄 -> 해결 안됨
+닷넷 프레임워크 3.1 설치 -> 해결 안됨
+visual studio window sdk 10 설치 -> 해결 안됨
+
+솔루션, 임시 폴더들 삭제
+프로젝트 폴더 - (Binaries, Intermediate, Saved) 폴더 삭제 - .uproject 우클 - switch Unreal Engine Version
+-> 해결 안됨
+
+이번엔 디버깅 출력탭에, Target 없이, 이유 없이 빌드가 실패해버리는 WaitMutex -FromMsBuild 오류 발생
+
+런처로 언리얼 5.2 버전 받음
+
+그래도 또 실패해서 비주얼 스튜디오 통합 플러그인 받음
+
+런처 버전은 성공
+
+잘 되다가 해당 현상 또 발생 
+
+런처 버전은 프로젝트만 우클릭해 빌드하니 해결됨
+
+
+
+[4]
+문제점
+
+1. 5에서는 에셋 경로가 /Script/'모듈네임' 이 앞에 붙음.
+	GetAsset 경로 모두 수정
+
+2. T* -> TObjectPtr<T> 로 변수 모두 변경
+	단, UFUNCTION() 파라미터는 모두 원시 포인터 써야함 (질문글들에도 명확한 답 없음)
+
+3. INiagaraParticleCallbackHandler의 ReceiveParticleData를 재정의 할 수 없음
+
+4. Notify 소스들 Begin, End 함수가 Deprecated 되어 사용되지 않아 교체
+
+5. UMateeneCamera 사라짐. ULegacyCameraShake 사용해야 함
+
+6. USkinnedMeshComponent::SkeletalMesh 문제 Get/SetSkeletalMesh() 마다 Warninng 뜸
+
+const int32 size = Owner->GetMesh()->SkeletalMesh->Materials.Num();
+는 다음으로 수정
+const int32 size = Owner->GetMesh()->GetSkinnedAsset()->GetMaterials().Num();
+
+Mesh->SetSkinnedAsset(Owner->GetMesh()->SkeletalMesh.Get());
+는 다음으로 수정
+Mesh->SetSkinnedAsset(Owner->GetMesh()->GetSkinnedAsset());
+
+7. Build.cs 에  ../ 상대경로 없애기 위한 path add 
+PublicIncludePaths.Add(ModuleDirectory);
+가 실제론 적용되지만, 인텔리센스 문제로 모든 소스 파일에서 해당 헤더에 "파일 소스를 열 수 없습니다." 
+빨간 줄 뜸.
+하지만 실제론 정상 빌드됨
+
+8. Water 플러그인의 일부 클래스의 일부 변수, 함수들이 변경되어 블프 수정
+
+9. 블루프린트 모두 깨져서 다시 다 만들어야 함
+
+
+
