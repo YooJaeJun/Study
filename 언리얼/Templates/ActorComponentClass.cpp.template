@@ -1,0 +1,19 @@
+%MY_HEADER_INCLUDE_DIRECTIVE%
+#include "Global.h"
+
+%PREFIXED_CLASS_NAME%::%PREFIXED_CLASS_NAME%()
+{
+	PrimaryComponentTick.bCanEverTick = true;
+}
+
+void %PREFIXED_CLASS_NAME%::BeginPlay()
+{
+	Super::BeginPlay();
+	%CURSORFOCUSLOCATION%
+}
+
+void %PREFIXED_CLASS_NAME%::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+}
+%ADDITIONAL_MEMBER_DEFINITIONS%

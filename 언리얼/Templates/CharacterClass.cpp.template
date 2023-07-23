@@ -1,0 +1,24 @@
+%MY_HEADER_INCLUDE_DIRECTIVE%
+#include "Global.h"
+
+%PREFIXED_CLASS_NAME%::%PREFIXED_CLASS_NAME%()
+{
+	PrimaryActorTick.bCanEverTick = true;
+}
+
+void %PREFIXED_CLASS_NAME%::BeginPlay()
+{
+	Super::BeginPlay();
+	%CURSORFOCUSLOCATION%
+}
+
+void %PREFIXED_CLASS_NAME%::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
+void %PREFIXED_CLASS_NAME%::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+%ADDITIONAL_MEMBER_DEFINITIONS%
