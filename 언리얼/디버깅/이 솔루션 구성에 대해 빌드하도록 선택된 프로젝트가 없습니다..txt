@@ -1,0 +1,8 @@
+
+빌드 시,
+이 솔루션 구성에 대해 빌드하도록 선택된 프로젝트가 없습니다. 
+문제 발생
+->
+1. C:\Program Files (x86)\Epic Games\Launcher\Engine\Binaries\Win64 경로의 UnrealVersionSelector.exe 실행
+1.1. 안 되면 실제 엔진 폴더 D:\EpicGames\UE_4.26\Engine\Binaries\Win64 복붙 후 실행
+2. 언리얼 프로젝트 열고 컴파일
