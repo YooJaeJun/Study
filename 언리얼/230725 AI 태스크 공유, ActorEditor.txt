@@ -1,0 +1,10 @@
+컴포짓 태스크 등은 각 객체 간 공유함!!
+
+ActorEditor
+	헤더는 하난데 CPP를 분리
+	Actor.cpp / Actor_Movementcpp / ActorEditer.cpp
+
+
+InstanceSynced
+	모든 객체 공유하는 블랙보드 키
+
