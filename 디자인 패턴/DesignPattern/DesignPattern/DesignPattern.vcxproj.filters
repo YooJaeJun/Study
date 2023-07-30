@@ -2,5 +2,27 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="소스.cpp" />
+    <ClCompile Include="20.SpceDivison.cpp" />
+    <ClCompile Include="2.InputHandler.cpp" />
+    <ClCompile Include="4.Observer.cpp" />
+    <ClCompile Include="5.Prototype.cpp" />
+    <ClCompile Include="6.Singleton.cpp" />
+    <ClCompile Include="7.State.cpp" />
+    <ClCompile Include="8.DoubleBuffer.cpp" />
+    <ClCompile Include="9.GameLoop.cpp" />
+    <ClCompile Include="10.UpdateMethod.cpp" />
+    <ClCompile Include="11.ByteCode.cpp" />
+    <ClCompile Include="12.Sandbox.cpp" />
+    <ClCompile Include="13.TypedObject.cpp" />
+    <ClCompile Include="14.Component.cpp" />
+    <ClCompile Include="15.EventQueue.cpp" />
+    <ClCompile Include="16.ServiceMiddleman.cpp" />
+    <ClCompile Include="17.DataLocality.cpp" />
+    <ClCompile Include="18.DirtyFlag.cpp" />
+    <ClCompile Include="19.ObjectPool.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="2.Command.h" />
+    <ClInclude Include="2.InputHandler.h" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,14 @@
+정보 + 객체
+정보 == WeaponAsset
+객체 == WeaponData
+
+
+
+팩토리 패턴
+외부 -> ResourceMgr -> Sound (Load)
+외부에서는 내부에 관여할 필요 없음
+
+ResourceMgr <-> Sound
+	private으로 숨기고, friend 선언
+
+
