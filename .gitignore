@@ -30,3 +30,20 @@
 *.exe
 *.out
 *.app
+
+# Unreal Assets Folder
+**/Assets/
+
+# Unreal Temp Folder
+**/Binaries/
+**/DerivedDataCache/
+**/Intermediate/
+**/Saved/
+**/.vs/
+**/Debug/
+**/Debug_Framework/
+**/Debug_ModelEditor/
+
+# C++ Folder
+**/x86/
+**/x64/
