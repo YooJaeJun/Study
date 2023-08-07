@@ -1,0 +1,50 @@
+에셋 로드
+
+
+강참조
+
+에셋 경로 정확히 알 때
+	ConstructorHelpers::FObjectFinder<>()
+
+
+TSoftObjectPtr 
+	약 참조 일종
+
+동기식 방법
+	LoadObject<>()
+	StaticLoadObject()
+
+비동기식 방법
+	FStreamableManager
+
+클래스 버전
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
+		TSoftClassPtr<UAnimInstance> AnimClass;
+	애니메이션 블루프린트 에셋 경우, TSoftClassPtr을 사용해야 정상적으로 가져올 수 있다.
+
+
+FindObject<>()
+LoadObject<>()
+
+
+
+
+약참조 - 객체 검색/로드
+	
+이미 생성, 로드된  UObject
+	FindObject<>()
+이미 로드되어 있지 않는 오브젝트 로드
+	LoadObject<>()
+
+UClass Load
+	~ = LoadClass<T>( , , , , );
+	혹은
+	DefaultPreviewPawnClass = LoadObject<UClass>(, *, , , );
+
+	if (!DefaultPreviewPawnClass->IsChildOf(APawn::StaticClass()))
+	{
+    		DefaultPreviewPawnClass = nullptr;
+	}
+
+
+
