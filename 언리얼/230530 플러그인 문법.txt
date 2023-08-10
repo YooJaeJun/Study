@@ -12,4 +12,3 @@ SLATE_ARGUMENT
 
 TAttribute<FText>();
 	외부에서 변수가 변경되면 화면 갱신
-

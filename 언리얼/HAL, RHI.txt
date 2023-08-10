@@ -7,5 +7,7 @@ RHI
 - Render Hadware Interface
 - Draw 등 명령을 받으면, 하드웨어를 선택해서 HAL에 들어간다.
 - DirectX의 DXGI 개념
+- 어떤 명령 콜 -> dx 11, 12, opengl 인지 상관없이 동일한 렌더링하기 위함
 
-
+DXGI
+- 엔비디아든 어디든 호환

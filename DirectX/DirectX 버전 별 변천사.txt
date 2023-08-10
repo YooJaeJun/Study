@@ -1,0 +1,14 @@
+8
+- shader 1.x
+
+9
+- CPU + GPU
+- shader 2.x, 3.x
+- Device
+
+11
+- CPU (Device) + GPU (Device Context)
+
+12
+- Low Level 접근
+
