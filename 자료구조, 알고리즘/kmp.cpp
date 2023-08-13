@@ -1,138 +1,75 @@
-#include <bits/stdc++.h>
+#include <map>
+#include <set>
+#include <list>
+#include <cmath>
+#include <ctime>
+#include <deque>
+#include <queue>
+#include <stack>
+#include <string>
+#include <bitset>
+#include <cstdio>
+#include <limits>
+#include <vector>
+#include <climits>
+#include <cstring>
+#include <cstdlib>
+#include <fstream>
+#include <numeric>
+#include <sstream>
+#include <iostream>
+#include <algorithm>
+#include <unordered_map>
+
 using namespace std;
-#define int int64_t
-using ll = long long;
-using pii = pair<int, int>;
-using vi = vector<int>;
-using vvi = vector<vector<int>>;
+int main() {
+    /* Enter your code here. Read input from STDIN. Print output to STDOUT */
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
+    int n;
+    string m;
+    int q;
+    cin >> n >> m >> q;
 
-vector<int> getPi(string p)
-{
-    int m = (int)p.size(), j = 0;
-    vector<int> pi(m, 0);
-    for (int i = 1; i < m; ++i)
+    vector<pair<int, int>> cuts(q);
+
+    for (int i = 0; i < q; i++)
+        cin >> cuts[i].first >> cuts[i].second;
+
+    for (auto& elem : cuts)
     {
-        while (j > 0 && p[i] != p[j])
-            j = pi[j - 1];
-        if (p[i] == p[j])
-            pi[i] = ++j;
-    }
-    return pi;
-}
+        string str = m.substr(elem.first, elem.second - elem.first + 1);
+        int start = 0, end = 0;
 
-vector<int> kmp(string s, string p)
-{
-    vector<int> ans;
-    auto pi = getPi(p);
-    int n = (int)s.size(), m = (int)p.size(), j = 0;
-    for (int i = 0; i < n; ++i)
-    {
-        while (j > 0 && s[i] != p[j])
-            j = pi[j - 1];
-        if (s[i] == p[j])
+        for (int i = 0; i < str.size(); i++)
         {
-            if (j == m - 1)
+            if (str[i] == '*')
             {
-                ans.push_back(i - m + 1);
-                j = pi[j];
-            }
-            else
-            {
-                j++;
+                start = i;
+                break;
             }
         }
-    }
-    return ans;
-}
 
-string solution(string m, vector<string> musicinfos) {
-    // 제목, 재생된 시간 (제일 긴 음악 판정)
-    string ansTitle;
-    int ansIterCnt;
-
-    for (auto& info : musicinfos)
-    {
-        // 시간 구하기 (반복용)
-        string start;
-        start += info[6]; start += info[7];
-        string end;
-        end += info[0]; end += info[1];
-        int minute = stoi(start) - stoi(end);
-
-        start = ""; end = "";
-        start += info[9]; start += info[10];
-        end += info[3]; end += info[4];
-
-        int sec = stoi(start) - stoi(end);
-        if (sec < 0)
+        for (int i = str.size() - 1; i >= 0; i--)
         {
-            --minute;
-            sec += 60;
-        }
-
-        // 타이틀 저장
-        string title;
-        int noteIdx = 12;
-        for (int i = 12; info[i] != ','; ++i)
-        {
-            title += info[i];
-            noteIdx = i;
-        }
-        noteIdx += 2;
-
-        // 악보 반복
-        string note;
-        int iterCnt = minute * 60 + sec;
-        int iterCntOrigin = iterCnt;
-        int cur = noteIdx;
-
-        while (iterCnt--)
-        {
-            note += info[cur];
-
-            if (info[cur + 1] == '#')
-                iterCnt++;
-
-            if (cur == info.size() - 1)
-                cur = noteIdx;
-            else
-                cur++;
-        }
-
-        // kmp 알고리즘
-        vector<int> idxs = kmp(note, m);
-
-        // 고려1. 찾았어도 뒤에 #이 있으면 안 됨.
-        // 고려2. #이 붙었으면 다음 인덱스부터 또 검사해야 됨
-        for (auto& idx : idxs)
-        {
-            if (note[idx + m.size()] != '#')
+            if (str[i] == '*')
             {
-                if (ansTitle.empty()) {
-                    ansTitle = title;
-                    ansIterCnt = iterCntOrigin;
-                }
-                else
-                {
-                    if (ansIterCnt < iterCntOrigin)
-                    {
-                        ansTitle = title;
-                        ansIterCnt = iterCntOrigin;
-                    }
-                }
+                end = i;
+                break;
             }
         }
+
+        str = str.substr(start, end - start + 1);
+        int sum = 0;
+
+        for (auto& ch : str)
+        {
+            if (ch >= '0' && ch <= '9')
+                sum += ch - '0';
+        }
+
+        cout << sum << '\n';
     }
 
-    if (ansTitle.empty()) return "(None)";
-    else return ansTitle;
-}
-
-int32_t main() {
-	ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-	int t = 1;
-	// cin >> t;
-    for (int i = 0; i != t; i++) { solution("A#", {"12:00,12:01,HELLO,A#" }); }
-	return 0;
+    return 0;
 }
