@@ -1,0 +1,35 @@
+드로우 콜
+
+CPU는 현재 프레임에 어떤 것 그려야 할 지 정함
+GPU에 오브젝트를 그리라고 명령 호출
+이 명령이 드로우 콜
+
+
+메시, 머터리얼 수, 멀티 패스 등으로 드로우 콜 발생
+
+CPU 병목의 주 원인
+
+
+
+
+언리얼에서 최적화
+
+액터 병합
+
+
+
+콘솔 커맨드
+
+드로우 콜 확인
+stat scenerendering
+stat slate
+
+
+컬링 물체 확인
+r.VisualizeOccludedPrimitives 1
+
+
+렌더링 현재 카메라로 동결
+freezerendering
+
+
