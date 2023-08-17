@@ -1,0 +1,39 @@
+D3DXMatrixLookAtLH (Eye, At, Up)
+
+Z = N(At - Eye)
+X = N(Cross(Up, Z))
+Y = Cross(Z, X)
+
+
+
+내적 2가지 성질
+	내각을 본다, 이동한다
+
+
+-
+X = -dot(X, Eye)
+-
+Y = -dot(Y, Eye)
+-
+Z = -dot(Z, Eye)
+
+
+
+1 degree = 파이 / 180 radian
+
+
+
+
+D3DXMatrixTransformCoord
+D3DXMatrixTransformNormal
+
+VS에서 함수 mul 과 같다.
+
+mul(position, w)
+	월드공간으로 변환
+	position의 x, y, z, w
+
+
+
+
+
