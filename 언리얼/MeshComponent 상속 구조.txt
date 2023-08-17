@@ -1,0 +1,17 @@
+UObject
+- UActorComp
+-- USceneComp
+--- UPrimitiveComp
+---- UMeshComp
+----- UStaticMeshComp : 기본 모델 보여줄 때
+----- USkinnedMeshComp
+----- UProceduralMeshComp : 
+
+
+
+*Procedural: 규칙에 의해 데이터가 입력되서 생성
+
+Control Point
+	찾아보기
+
+
