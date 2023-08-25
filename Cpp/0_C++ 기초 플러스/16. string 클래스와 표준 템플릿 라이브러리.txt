@@ -371,7 +371,7 @@ Allocator 클래스는 메모리 관리에 사용
 ```
 	shared_ptr<double> pd;
 	double* p_reg = new double;
-	pd = p_reg;							// 허용되지 않는다 (암시적 변환)
+	pd = p_reg;				// 허용되지 않는다 (암시적 변환)
 	pd = shared_ptr<double>(p_reg);		// 허용된다 (명시적 변환)
 	shared_ptr<double> pshared = p_reg;	// 허용되지 않는다 (암시적 변환)
 	shared_ptr<double> pshared(p_reg);	// 허용된다 (명시적 변환)
@@ -818,14 +818,14 @@ rbegin(), rend()
 
 
 선택적 시퀀스 요구사항
-a.front()			vetor, list, deque
+a.front()		vetor, list, deque
 a.back()
 a.push_front(t)		list, deque
 q.push_back(t)		vector, list, deque
 a.pop_front(t)		list, deque
 a.pop_back(t)		vector, list, deque
-a[n]				vector, deque
-a.at(n)				vector, deque
+a[n]			vector, deque
+a.at(n)			vector, deque
 
 
 a[n] vs a.at(n)
@@ -1205,7 +1205,9 @@ public:
 3. 
 void ToUpper(string& s)
 {
-	for(auto& ch : s) if (ch >= 'a' && ch <= 'z') ch += ('A' - 'a');
+	for(auto& ch : s) 
+		if (ch >= 'a' && ch <= 'z') 
+			ch += ('A' - 'a');
 }
 
 4. [생략]

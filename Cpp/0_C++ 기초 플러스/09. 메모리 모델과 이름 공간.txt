@@ -142,7 +142,7 @@ extern char gr = 'z';	// 초기화되므로 선언이다.
 ```
 // file01.cpp
 extern int cats = 20;	// 초기화되므로 정의에 해당된다.
-int dogs = 22;	// 정의에 해당된다
+int dogs = 22;		// 정의에 해당된다
 int fleas;		// 정의에 해당된다
 ...
 // file02.cpp

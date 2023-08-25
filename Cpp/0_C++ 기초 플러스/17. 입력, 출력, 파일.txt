@@ -282,10 +282,18 @@ get(char*, int, char)와 getline(char*, int, char) 함수는 한 단어가 아�
 
 단일 문자 입력
 
-특성						  cin.get(ch)						 ch = cin.get()
-입력 문자를 전달하는 방법		매개변수 ch에 대입					함수 리턴값을 사용하여 ch에 대입
-문자 입력에 대한 함수 리턴값	클래스 istream 객체에 대한 참조		 int형 값인 그 문자의 코드
-파일 끝에 대한 함수 리턴값		false로 변환						EOF
+특성				
+	cin.get(ch)
+	ch = cin.get()
+입력 문자를 전달하는 방법		
+	매개변수 ch에 대입					
+	함수 리턴값을 사용하여 ch에 대입
+	문자 입력에 대한 함수 리턴값	
+	클래스 istream 객체에 대한 참조		 
+	int형 값인 그 문자의 코드
+	파일 끝에 대한 함수 리턴값		
+	false로 변환						
+	EOF
 
 
 문자열 입력

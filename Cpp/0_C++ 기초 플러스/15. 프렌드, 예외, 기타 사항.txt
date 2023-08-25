@@ -91,7 +91,7 @@ class Tv { /*...*/ };
 - Remote를 메서드 선언(declaration)으로 제한하고, 실제 정의(definition)들은 Tv 클래스 뒤에 두자
 
 ```
-class Tv;					// 사전 선언
+class Tv;			// 사전 선언
 class Remote { /*...*/ };	// Tv를 사용하는 Remote 메서드들의 원형
 class Tv { /*...*/ };		// 여기에 Remote 메서드들의 실제 정의들을 넣는다.
 ```
@@ -520,6 +520,7 @@ runtime_error 패밀러
 - overflow_error
 	- 데이터형이 나타낼 수 있는 최대 크기 초과
 - underflow_error
+	- 산술연산의 결과가 취급할 수 있는 수의 범위 보다 작아지는 상태
 	- 부동소수점형이 나타낼 수 있는 0이 아닌 최소 크기가 존재하는데,
 	- 더 작은 값을 산출하는 계산이 언더플로 에러 발생
 
@@ -1024,7 +1025,7 @@ High bar;
 Low blow;
 
 High* pb = static_cast<High*>(&blow);	// 유효한 업캐스트
-Low* pl = static_cast<Low*>(&bar);		// 유효한 다운캐스트
+Low* pl = static_cast<Low*>(&bar);	// 유효한 다운캐스트
 Pond* pmer = static_cast<Pond*>(&blow);	// 유효하지 않다.
 ```
 

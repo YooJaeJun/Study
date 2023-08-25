@@ -46,7 +46,7 @@ std::initializer_list
 auto 
 
 decltype
-	decltype(x) y;		y를 x와 같은 타입으로 만들어라.
+	decltype(x) y;		// y를 x와 같은 타입으로 만들어라.
 	template 타입 결정하기 전 사용
 
 ```
@@ -335,7 +335,7 @@ int count3 = std::count_if(numbers.begin(), numbers.end(),
 ```
 
 람다에서 본문이 단일 구문을 반환하는 구조라면 타입은 자동으로 결정된다.
-	그렇지 않다면   ->T   문법 필요
+	그렇지 않다면 -> T 문법 필요
 
 
 

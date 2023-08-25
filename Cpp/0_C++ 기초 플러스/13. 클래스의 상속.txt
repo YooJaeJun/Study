@@ -438,7 +438,7 @@ explicit 암시적 변환 x
 Base b;
 Derived d;
 
-Base* pb = &d;		// 허용되는 암시적 업캐스팅
+Base* pb = &d;			// 허용되는 암시적 업캐스팅
 Derived* pd = (Base*)&b;	// 허용되는 명시적 다운캐스팅
 
 pb->show_name();		// 부모의 메서드. 안전한 업캐스팅
@@ -470,7 +470,7 @@ void inadequate(Base ba)
 }
 
 Derived buzz();
-show(buzz);			// Derived 버전으로 해석
+show(buzz);		// Derived 버전으로 해석
 inadequate(buzz);	// Base 버전으로 해석
 ```
 
@@ -559,7 +559,7 @@ b. 파생 클래스 메서드 호출
 
 1. public, protected 멤버변수와 메서드
 2. 생성자, 파괴자, 복사 대입 연산자, 프렌드 등
-3. 객체 = 객체 = 객체 와 같이연속적인 대입 불가능
+3. 객체 = 객체 = 객체 와 같이 연속적인 대입 불가능
 	복사 생성자가 암시적으로 호출되어 비용이 나며, 더 느리다.
 4. 기본생성 - 파생생성
 	파생파괴 - 기본파괴
